@@ -3,13 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Embedded System Lab's documentation!
-===============================================
+Embedded System Lab's documentation
+===================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
    Introduction
    Microprocessor Hardware (Rspberry Pi)
    Function Blocks
