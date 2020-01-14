@@ -7,7 +7,7 @@ Function Blocks
 ---------------
 Hardware Interfaces
 -------------------
-Controling Sensors and Actors
+Controlling Sensors and Actors
 -----------------------------
 Experiments
 ===========
