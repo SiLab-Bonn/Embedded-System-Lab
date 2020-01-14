@@ -7,8 +7,7 @@ Embedded System Lab's documentation
 ===================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+
    Introduction
    Microprocessor Hardware (Rspberry Pi)
    Function Blocks
