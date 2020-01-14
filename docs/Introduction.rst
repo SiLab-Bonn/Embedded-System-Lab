@@ -1,5 +1,5 @@
-Introduction to The Embedded System Lab
-=======================================
+Introduction 
+============
 
 Embedded Microprocessor Hardware (Raspberry Pi)
 ===============================================
@@ -7,7 +7,7 @@ Function Blocks
 ---------------
 Hardware Interfaces
 -------------------
-Controllingg Sensors & Actors
+Controling Sensors and Actors
 -----------------------------
 Experiments
 ===========
