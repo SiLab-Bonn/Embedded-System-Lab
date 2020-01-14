@@ -9,7 +9,7 @@ Embedded System Lab's documentation
 .. toctree::
    :maxdepth: 2
 
-   introduction
+   Introduction
 
 
 
