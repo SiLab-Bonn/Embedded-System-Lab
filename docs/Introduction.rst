@@ -1,12 +1,19 @@
 Introduction to The Embedded System Lab
 =======================================
 
-Microprocessor Hardware (Rspberry Pi)
+Embedded Microprocessor Hardware (Raspberry Pi)
+===============================================
 Function Blocks
-Interfaces
-Sensors & Actors
+---------------
+Hardware Interfaces
+-------------------
+Controllingg Sensors & Actors
+-----------------------------
 Experiments
+===========
 GPIO Programming
+----------------
 Ultrasonic Ranging
+------------------
 LIDAR
-LIDAR Scanner
+-----
