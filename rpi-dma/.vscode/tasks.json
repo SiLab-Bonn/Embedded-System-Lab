@@ -12,8 +12,8 @@
 				"-Wall",
 				"-shared",
 				"-o",
-				"c_func.so",
-				"c_func.c",
+				"adc.so",
+				"adc.c",
 				"rpi_dma_utils.c"
 			],
 			"options": {

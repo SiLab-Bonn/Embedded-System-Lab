@@ -64,12 +64,13 @@
 #define SAMPLE_SIZE     2
 
 // GPIO pin numbers
-#define ADC_D0_PIN      12
-#define ADC_NPINS       12
+#define ADC_D0_PIN      12  // data bus @GPIO[23:12]
+#define ADC_NPINS       14  // 12 data bits + GPIO24/25
 #define SMI_SOE_PIN     6
 #define SMI_SWE_PIN     7
-#define SMI_DREQ_PIN    24
-#define TEST_PIN        25
+#define SMI_ACK_PIN     24
+#define SMI_DREQ_PIN    25
+#define TEST_PIN        26
 #define USE_TEST_PIN    1
 
 // DMA request threshold
@@ -112,11 +113,15 @@ int num_samples;
 // Non-volatile memory size
 #define VC_MEM_SIZE(nsamp) (PAGE_SIZE + ((nsamp)+4)*SAMPLE_SIZE)
 
+void init(uint16_t *adc_data, int samples, int time_base, int wait_trigger);
+void take_data(void);
+void close(void);
+
 void map_devices(void);
 void smi_start(int nsamples, int packed);
 uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp);
 int  map_adc_data(void *buff, uint16_t *data, int nsamp);
-void smi_init(int width, int ns, int setup, int hold, int strobe);
+void smi_init(int width, int ns, int setup, int hold, int strobe, int wait_trigger);
 void disp_smi(void);
 void mode_word(uint32_t *wp, int n, uint32_t mode);
 void disp_reg_fields(char *regstrs, char *name, uint32_t val);
@@ -136,7 +141,7 @@ void map_devices(void)
     map_periph(&smi_regs, (void *)SMI_BASE, PAGE_SIZE);
 }
 
-void ADC_init(uint16_t *adc_data, int samples, int time_base)
+void init(uint16_t *adc_data, int samples, int time_base, int wait_trigger)
 {
   num_samples = samples;
   adc_data_ptr = adc_data;
@@ -149,12 +154,12 @@ void ADC_init(uint16_t *adc_data, int samples, int time_base)
 
   switch (time_base)
   {
-      case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k); break;
-      case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k); break;
-      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M); break;
-      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M); break;
-      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M); break;
-      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M); break;
+      case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); break;
+      case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); break;
+      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M, wait_trigger); break;
+      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M, wait_trigger); break;
+      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M, wait_trigger); break;
+      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M, wait_trigger); break;
   }
 
 #if USE_TEST_PIN
@@ -164,13 +169,12 @@ void ADC_init(uint16_t *adc_data, int samples, int time_base)
   map_uncached_mem(&vc_mem, VC_MEM_SIZE(num_samples+PRE_SAMP)); 
 }
 
-
-void ADC_take_data()
+void take_data(void)
 {
 //  smi_cs->enable = 1;
 //  smi_cs->clear = 1;  
   rx_buffer_ptr = adc_dma_start(&vc_mem, num_samples);
-  //smi_start(num_samples, 1);
+
   smi_dmc->dmaen = 1;
   smi_l->len = num_samples + PRE_SAMP;
   smi_cs->pxldat = 1;  // pack bytes to words
@@ -181,11 +185,12 @@ void ADC_take_data()
     ;
   map_adc_data(rx_buffer_ptr, adc_data_ptr, num_samples);
   //disp_reg_fields(smi_cs_regstrs, "CS", *REG32(smi_regs, SMI_CS));
+  smi_dmc->dmaen = 0;
   smi_cs->enable = 0;
   smi_dcs->enable = 0;	
 }
 
-void ADC_close(void)
+void close(void)
 {
   int i;
 
@@ -205,7 +210,7 @@ void ADC_close(void)
 
 // Initialise SMI, given data width, time step, and setup/hold/strobe counts
 // Step value is in nanoseconds: even numbers, 2 to 30
-void smi_init(int width, int ns, int setup, int strobe, int hold)
+void smi_init(int width, int ns, int setup, int strobe, int hold, int wait_trigger)
 {
     int divi = ns / 2;
 
@@ -235,14 +240,26 @@ void smi_init(int width, int ns, int setup, int strobe, int hold)
         while ((*REG32(clk_regs, CLK_SMI_CTL) & (1 << 7)) == 0) ;
         usleep(100);
     }
-    if (smi_cs->seterr)
+    if (smi_cs->seterr) // clear error flag
         smi_cs->seterr = 1;
+ 
+    smi_dsr->rwidth = smi_dsw->wwidth = width;   
     smi_dsr->rsetup = smi_dsw->wsetup = setup;
     smi_dsr->rstrobe = smi_dsw->wstrobe = strobe;
     smi_dsr->rhold = smi_dsw->whold = hold;
     smi_dmc->panicr = smi_dmc->panicw = 8;
     smi_dmc->reqr = smi_dmc->reqw = REQUEST_THRESH;
-    smi_dsr->rwidth = smi_dsw->wwidth = width;
+    // external DREQ setup
+    if (wait_trigger)
+    {
+      smi_dsr->rdreq = 1;
+      smi_dmc->dmap = 1;
+    }
+    else
+    {
+      smi_dsr->rdreq = 0;
+      smi_dmc->dmap = 0;
+    }
 }
 
 // Start SMI, given number of samples, optionally pack bytes into words
@@ -313,16 +330,15 @@ uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
     *pindata = 1 << TEST_PIN;
 
     enable_dma(DMA_CHAN_A);
-
-
-// control block 1: set SMI mode for selected pins in GPIO[29:20]
+  
+// control block 0: set SMI mode for selected pins in GPIO[29:20]
     cbs[0].ti = DMA_CB_SRCE_INC | DMA_CB_DEST_INC  | DMA_WAIT_RESP;
     cbs[0].tfr_len = 3 * 4;
     cbs[0].srce_ad = MEM_BUS_ADDR(mp, &modes[0]);
     cbs[0].dest_ad = REG_BUS_ADDR(gpio_regs, GPIO_MODE0);
     cbs[0].next_cb = MEM_BUS_ADDR(mp, &cbs[1]);
 
-// Control blocks 0: set test pin
+// Control blocks 1: set test pin
     cbs[1].ti = DMA_WAIT_RESP;
     cbs[1].tfr_len = 4;
     cbs[1].srce_ad = MEM_BUS_ADDR(mp, pindata);  // index of TEST_PIN
@@ -331,6 +347,7 @@ uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
 
 // Control block 2: read data
     cbs[2].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_CB_DEST_INC;
+    //cbs[2].ti = DMA_SRCE_DREQ | DMA_CB_DEST_INC  ;
     cbs[2].tfr_len = (nsamp + PRE_SAMP) * SAMPLE_SIZE;
     cbs[2].srce_ad = REG_BUS_ADDR(smi_regs, SMI_D);
     cbs[2].dest_ad = MEM_BUS_ADDR(mp, rxdata);
