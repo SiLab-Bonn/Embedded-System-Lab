@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 # GPIO.setmode(GPIO.BOARD) # RPi.GPIO Layout verwenden (wie Pin-Nummern)
 GPIO.setmode(GPIO.BCM)
 
-ADC = ctypes.CDLL("/home/pi/piLab/rpi/adc.so")
+ADC = ctypes.CDLL("./adc.so")
 
 TRIGGER = 3
 #GPIO.setup(TRIGGER, GPIO.OUT)
@@ -15,7 +15,7 @@ TRIGGER = 3
 
 n_samples = 265
 time_base = 3 # 1 Msps
-wait_for_trigger = 1
+wait_for_trigger = 0
 adc_data = (ctypes.c_uint16 * n_samples)()
 
 ADC.init_device(adc_data, n_samples, time_base, wait_for_trigger)
