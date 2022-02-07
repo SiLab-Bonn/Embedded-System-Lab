@@ -18,7 +18,6 @@ GPIO.output(SAMPLE, GPIO.LOW)
 COMP = 5  # GPIO5
 GPIO.setup(COMP, GPIO.IN)
 
-
 # trigger sample switch
 GPIO.output(SAMPLE, GPIO.HIGH)
 time.sleep(0.0001)
