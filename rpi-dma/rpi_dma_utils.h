@@ -15,13 +15,25 @@
 // limitations under the License.
 //
 
+#define RPI4 1
+
+#ifdef RPI3
+  #define PHYS_REG_BASE   PI_23_REG_BASE
+  #define CLOCK_HZ        PI_03_CLOCK   
+#elif RPI4
+  #define PHYS_REG_BASE   PI_4_REG_BASE
+  #define CLOCK_HZ        PI_4_CLOCK   
+#else 
+// do something
+#endif  
+
 // Location of peripheral registers in physical memory
-#define PHYS_REG_BASE   PI_23_REG_BASE
+//#define PHYS_REG_BASE   PI_23_REG_BASE
 #define PI_01_REG_BASE  0x20000000  // Pi Zero or 1
 #define PI_23_REG_BASE  0x3F000000  // Pi 2 or 3
 #define PI_4_REG_BASE   0xFE000000  // Pi 4
 
-#define CLOCK_HZ      PI_03_CLOCK   
+//#define CLOCK_HZ      PI_03_CLOCK   
 #define PI_03_CLOCK   250000000   // PI 0-3
 #define PI_4_CLOCK    375000000   // PI 4
 

@@ -88,8 +88,8 @@ char *smi_regstrs[] = {
 char *smi_cs_regstrs = STRS(SMI_CS_FIELDS);
 
 // Structures for mapped I/O devices, and non-volatile memory
-extern MEM_MAP gpio_regs, dma_regs;
-MEM_MAP vc_mem, clk_regs, smi_regs;
+extern MEM_MAP gpio_regs, clk_regs, dma_regs;
+MEM_MAP vc_mem,  smi_regs;
 
 // Pointers to SMI registers
 volatile SMI_CS_REG  *smi_cs;
@@ -124,6 +124,8 @@ void disp_reg_fields(char *regstrs, char *name, uint32_t val);
 
 char* Hello(void)
 {
+  //system("grep -o BCM2711 /proc/cpuinfo"); 
+  system("cat /proc/cpuinfo | grep 'Hardware' | awk '{print $3}'> NULL"); 
   return("Hello World!");
 }
 
@@ -152,10 +154,10 @@ void init_device(uint16_t *adc_data, int samples, int time_base, int wait_trigge
   {
       case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); break;
       case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); break;
-      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M, wait_trigger); break;
-      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M, wait_trigger); break;
-      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M, wait_trigger); break;
-      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M, wait_trigger); break;
+      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,   wait_trigger); break;
+      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M,   wait_trigger); break;
+      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M,   wait_trigger); break;
+      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,  wait_trigger); break;
   }
 
 #if USE_TEST_PIN
