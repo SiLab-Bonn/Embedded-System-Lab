@@ -1,74 +1,12 @@
 Introduction 
 ============
 
-Embedded System Hardware
-========================
+This modular lab course gives an introduction to selected aspects of analog signal processing and data acquisition using an embedded system. The system hardware is based on a Raspberry Pi single board computer which is connected to a custom base board. The base board allows access to various interfaces (UART, I2C, SPI etc.) which are implemented via the general purpose IO ports (GPIO). In addition, the base board features a fast 12-bit ADC, which allows the Raspberry Pi to be used as a simple oscilloscope to sample waveforms for further processing, documentation, and analysis.
 
-Function Blocks (Raspberry Pi)
----------------
-- Video Core
-- ARM Core
-- Memory
-- Periphery
+The individual experiments are featuring dedicated add-on boards (modules) which are connected to Raspberry Pi via an SPI bus and other GPIO signals. In addition the on-board ADC will be used to record data (for some experiments) and/or other lab equipment like power supplies will be controlled as well. The goal of each experiment is 
 
-GPIO Hardware Interface
--------------------
-- UART
-- I2C
-- SPI
-- PWM
-- SMI
+ - develop the required software to control the given module, 
+ - acquire various measurement data and
+ - document and analyse the measurement.
 
-Programming Examples
---------------------
-- Python
-- C++
-
-Experiments
-===========
-1. GPIO Programming
-- LED, Button, PWM
-- UART (Rpi to Rpi terminal)
-
-2. Successive Approximation Analog to Digital Converter
-- SPI controlled Digital to Analog Converter
- - R-2R Resistor DAC
-- Successive Approximation Logic
-- ADC Characterization
- - Noise
- - Linearity
- - INL/DNL
-- NOP
- 
-3. Fast Sampling ADC
-- SMI readout of the on-board ADC
-- Trigger (SW / HW)
-- ADC Characterization
- - Noise
- - Linearity
- - INL/DNL
- 
-4. Capacitance Measurement
-
-- Charge based capacitance measurement methode
-- P-N Junction capacitance
-- C-V charactersitics of a sensor diode
- 
-5. Analog Front-end for silicon sensor read-out
-- Charge sensitive Amplifier
-- Shaping Amplifier
-- Noise sources
-- Characterization
- - Signal processing chain
- - Shaper time constant
- - charge injection 
- - S-curve measurements
- - Noise vs. SHA_tau / CSA_input load
- - Multi Channel Analyzer
- 
-6. Pulse Sampler
-- Time Domian Reflectometry
-- Digital Serial Analyzer
-- TDR Measurements
- - Intrinsic resolution (amplitude, time)
- - Cables, test coupons
+ Every experiment comes with (very) basic code examples (which can but don't have to be used) which should help to get started. The example software is mainly written in Python but C++ examples are also given in some places.

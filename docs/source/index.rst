@@ -8,8 +8,19 @@ Embedded System Lab
 
 .. toctree::
    :maxdepth: 1
+   :caption: Contents:
  
-   Introduction
+   introduction
+   embedded-system-hardware
+   experiments
+   gpio-programming
+   sar-adc
+   fast-adc
+   cvm
+   afe
+   tdr
+
+
 
 
 
