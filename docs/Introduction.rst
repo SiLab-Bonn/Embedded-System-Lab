@@ -1,12 +1,17 @@
 Introduction 
 ============
 
-Embedded Microprocessor Hardware (Raspberry Pi)
+Embedded System Hardware (Raspberry Pi)
 ===============================================
 Function Blocks
 ---------------
+- Video Core
+- ARM Core
+- Memory
+- Periphery
 Hardware Interfaces
 -------------------
+
 Controlling Sensors and Actors
 -----------------------------
 Experiments
