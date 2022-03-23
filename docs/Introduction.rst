@@ -40,9 +40,10 @@ Experiments
  - Noise
  - Linearity
  - INL/DNL
+- NOP
  
 3. Fast Sampling ADC
------------------
+--------------------
 - SMI readout of the on-board ADC
 - Trigger (SW / HW)
 - ADC Characterization
