@@ -8,7 +8,7 @@ Embedded System Lab
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+ Contents
 
 
 
