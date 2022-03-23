@@ -10,4 +10,4 @@ The individual experiments are featuring dedicated add-on boards (modules) which
  - Acquire various measurement data and
  - Document and analyse the measurements.
 
- Every experiment comes with basic code examples which can but don't have to be used to get started. The example software is mainly written in Python but C examples are also given in some places. The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_.
+Every experiment comes with basic code examples which can but don't have to be used to get started. The example software is mainly written in Python but C examples are also given in some places. The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_.
