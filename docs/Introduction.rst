@@ -26,12 +26,12 @@ Programming Examples
 
 Experiments
 ===========
-GPIO Programming
+1. GPIO Programming
 ----------------
 - LED, Button, PWM
 - UART (Rpi to Rpi terminal)
 
-Successive Approximation Analog to Digital Converter
+2. Successive Approximation Analog to Digital Converter
 ----------------------------------------------------
 - SPI controlled Digital to Analog Converter
  - R-2R Resistor DAC
@@ -41,8 +41,8 @@ Successive Approximation Analog to Digital Converter
  - Linearity
  - INL/DNL
  
- Fast Sampling ADC
- -----------------
+3. Fast Sampling ADC
+-----------------
 - SMI readout of the on-board ADC
 - Trigger (SW / HW)
 - ADC Characterization
