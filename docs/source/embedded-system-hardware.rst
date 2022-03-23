@@ -1,6 +1,4 @@
-Introduction 
-============
-
+========================
 Embedded System Hardware
 ========================
 
