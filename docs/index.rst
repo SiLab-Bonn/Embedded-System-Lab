@@ -8,6 +8,7 @@ Embedded System Lab
 
 .. toctree::
    :maxdepth: 2
+   :caption: Intoduction:
 
 
 
