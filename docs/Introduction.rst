@@ -46,5 +46,33 @@ Experiments
 - SMI readout of the on-board ADC
 - Trigger (SW / HW)
 - ADC Characterization
+ - Noise
  - Linearity
  - INL/DNL
+ 
+ 4. Capacitance Measurement
+ --------------------------
+ - Charge based capacitance measurement methode
+ - P-N Junction capacitance
+ - C-V charactersitics of a sensor diode
+ 
+ 5. Analog Front-end for silicon sensor read-out
+ -----------------------------------------------
+ - Charge sensitive Amplifier
+ - Shaping Amplifier
+ - Noise sources
+ - Characterization
+  - Signal processing chain
+  - Shaper time constant
+  - charge injection 
+  - S-curve measurements
+  - Noise vs. SHA_tau / CSA_input load
+ - Multi Channel Analyzer
+ 
+ 6. Pulse Sampler
+ ----------------
+- Time Domian Reflectometry
+- Digital Serial Analyzer
+- TDR Measurements
+ - Intrinsic resolution (amplitude, time)
+ - Cables, test coupons
