@@ -13,10 +13,10 @@ The individual experiments are featuring dedicated add-on boards (modules) which
 Each experiment comes with basic code examples which can (but don't have to) be used to get started. The example software is mainly written in Python but C examples are also given in some places. The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_. The project files are synchronized to the RPi file system at the following location: 
 
 The folder structure on the Raspberry Pi is organited like this:
-  home
-    |_Embedded-System-Lab (GitHub root directory)
-        |_docs
-        |_examples
-        |_rpi-dma
-        |_schematics
-
+|  home
+|  |──Embedded-System-Lab (GitHub root directory)
+|     |──docs
+|     |──examples
+|     |──rpi-dma
+|     |──schematics
+|
