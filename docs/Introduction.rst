@@ -31,7 +31,7 @@ GPIO Programming
 - LED, Button, PWM
 - UART (Rpi to Rpi terminal)
 
-Successive Approximation Analog to Digital Converter (SAR-ADC)
+Successive Approximation Analog to Digital Converter
 ----------------------------------------------------
 - SPI controlled Digital to Analog Converter
  - R-2R Resistor DAC
@@ -41,8 +41,8 @@ Successive Approximation Analog to Digital Converter (SAR-ADC)
  - Linearity
  - INL/DNL
  
- Fast Sampling ADC (Pipeline ADC)
- ---------------------------------
+ Fast Sampling ADC
+ -----------------
 - SMI readout of the on-board ADC
 - Trigger (SW / HW)
 - ADC Characterization
