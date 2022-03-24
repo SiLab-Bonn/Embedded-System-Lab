@@ -20,4 +20,4 @@ Each experiment comes with basic code examples which can (but don't have to) be 
  | |   |─ hardware (documentation: schematics, datasheets)
  | |─ work (user working directory, not synchronized to GitHub)
  
- The user programs should be saved in the ``work`` folder. One should not overwrite the code examples in the ``Embedded-System-Lab/examples`` folder but rather copy them to the ``work`` folder if needed. In case the content of the ``examples`` folder were accidentally overwritten, the files can be restored by calling 
+ The user programs should be saved in the ``work`` folder. One should not overwrite the code examples in the ``Embedded-System-Lab/examples`` folder but rather copy and modify them to the ``work`` folder if needed. In case the content of the ``examples`` folder were accidentally overwritten, the files can be restored by calling ``git checkout *`` from the command line within ``examples`` folder.
