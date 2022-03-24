@@ -17,7 +17,7 @@ Embedded System Lab
    fast-adc
    cvm
    afe
-   tdr
+   psa
 
 
 
