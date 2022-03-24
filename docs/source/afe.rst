@@ -3,8 +3,8 @@ Experiment: Analog Front-end for silicon sensor read-out
 ===========
 Signal Processing for Semiconductor Detectors
 ---------------------------------------------
-- Charge sensitive Amplifier
-- Shaping Amplifier
+- Charge sensitive amplifier
+- Shaping amplifier
 - Noise sources
 Characterization
 ----------------
