@@ -12,7 +12,6 @@ Embedded System Lab
  
    introduction
    embedded-system-hardware
-   experiments
    gpio-programming
    sar-adc
    fast-adc
