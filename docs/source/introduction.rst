@@ -16,6 +16,8 @@ Each experiment comes with basic code examples which can (but don't have to) be 
  | |─ Embedded-System-Lab (GitHub root directory)
  | |   |─ docs (sources for this documentation)
  | |   |─ examples (code snippets for the experiments)
- | |   |─ rpi-dma (special C code functions for fast ADC readout)
- | |   |─ hardware (documentation: schematics, data sheets)
- |
+ | |   |─ rpi-dma (C code functions for fast ADC readout)
+ | |   |─ hardware (documentation: schematics, datasheets)
+ | |─ work (user working directory, not synchronized to GitHub)
+ 
+ The user programs should be saved in the ``work`` folder. One should not overwrite the code examples in the ``Embedded-System-Lab/examples`` folder but rather copy them to the ``work`` folder if needed. In case the content of the ``examples`` folder were accidentally overwritten, the files can be restored by calling 
