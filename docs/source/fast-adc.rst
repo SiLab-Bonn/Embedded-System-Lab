@@ -1,8 +1,8 @@
 =============================
 Experiment: Fast ADC
 =============================
-- DMA Programming
-- ADC Characterization
+- DMA programming
+- ADC characterization
  - Noise
  - Linearity
  - INL/DNL

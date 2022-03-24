@@ -12,7 +12,7 @@ Embedded System Lab
  
    introduction
    embedded-system-hardware
-   gpio-programming
+   gpio
    sar-adc
    fast-adc
    cvm

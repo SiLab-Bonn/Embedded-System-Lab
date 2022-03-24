@@ -1,8 +1,8 @@
 ===========
 Experiment: Capacitance Measurement
 ===========
-Charge based capacitance measurement method
--------------------------------------------
+Charge Based Capacitance Measurement
+------------------------------------
 Sensor Characterization
 ------------------------
 - PN junction capacitance
