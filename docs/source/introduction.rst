@@ -14,8 +14,8 @@ Each experiment comes with basic code examples which can (but don't have to) be 
 
  | home
  | |─ Embedded-System-Lab (GitHub root directory)
- | |   |─ docs (this documentation)
- | |   |─ examples (basic programming examples for the experiments)
- | |   |─ rpi-dma (special c code functions for fast ADC readout)
- | |   |─ schematics (module hardware)
+ | |   |─ docs (sources for this documentation)
+ | |   |─ examples (code snippets for the experiments)
+ | |   |─ rpi-dma (special C code functions for fast ADC readout)
+ | |   |─ hardware (documentation: schematics, data sheets)
  |
