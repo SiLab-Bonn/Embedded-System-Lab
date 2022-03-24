@@ -10,7 +10,7 @@ The individual experiments are featuring dedicated add-on boards (modules) which
  - Acquire various measurement data and
  - Document and analyse the measurements.
 
-Each experiment comes with basic code examples which can (but don't have to) be used to get started. The example software is mainly written in Python but C examples are also given in some places. The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_. The project structure is synchronized to the Raspberry Pi file system like this::
+Each experiment comes with basic code examples which can (but don't have to) be used to get started. The example software is mainly written in Python but C examples are also given in some places. The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_. The project structure on the Raspberry Pi file system is organized like this::
  | home
  | |─ Embedded-System-Lab (GitHub root directory)
  | |   |─ docs (sources for this documentation)
