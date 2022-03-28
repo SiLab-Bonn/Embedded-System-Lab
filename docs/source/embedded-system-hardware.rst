@@ -86,25 +86,29 @@ To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are us
     31-0   CLRn         1 = set pin to logic 0   R/W      0
     =====  ===========  ======================  ====  =======
 
-Writing a 0 to one of the Set/Clear registers has no effect. Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin without the need for read-modify-write operations (i.e read the current register value, modify it, write back the new value). This code will set GPIO4 to `0` and immediately afterwards to 1:
+Writing a 0 to one of the Set/Clear registers has no effect. Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin without the need for read-modify-write operations (i.e read the current register value, modify it, write back the new value). This code will toggle GPIO4 from 0 to 1 and immediately back to 0:
 
 .. code::
 
     GPCLR0 = 4
     GPSET0 = 4
+    GPCLR0 = 4
+ 
+.. note:: Note that a direct access to these registers (i.e. reading/writing from/to the specific bus address) is not possible. A user accessible (virtual) memory space has to be allocated first and than mapped to the register addresses. Since the register addresses used in the BCM2837-ARM-Peripherals document are referring to the VideoCore address space, the corresponding address offsets as seen by the CPU core have to be taken into account. Here is the description and the pseudo code of such mapping:
 
-.. note: Note that a direct access to these registers (i.e. reading/writing from/to the specific bus address) is not possible. A user accessible (virtual) memory space has to be allocated first and than mapped to the register addresses. And since the register addresses used in the BCM2837-ARM-Peripherals document are referring to the VideoCore address space, the corresponding address offsets as seen by the ARM core have to be taken into account. Here the pseudo code to do such mapping:
+At first the address at which the CPU core can access the IO periphery register is calculated. This step converts address at which the peripheral register is located on the VideoCore bus to the physical address the CPU core can access:
 
 .. code::
 
-    # calculate the address the ARM core can access the IO periphery register at (physical address) from the given address at the VideoCore bus (bus address)
     reg_physical_address = reg_bus_address - BUS_REG_BASE + PHYS_REG_BASE
 
-    # map the physical address to user accessible virtual memory
+Than the physical address needs to be mapped to user accessible virtual memory:
+
+.. code::
     allocate_mem(reg_phys_address, virt_reg_address, size)
 
 
- The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi models.
+ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms.
 
 .. table::
     
@@ -119,7 +123,10 @@ Writing a 0 to one of the Set/Clear registers has no effect. Having separate fun
 
 There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
 
-- GPIO Multiplexer
+
+Alternate GPIO Functions
+-------------------------
+The alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex and will not be described in detail. Typically, a user will call a library function to set-up and use the alternate function modes. Here the properties of the most commonly used function modes for implementing serial protocols are briefly described:
 
 - UART
 - I2C
