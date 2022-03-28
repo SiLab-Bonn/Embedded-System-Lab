@@ -20,10 +20,9 @@ The BCM2711 has 54 general purpose input/output ports of which 28 are available 
 There are special control registers which configure the GPIO ports to become an input or output port according to the required functionality. For many control tasks this simple so-called bit-banging IO interface is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are available. To offload the CPU from implementing these protocols and to allow a precise protocol timing, special hardware blocks can be selected to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2873, which is used on the Raspberry Pi 3 modules. However, the given description of the GPIO port is still valid for the new chip.
 Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
-**GPIO Function Select Register (GPFSEL0 @ 0x7E200000)**
 
-.. table:: 
-    : widths: auto
+
+.. table:: **GPIO Function Select Register (GPFSEL0 @ 0x7E200000)**
 
     =====  ===========  ======================  ====  =======
     Bit    Field Name   Description             Type  Default
@@ -44,7 +43,6 @@ Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-
 There are 6 registers of this type (GPFSEL0 - GPFSEL5) to cover all 54 GPIO pins. Each 3-bit word selects one out of eight function modes:
 
 .. table:: **Function Modes**
-    : width: auto
 
     ===== ===================
     FSELn Function
