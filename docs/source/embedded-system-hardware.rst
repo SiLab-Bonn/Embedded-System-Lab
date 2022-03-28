@@ -34,6 +34,7 @@ Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-
 
 .. table:: GPIO Function Select Register (GPFSEL0 @ 0x7E200000):
     : widths: auto
+
     =====  ===========  ======================  ====  =======
     Bit    Field Name   Description             Type  Default
     =====  ===========  ======================  ====  =======
@@ -54,6 +55,7 @@ There are 6 registers of this type (GPFSEL0 - GPFSEL5) to cover all 54 GPIO pins
 
 .. table:: Function Modes
     : width: auto
+    
     ===== ===================
     FSELn Function
     ===== ===================
