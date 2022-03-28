@@ -21,7 +21,6 @@ There are special control registers which configure the GPIO ports to become an 
 Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
 
-
 .. table:: **GPIO Function Select Register (GPFSEL0 @ 0x7E200000)**
 
     =====  ===========  ======================  ====  =======
@@ -40,7 +39,7 @@ Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-
     2-0    FSEL0        Function Select GPIO0   R/W    0
     =====  ===========  ======================  ====  =======
 
-There are 6 registers of this type (GPFSEL0 - GPFSEL5) to cover all 54 GPIO pins. Each 3-bit word selects one out of eight function modes:
+The address space of the IO peripheral registers starts at 0x7E000000 of the VideoCore bus. There are six 32-bit registers of this type (GPFSEL0 - GPFSEL5) to cover all 54 GPIO pins. Each 3-bit word selects one out of eight function modes for a given GPIO pin:
 
 .. table:: **Function Modes**
 
@@ -49,6 +48,12 @@ There are 6 registers of this type (GPFSEL0 - GPFSEL5) to cover all 54 GPIO pins
     ===== ===================
     000   Input
     001   Output
+    100   Alternate function 0
+    101   Alternate function 1
+    110   Alternate function 2
+    111   Alternate function 3
+    011   Alternate function 4
+    010   Alternate function 5
     ===== ===================
 
 
