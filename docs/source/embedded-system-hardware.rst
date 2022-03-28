@@ -18,7 +18,7 @@ The BCM2711 has 54 general purpose input/output ports of which 28 are available 
     Any potential applied to the GPIO pins must not exceed 3.3 V. When connected to circuits with higher output levels, appropriate levels shifters or resistive dividers must be used. 
 
 There are special control registers which configure the GPIO ports to become an input or output port according to the required functionality. For many control tasks this simple so-called bit-banging IO interface is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are available. To offload the CPU from implementing these protocols and to allow a precise protocol timing, special hardware blocks can be selected to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2873, which is used on the Raspberry Pi 3 modules. However, the given description of the GPIO port is still valid for the new chip.
-Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
+Here is an example of a **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
 
 .. table:: **GPIO Function Select Register (GPFSEL0 @ 0x7E200000)**
@@ -28,11 +28,11 @@ Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-
     =====  ===========  ======================  ====  =======
     31-30  ---          Reserved                R      0
     29-27  FSEL9        Function Select GPIO9   R/W    0
-    26-14  FSEL8        Function Select GPIO8   R/W    0
+    26-24  FSEL8        Function Select GPIO8   R/W    0
     23-21  FSEL7        Function Select GPIO7   R/W    0
     20-18  FSEL6        Function Select GPIO6   R/W    0
     17-15  FSEL5        Function Select GPIO5   R/W    0
-    14-14  FSEL4        Function Select GPIO4   R/W    0
+    14-12  FSEL4        Function Select GPIO4   R/W    0
     11-9   FSEL3        Function Select GPIO3   R/W    0
     8-6    FSEL2        Function Select GPIO2   R/W    0
     5-3    FSEL1        Function Select GPIO1   R/W    0
@@ -41,7 +41,7 @@ Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-
 
 The address space of the IO peripheral registers starts at 0x7E000000 of the VideoCore bus. There are six 32-bit registers of this type (GPFSEL0 - GPFSEL5) to cover all 54 GPIO pins. Each 3-bit word selects one out of eight function modes for a given GPIO pin:
 
-.. table:: **Function Modes**
+.. table:: **GPIO Function Modes**
 
     ===== ===================
     FSELn Function
@@ -56,8 +56,33 @@ The address space of the IO peripheral registers starts at 0x7E000000 of the Vid
     010   Alternate function 5
     ===== ===================
 
+To use a GPIO pin as an output, the value 0x001 has to be written to its corresponding GPFSEL register. Here is an example for GPIO4:
 
+``GPFSEL0 |= 0x001 << 12``
+
+To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are used:
+
+.. table:: **GPIO Pin Output Set Registers (GPSET0 @ 0x7E20001C)**
+
+    =====  ===========  ======================  ====  =======
+    Bit    Field Name   Description             Type  Default
+    =====  ===========  ======================  ====  =======
+    31-0   SETn         1 = set pin to logic 1   R/W      0
+    =====  ===========  ======================  ====  =======
  
+.. table:: **GPIO Pin Output Clear Registers (GPCLR0 @ 0x7E20001C)**
+
+    =====  ===========  ======================  ====  =======
+    Bit    Field Name   Description             Type  Default
+    =====  ===========  ======================  ====  =======
+    31-0   CLRn         1 = set pin to logic 0   R/W      0
+    =====  ===========  ======================  ====  =======
+
+Writing a `0` to one of the Set/Clear registers has no effect. Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin without the need for read-modify-write operations (i.e read the current register value, modify it, write back the new value). This code will set GPIO4 to `0` and immediately afterwards to `1`:
+
+``GPCLR0 = 4
+  GPSET0 = 4``
+
 
 
 - GPIO Multiplexer
