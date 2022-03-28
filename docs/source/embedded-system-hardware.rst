@@ -94,7 +94,7 @@ Writing a 0 to one of the Set/Clear registers has no effect. Having separate fun
     GPSET0 = 4
     GPCLR0 = 4
  
-.. note:: Note that a direct access to these registers (i.e. reading/writing from/to the specific bus address) is not possible. A user accessible (virtual) memory space has to be allocated first and than mapped to the register addresses. Since the register addresses used in the BCM2837-ARM-Peripherals document are referring to the VideoCore address space, the corresponding address offsets as seen by the CPU core have to be taken into account. Here is the description and the pseudo code of such mapping:
+.. note:: It is not possible to directly access these registers (i.e. reading/writing from/to the specific bus address). A user accessible (virtual) memory space has to be allocated first and than mapped to the register addresses. Since the register addresses used in the BCM2837-ARM-Peripherals document are referring to the VideoCore address space, the corresponding address offsets as seen by the CPU core have to be taken into account. Here is the description and the pseudo code of such mapping:
 
 At first the address at which the CPU core can access the IO periphery register is calculated. This step converts address at which the peripheral register is located on the VideoCore bus to the physical address the CPU core can access:
 
@@ -105,6 +105,7 @@ At first the address at which the CPU core can access the IO periphery register 
 Than the physical address needs to be mapped to user accessible virtual memory:
 
 .. code::
+    
     allocate_mem(reg_phys_address, virt_reg_address, size)
 
 
