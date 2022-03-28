@@ -44,7 +44,12 @@ There are 6 registers of this type (GPFSEL0 - GPFSEL5) to cover all 54 GPIO pins
 .. table:: Function Modes
     : width: auto
     ===== ===================
-    
+    FSELn Function
+    ===== ===================
+    000   Input
+    001   Output
+    ===== ===================
+
 
  
 
