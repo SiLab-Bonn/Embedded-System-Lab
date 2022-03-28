@@ -56,11 +56,17 @@ The address space of the IO peripheral registers starts at 0x7E000000 of the Vid
     010   Alternate function 5
     ===== ===================
 
-To use a GPIO pin as an output, the value 0x001 has to be written to its corresponding GPFSEL register. Here is an example for GPIO4:
+To use a GPIO pin as an output, the value 0x001 has to be written to its corresponding GPFSEL register. Here is a pseudo code example enabling GPIO4 as an output:
 
 .. code::
     
     GPFSEL0 |= 0x001 << 12
+
+    # which is the abbreviation for a read-modify-write operation:
+
+    temp    = GPFSEL0;             # read 
+    temp    = temp | (0x001 << 12) # modify
+    GPFSEL0 = temp                 # write
 
 To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are used:
 
