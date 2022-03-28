@@ -21,6 +21,7 @@ There are special control registers which configure the GPIO ports to become an 
 Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
 **GPIO Function Select Register (GPFSEL0 @ 0x7E200000)**
+
 .. table:: 
     : widths: auto
 
