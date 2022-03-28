@@ -58,7 +58,9 @@ The address space of the IO peripheral registers starts at 0x7E000000 of the Vid
 
 To use a GPIO pin as an output, the value 0x001 has to be written to its corresponding GPFSEL register. Here is an example for GPIO4:
 
-``GPFSEL0 |= 0x001 << 12``
+.. code::
+    
+    GPFSEL0 |= 0x001 << 12
 
 To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are used:
 
@@ -78,10 +80,10 @@ To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are us
     31-0   CLRn         1 = set pin to logic 0   R/W      0
     =====  ===========  ======================  ====  =======
 
-Writing a `0` to one of the Set/Clear registers has no effect. Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin without the need for read-modify-write operations (i.e read the current register value, modify it, write back the new value). This code will set GPIO4 to `0` and immediately afterwards to `1`:
+Writing a 0 to one of the Set/Clear registers has no effect. Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin without the need for read-modify-write operations (i.e read the current register value, modify it, write back the new value). This code will set GPIO4 to `0` and immediately afterwards to 1:
 
 .. code::
-    
+
     GPCLR0 = 4
     GPSET0 = 4
 
