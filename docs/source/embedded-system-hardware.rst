@@ -17,7 +17,7 @@ The BCM2711 has 54 general purpose input/output ports of which 28 are available 
 .. warning::
     Any potential applied to the GPIO pins must not exceed 3.3 V. When connected to circuits with higher output levels, appropriate levels shifters or resistive dividers must be used. 
 
-There are special control registers which configure the GPIO ports to become an input or output port according to the required functionality. For many control tasks this simple so-called bit-banging IO interface is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are available. To offload the CPU from implementing these protocols and to allow a precise protocol timing, special hardware blocks can be selected to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2873, which is used on the Raspberry Pi 3 modules. However, the given description of the GPIO port is still valid for the new chip.
+There are special control registers which configure the GPIO ports to become an input or output port according to the required functionality. For many control tasks this simple so-called bit-banging IO interface is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are available. To offload the CPU from implementing these protocols and to allow a precise protocol timing, special hardware blocks can be selected to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2835 (and not even the BCM2837, as the name suggests), which is used on the Raspberry Pi 1 modules. However, the given description of the GPIO port and other peripherals is still valid for the newer chip generations - apart from a few details like bus address offsets (see below).
 Here is an example of a **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
 
@@ -78,7 +78,7 @@ To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are us
     31-0   SETn         1 = set pin to logic 1   R/W      0
     =====  ===========  ======================  ====  =======
  
-.. table:: **GPIO Pin Output Clear Registers (GPCLR0 @ 0x7E20001C)**
+.. table:: **GPIO Pin Output Clear Registers (GPCLR0 @ 0x7E200028)**
 
     =====  ===========  ======================  ====  =======
     Bit    Field Name   Description             Type  Default
@@ -93,7 +93,31 @@ Writing a 0 to one of the Set/Clear registers has no effect. Having separate fun
     GPCLR0 = 4
     GPSET0 = 4
 
+.. note: Note that a direct access to these registers (i.e. reading/writing from/to the specific bus address) is not possible. A user accessible (virtual) memory space has to be allocated first and than mapped to the register addresses. And since the register addresses used in the BCM2837-ARM-Peripherals document are referring to the VideoCore address space, the corresponding address offsets as seen by the ARM core have to be taken into account. Here the pseudo code to do such mapping:
 
+.. code::
+
+    # calculate the address the ARM core can access the IO periphery register at (physical address) from the given address at the VideoCore bus (bus address)
+    reg_physical_address = reg_bus_address - BUS_REG_BASE + PHYS_REG_BASE
+
+    # map the physical address to user accessible virtual memory
+    allocate_mem(reg_phys_address, virt_reg_address, size)
+
+
+ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi models.
+
+.. table::
+    
+    ===========  ==========  ==================
+     Model        Chip        PHYS_REG_BASE
+    ===========  ==========  ==================
+      RPi 1       BCM2835     0x20000000
+      RPi 2       BCM2836     0x3F000000
+      RPi 3       BCM2837     0x3F000000
+      RPi 4       BCM2711     0xFE000000      
+    ===========  ==========  ==================
+
+There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
 
 - GPIO Multiplexer
 
