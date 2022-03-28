@@ -21,13 +21,24 @@ There are special control registers which configure the GPIO ports to become an 
 To offload the CPU from implementing these protocols and to allow a precise protocol timing which is not affected by the CPU multi-tasking, special hardware blocks can be selectively connected to the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2873, which is used on the Raspberry Pi 3 modules. However, the given description of the GPIO port is still valid for the new chip.
 Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
-.. table:: GPIO Function Select Register (GPFSEL):
+.. table:: GPIO Function Select Register (GPFSEL0 @ 0x7E200000):
     : widths: auto
     ===== =========== ====================== ==== =======
     Bit   Field Name  Description            Type Default
     ===== =========== ====================== ==== =======
     31-30 ---         Reserved                R     0
-    29-17 FSEL9       Function Select GPIO9   R/W   0
+    29-27 FSEL9       Function Select GPIO9   R/W   0
+    26-14 FSEL8       Function Select GPIO8   R/W   0
+    23-21 FSEL7       Function Select GPIO7   R/W   0
+    20-18 FSEL6       Function Select GPIO6   R/W   0
+    17-15 FSEL5       Function Select GPIO5   R/W   0
+    14-14 FSEL4       Function Select GPIO4   R/W   0
+     11-9 FSEL3       Function Select GPIO3   R/W   0
+      8-6 FSEL2       Function Select GPIO2   R/W   0
+      5-3 FSEL1       Function Select GPIO1   R/W   0
+      2-0 FSEL0       Function Select GPIO0   R/W   0
+    ===== =========== ====================== ==== =======
+
  
 
 
