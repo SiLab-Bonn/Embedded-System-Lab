@@ -105,11 +105,10 @@ At first the address at which the CPU core can access the IO periphery register 
 Than the physical address needs to be mapped to user accessible virtual memory:
 
 .. code::
-    
+
     allocate_mem(reg_phys_address, virt_reg_address, size)
 
-
- The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms.
+The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms.
 
 .. table::
     
