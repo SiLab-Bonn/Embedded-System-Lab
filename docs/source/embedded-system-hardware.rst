@@ -102,11 +102,23 @@ At first the address at which the CPU core can access the IO periphery register 
 
     reg_physical_address = reg_bus_address - BUS_REG_BASE + PHYS_REG_BASE
 
-Than the physical address needs to be mapped to user accessible virtual memory:
+Than a chunk of virtual memory has to be allocated: 
 
 .. code::
 
-    allocate_mem(reg_phys_address, virt_reg_address, size)
+    allocate_mem(virt_reg_address, size)
+
+And finally the physical address is mapped to user accessible virtual memory:
+
+.. code::
+
+    mmap(virt_reg_address, reg_physical_address)
+
+Now the ``virt_reg_address`` can be used to access the IO peripheral register. For example, if ``reg_bus_address`` is ``0x7E20001C`` (the GPSET0 register), the GPIO4 pin would be set by calling
+
+.. code::
+  
+    virt_reg_address = 4
 
 The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms.
 
