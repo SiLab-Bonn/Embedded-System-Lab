@@ -39,6 +39,13 @@ Here is an example of a GPIO function register (see also chapter 6.1 in BCM2837-
       2-0 FSEL0       Function Select GPIO0   R/W   0
     ===== =========== ====================== ==== =======
 
+There are 6 registers of this type (GPFSEL0 - GPFSEL5) to cover all 54 GPIO pins. Each 3-bit word selects one out of eight function modes:
+
+.. table:: Function Modes
+    : width: auto
+    ===== ===================
+    
+
  
 
 
