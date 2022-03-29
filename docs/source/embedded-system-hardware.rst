@@ -157,20 +157,26 @@ There are more GPIO configuration registers (documented and undocumented) which 
 
 
 Alternate GPIO Functions
--------------------------
+========================
 The GPIO ports can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols a supported directly be dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex and will not be described in detail. Typically, a user will call functions from a library to set-up and use the alternate function modes. Next, the properties of the most commonly used function modes for implementing serial protocols are described:
 
-- UART
-The Universal-Asynchronous-Receiver-Transmitter (UART) protocol is widely used for communication between a hosts and peripheral hardware components. It is a full-duplex protocol which uses two separate data lines: one for sending data from host to device and the other for sending data from device to host. The data transmission is asynchronous because there is no additional clock signal to synchronize the transfer. To set-up a communication via an UART bus, host and device have to define the same configuration settings for the data transfer:
+UART
+----
+The Universal-Asynchronous-Receiver-Transmitter (UART) protocol is widely used for communication between a pair of hardware components. It is a full-duplex peer-to-peer protocol which uses two separate data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) the two communicating devices can send data any time - there are no master or slaves roles. The data transmission is asynchronous because there is no additional clock signal needed to synchronize the transfer. However, to set-up a communication link via an UART bus, host and device have to use the same configuration settings for the data transfer engine:
 
-  - Data rate, also called baud rate: Typically multiples of 9600 up to 115200 
+  - Data rate (also called baud rate): Typically multiples of 9600 up to 115200 
   - Number of data bits: 8 (but also 7 or 9 bits are supported)
-  - Number of stop bits: 1,2 or 1.5
+  - Number of stop bits: 1, 2 or 1.5
   - Parity: odd, even or none
 
 In addition, other features for making the communication more robust (handshaking, software or hardware based) are sometimes used but will be omitted here. 
 
-Data are being sent always one byte at a time. A data transmission starts by sending a start bit (always 0), then the data bits, the parity bit (if configured) and finally the stop bit(s). A typical UART configuration is 8 data bits, even parity, one stop bit (8E1) and thus one data byte is transferred using 11 bit-clock cycles.
+Data are being sent always one byte at a time. A data transmission starts by sending a start bit (always 0), then the data bits LSB first, the parity bit (if configured) and finally the stop bit(s) which are always 1. A typical UART configuration is 8 data bits, even parity, one stop bit (8E1) and thus one data byte is transferred using 11 bit-clock cycles. This is a timing diagram of a UART transfer of one byte with a 8E1 setting. The period of one bit cycle is 1/F_baud.
+
+.. figure:: images/UART.png
+    :width: 600
+    :align: center
+
 
 .. note::
     The signal names RX and TX, which are commonly used for labeling the UART bus, can cause confusion when connecting one device with another. Since a device sends data via its TX port and expects to receive data via its RX port, at some point the TX labeled net from one device needs to be connected to the RX labeled net of the other device and vice versa.
@@ -178,13 +184,20 @@ Data are being sent always one byte at a time. A data transmission starts by sen
 
 
 
-- I2C
-- SPI
-- PWM
-- SMI
+I2C
+---
+
+SPI
+---
+
+PWM
+---
+
+SMI
+---
 
 Programming Examples
---------------------
+====================
 - Python
 - C++
 
