@@ -15,7 +15,7 @@ The central part of the Raspberry Pi module is a system-on-chip (SOC). A SOC int
 The Raspberry Pi SOC is based on a highly integrated, low power video processor called VideoCore (sometimes also referred to as graphics- or video-processing-unit, GPU or VPU) with a multi-core ARM CPU attached to it. The following block diagram of the BCM2711 chip, which is used on the Raspberry Pi 4 modules, shows the SOC main function blocks which communicate and exchange data via an internal system bus (AMBA/AXI bus). 
 
 .. figure:: images/BCM2711.png
-    :width: 800
+    :width: 600
     :align: center
 
 Memory and I/O Access
