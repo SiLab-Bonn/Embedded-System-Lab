@@ -11,8 +11,9 @@ Embedded System Lab
    :caption: Contents:
  
    introduction
-   embedded-system-hardware
+   hardware-intro
    gpio
+   software-intro
    sar-adc
    fast-adc
    cvm

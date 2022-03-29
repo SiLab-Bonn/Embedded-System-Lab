@@ -87,14 +87,14 @@ There are more GPIO configuration registers (documented and undocumented) which 
 
 Alternate GPIO Functions
 ========================
-The GPIO ports can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols a supported directly be dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex and will not be described in detail. Typically, a user will call functions from a library to set-up and use the alternate function modes. Here is a table which shows the available alternate functions which can be selected via the appropriate GPFSEL registers for each GPIO pin. Note that all alternate functions require a number of consecutive pins to set to the same mode.
+The GPIO ports can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols a supported directly be dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex and will not be described in detail. Typically, a user will call functions from a library to set-up and use the alternate function modes. Here is a table which shows the available alternate functions which can be selected via the appropriate GPFSEL registers for each GPIO pin. Note that all alternate functions require a number of consecutive pins to be set to the same mode.
 
 .. figure:: images/GPIO_Alt.png
     :width: 600
     :align: center
 
 
-Next, the properties of a few commonly used serial protocols are described.
+Next, the properties of a few of those commonly used serial protocols are described.
 
 
 UART
@@ -135,10 +135,4 @@ PWM
 SMI
 ---
 
-Basic Programming Examples
-==========================
-- Python
-- C++
-- LED, Button, PWM
-- UART (Rpi to Rpi terminal)
 

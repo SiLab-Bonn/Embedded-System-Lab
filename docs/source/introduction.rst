@@ -16,16 +16,4 @@ The individual experiments are featuring dedicated add-on boards (modules) which
 - Acquire various measurement data and
 - Document and analyse the measurements.
 
-Each experiment comes with basic code examples which can (but don't have to) be used to get started. The example software is mainly written in Python but C examples are also given in some places. The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_. The project structure on the Raspberry Pi file system is organized like this::
-
- | home
- | |─ Embedded-System-Lab (GitHub root directory)
- | |   |─ docs (sources for this documentation)
- | |   |─ examples (code snippets for the experiments)
- | |   |─ rpi-dma (C code functions for fast ADC readout)
- | |   |─ hardware (documentation: schematics, datasheets)
- | |─ work (user working directory, not synchronized to GitHub)
-
- 
-.. note:: 
- User programs and measurement data should be saved in the ``work`` folder. The code examples in the ``Embedded-System-Lab/examples`` folder should not be modified directly but rather copied to the ``work`` folder and modified there, as needed. In case the content of the ``examples`` or any other folder were accidentally changed, the files can be restored by calling ``git checkout *`` from the command line within the respective folder.
+Each experiment comes with basic code examples which can (but don't have to) be used to get started. The example software is mainly written in Python but C examples are also given in some places. 
