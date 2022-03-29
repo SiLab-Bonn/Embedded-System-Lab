@@ -13,10 +13,10 @@ The code examples and additional documentation is maintained on  `GitHub <https:
 
  |─ home
  |  |─ Embedded-System-Lab (GitHub root directory)
- |  |   |─ docs (sources for this documentation)
- |  |   |─ examples (code snippets for the experiments)
- |  |   |─ rpi-dma (C code functions for fast ADC readout)
- |  |   |─ hardware (documentation: schematics, datasheets)
+ |  |  |─ docs (sources for this documentation)
+ |  |  |─ examples (code snippets for the experiments)
+ |  |  |─ rpi-dma (C code functions for fast ADC readout)
+ |  |  |─ hardware (documentation: schematics, datasheets)
  |  |─ work (user working directory, not synchronized to GitHub)
 
  
