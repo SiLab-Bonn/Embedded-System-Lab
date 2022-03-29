@@ -1,0 +1,13 @@
+{signal: 
+ [
+  {name: 'TX', wave: '1222222222221', data:['Start','D0','D1','D2','D3','D4','D5','D6','D7','P', 'Stop']},
+  {name: 'Data = 0xCD', wave: '10101.0.1....'},
+   
+],
+ foot:
+   {
+   text:'UART protocol',
+   tock:-1
+   },
+}
+   
