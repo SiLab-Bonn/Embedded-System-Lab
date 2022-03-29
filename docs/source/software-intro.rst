@@ -11,13 +11,13 @@ The Raspberry Pi module runs a Debian-based operating system (Raspberry Pi OS) i
 
 The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_. The project structure on the Raspberry Pi file system is organized like this::
 
- | home
- | |─ Embedded-System-Lab (GitHub root directory)
- | |   |─ docs (sources for this documentation)
- | |   |─ examples (code snippets for the experiments)
- | |   |─ rpi-dma (C code functions for fast ADC readout)
- | |   |─ hardware (documentation: schematics, datasheets)
- | |─ work (user working directory, not synchronized to GitHub)
+ |─ home
+ |  |─ Embedded-System-Lab (GitHub root directory)
+ |  |   |─ docs (sources for this documentation)
+ |  |   |─ examples (code snippets for the experiments)
+ |  |   |─ rpi-dma (C code functions for fast ADC readout)
+ |  |   |─ hardware (documentation: schematics, datasheets)
+ |  |─ work (user working directory, not synchronized to GitHub)
 
  
 .. note:: 
