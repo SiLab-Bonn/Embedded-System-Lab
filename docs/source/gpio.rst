@@ -121,6 +121,7 @@ The encoding and decoding of the parity bit is done in the UART hardware. If eve
 .. note::
     The signal names RX and TX, which are commonly used for labeling the UART bus, can cause confusion when connecting one device with another. Since a device sends data via its TX port and expects to receive data via its RX port, at some point the TX labeled net from one device needs to be connected to the RX labeled net of the other device and vice versa.
 
+In the GPIO alternate modes table, the UART signals are marked in red with the names ``TXDn`` and ``RXDn``. The UART port is available on ``GPIO14`` (TX) and ``GPIO15`` (RX) when mode 0 or 5 is selected. Additional signals for hardware handshaking (``CTS1`` and ``RTS1``) are available on ``GPIO16`` and ``GPIO17`` when mode 5 is used.
 
 
 
