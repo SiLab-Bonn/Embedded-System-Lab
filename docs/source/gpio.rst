@@ -103,8 +103,8 @@ UART
 The Universal-Asynchronous-Receiver-Transmitter (UART) protocol is widely used for communication between a pair of hardware components. It is a full-duplex peer-to-peer protocol which uses two separate data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) the two communicating devices can send data any time - there are no master or slaves roles. The data transmission is asynchronous because there is no additional clock signal needed to synchronize the transfer. However, to set-up a communication link via an UART bus, host and device have to use the same configuration settings for the data transfer engine:
 
   - Data rate (also called baud rate): Typically multiples of 9600 up to 115200 
-  - Number of data bits: 8 (but also 7 or 9 bits are supported)
-  - Number of stop bits: 1, 2 or 1.5
+  - Number of data bits: 8 (but also 5, 6 or 7 bits are supported)
+  - Number of stop bits: 1 or 2
   - Parity: odd, even or none
 
 In addition, other features for making the communication more robust (handshaking, software or hardware based) are sometimes used but will be omitted here. 
