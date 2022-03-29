@@ -23,7 +23,7 @@ Memory and I/O Access
 The operating system and the user programs run on a quad-core CPU (ARM Cortex A-72) while video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral I/O components attached to the system bus. The address handling and arbitration is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces (the address ranges in this diagram are derived from the BCM2835 document):
 
 .. figure:: images/address_spaces.png
-    :width: 600
+    :width: 800
     :align: center
 
 
