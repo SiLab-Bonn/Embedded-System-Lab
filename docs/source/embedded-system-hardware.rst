@@ -4,7 +4,7 @@ Embedded System Hardware
 This chapter introduces the computing hardware which is used in all experiments. Although the specific details of the following description relate to the Raspberry Pi platform, the fundamental aspects of interaction between software, system hardware and external devices are platform independent. The first section describes the Raspberry Pi hardware with a focus on the access to the GPIO ports. The second section gives an overview of commonly used serial protocols for communication between systems and electronic components. Finally, programming examples are presented and simple tasks which introduce the first experiment (GPIO Programming) are shown.
 
 Computing Platform
-------------------
+==================
 The central part of the Raspberry Pi module is a system-on-chip (SOC). A SOC integrates the CPU with peripheral components like display controller, various communication interfaces (USB, Ethernet, PCIe, etc.), memory controller, power regulators and others on a single chip. Therefore, only very few external components are needed to build a complete computing system. The picture belows shows the Raspberry Pi 4B module with the central SOC, the SDRAM memory, an on-board Wifi & BT transceiver, support chips for Ethernet and USB, connectors for video, audio, LAN , USB and a header for the GPIO port.
 
 
@@ -12,7 +12,7 @@ The central part of the Raspberry Pi module is a system-on-chip (SOC). A SOC int
     :width: 600
     :align: center
 
-The Raspberry Pi SOC is based on a highly integrated, low power video processor called VideoCore (sometimes also referred to as graphics- or video-processing-unit, GPU or VPU) with a multi-core ARM CPU attached to it. The following block diagram of the BCM2711 chip, which is used on the Raspberry Pi 4 modules, shows the SOC main function blocks which communicate and exchange data via an internal system bus (AMBA/AXI bus). 
+The Raspberry Pi SOC is based on a highly integrated, low power video processor called VideoCore (sometimes also referred to as graphics- or video-processing-unit, GPU or VPU) with a multi-core ARM CPU attached to it. The following block diagram of the BCM2711 chip, which is used on the Raspberry Pi 4 modules, shows the SOC main function blocks which communicate and exchange data via an internal system bus (AMBA/AXI bus). The GPIO interface shown in the lower left corner will be described in more detail in the following sections.
 
 .. figure:: images/BCM2711.png
     :width: 600
@@ -20,7 +20,7 @@ The Raspberry Pi SOC is based on a highly integrated, low power video processor 
 
 Memory and I/O Access
 ---------------------
-The operation system and the user programs run on a quad-core CPU (ARM Cortex A-72) while video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral components attached to the system bus. The address handling and arbitration is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC/ARM MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces:
+The operation system and the user programs run on a quad-core CPU (ARM Cortex A-72) while video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral I/O components attached to the system bus. The address handling and arbitration is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces (the address ranges in this diagram are derived from the BCM2835 document):
 
 .. figure:: images/address_spaces.png
     :width: 600
@@ -31,11 +31,11 @@ The center column shows the address space as seen by the CPU. The system memory 
 
 
 GPIO Interface
----------------
+==============
 The BCM2711 has 54 general purpose input/output ports of which 28 are available on the Raspberry Pi module (``GPIO[27:0]``). When a GPIO port is used as an output, its  state can be toggled between logic 0 and logic 1 and a high-impedance state (tri-state). Since the GPIO ports are powered from a 3.3 V supply, the voltage levels are 0 V and 3.3 V respectively. When used as an input, the port can read these levels.
 
 .. warning::
-    The voltage applied to the GPIO pins must not exceed 3.3 V. When connected to circuits with higher output levels, appropriate levels shifters or resistive dividers must be used. 
+    The voltage applied to the GPIO pins **must not exceed 3.3 V**. When connected to circuits with higher output levels, appropriate levels shifters or resistive dividers must be used. 
 
 There are special control registers which configure the GPIO ports to become an input or output port according to the required functionality. For many control tasks this simple so-called bit-banging IO interface is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are available. To offload the CPU from implementing these protocols and to allow a precise protocol timing, special hardware blocks can be selected to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2835 (and not even the BCM2837, as the name suggests), which is used on the Raspberry Pi 1 modules. However, the given description of the GPIO port and other peripherals is still valid for the newer chip generations - apart from a few details like bus address offsets (see below).
 Here is an example of a **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
@@ -158,7 +158,7 @@ There are more GPIO configuration registers (documented and undocumented) which 
 
 Alternate GPIO Functions
 -------------------------
-The alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex and will not be described in detail. Typically, a user will call a library function to set-up and use the alternate function modes. Next, the properties of the most commonly used function modes for implementing serial protocols are described:
+The GPIO ports can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols a supported directly be dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex and will not be described in detail. Typically, a user will call functions from a library to set-up and use the alternate function modes. Next, the properties of the most commonly used function modes for implementing serial protocols are described:
 
 - UART
 The Universal-Asynchronous-Receiver-Transmitter (UART) protocol is widely used for communication between a hosts and peripheral hardware components. It is a full-duplex protocol which uses two separate data lines: one for sending data from host to device and the other for sending data from device to host. The data transmission is asynchronous because there is no additional clock signal to synchronize the transfer. To set-up a communication via an UART bus, host and device have to define the same configuration settings for the data transfer:
