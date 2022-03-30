@@ -7,7 +7,7 @@ The BCM2711 has 54 general purpose input/output ports of which 28 are available 
     The voltage applied to the GPIO pins **must not exceed 3.3 V**. When connected to circuits with higher output levels, appropriate levels shifters or resistive dividers must be used. 
 
 There are special control registers which configure the GPIO ports to become an input or output port according to the required functionality. For many control tasks this simple so-called bit-banging IO interface is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are available. To offload the CPU from implementing these protocols and to allow a precise protocol timing, special hardware blocks can be selected to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2835 (and not even the BCM2837, as the name suggests), which is used on the Raspberry Pi 1 modules. However, the given description of the GPIO port and other peripherals is still valid for the newer chip generations - apart from a few details like bus address offsets (see below).
-Here is an example of a **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
+Here is the description of a few  basic **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
 
 .. table:: **GPIO Function Select Register (GPFSEL0 @ 0x7E200000)**
@@ -45,19 +45,18 @@ The address space of the IO peripheral registers starts at 0x7E000000 of the Vid
     010   Alternate function 5
     ===== ===================
 
-To use a GPIO pin as an output, the value 0x001 has to be written to its corresponding GPFSEL register. Here is a pseudo code example enabling GPIO4 as an output:
+As default, all GPIO are configured as input pins after a reboot unless otherwise defined in any start-up configuration script. The level of any of the GPIO pins can be detected reading the **Pin Level Register**
 
-.. code::
-    
-    GPFSEL0 |= 0x001 << 12
+.. table:: **GPIO Pin Output Set Registers (GPLEV0 @ 0x7E200034)**
 
-    # this is the abbreviation for a read-modify-write operation:
+    =====  ===========  ======================  ====  =======
+    Bit    Field Name   Description             Type  Default
+    =====  ===========  ======================  ====  =======
+    31-0   LEVn         0 = pin n is low        R/W      0
+                        1 = pin n is high
+    =====  ===========  ======================  ====  =======
 
-    temp    = GPFSEL0;             # read 
-    temp    = temp | (0x001 << 12) # modify
-    GPFSEL0 = temp                 # write
-
-To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are used:
+To use a GPIO pin as an output, the value 0x001 has to be written to its corresponding GPFSEL register. The output state is set by using the  **Pin Output Set/Clear Registers**:
 
 .. table:: **GPIO Pin Output Set Registers (GPSET0 @ 0x7E20001C)**
 
@@ -75,11 +74,31 @@ To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are us
     31-0   CLRn         1 = set pin to logic 0   R/W      0
     =====  ===========  ======================  ====  =======
 
-Writing a 0 to one of the Set/Clear registers has no effect. Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin without the need for read-modify-write operations (i.e read the current register value, modify it, write back the new value). There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
+Writing a 0 to one of the Set/Clear registers has no effect. 
 
-Basic GPIO Programming Examples
-===============================
-The first programming example describes the access to the GPIO registers. This access is made on "low level" (not using higher-level library functions) using C code. Here are samples from the ``GPIO.c`` file from ``examples/GPIO_Basics`` folder. The first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
+.. 
+    
+    Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin (i.e. a register bit) without the need for reading the current register before the actual modification and write-back. For example a so-called read-modify-write operation to set a bit to 1 and back to 0 looks like this:
+
+    .. code::
+
+        temp     = GPIO_OUT     # read
+        temp     = temp | 0x01  # modify (set bit 0 to one)
+        GPIO_OUT = temp         # write
+        temp     = temp & ~0x01 # modify (set bit 0 to zero)
+        GPIO_OUT = temp         # write
+
+    This operation is more efficient if separate registers for setting and clearing are available:
+
+    .. code::
+        GPIO_OUT_SET   = 0x01
+        GPIO_OUT_CLEAR = 0x01
+
+Note that there are two registers of each LEV-, SET- and CLR-type (GPxxx0 and GPxxx1) to cover all 56 GPIO pins. There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
+
+GPIO Programming Example
+========================
+The first programming example describes the basic access to the GPIO registers. This register handling is made on "low level" (i.e. not using higher-level library functions calls) using C code. Here are samples from the ``GPIO.c`` file from ``examples/GPIO_Basics`` folder. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
 
 .. code-block:: c
 
