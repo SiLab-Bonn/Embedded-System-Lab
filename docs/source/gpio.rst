@@ -75,15 +75,61 @@ To set the output state to 1 or 0, the **Pin Output Set/Clear Registers** are us
     31-0   CLRn         1 = set pin to logic 0   R/W      0
     =====  ===========  ======================  ====  =======
 
-Writing a 0 to one of the Set/Clear registers has no effect. Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin without the need for read-modify-write operations (i.e read the current register value, modify it, write back the new value). This pseudo code will toggle GPIO4 from 0 to 1 and immediately back to 0 (assuming that the GPCLR0 and GPSET0 variables point to memory mapped register addresses as described above):
+Writing a 0 to one of the Set/Clear registers has no effect. Having separate functions to set the logic levels to 1 and 0 allows changing the state of a GPIO pin without the need for read-modify-write operations (i.e read the current register value, modify it, write back the new value). There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
 
-.. code::
+Basic GPIO Programming Examples
+===============================
+The first programming example describes the access to the GPIO registers. This access is made on "low level" (not using higher-level library functions) using C code. Here are samples from the ``GPIO.c`` file from ``examples/GPIO_Basics`` folder. The first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
 
-    GPCLR0 = 4
-    GPSET0 = 4
-    GPCLR0 = 4
- 
-There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
+.. code-block:: c
+
+  // start address of the I/O peripheral register space on the VideoCore bus
+  #define BUS_REG_BASE    0x7E000000
+  // start address of the I/O peripheral register space seen from the CPU bus
+  #define PHYS_REG_BASE   0xFE000000 // RPi 4 
+  // start address of the GPIO register space on the VideoCore bus
+  #define GPIO_BASE       0x7E200000
+  // address offsets for the individual registers
+  #define GPIO_FSEL0      0x00  // mode selection
+  #define GPIO_SET0       0x1C  // set outputs to '1'
+  #define GPIO_CLR0       0x28  // set outputs to '0'
+  #define GPIO_LEV0       0x34  // get input states
+  
+  // calculate the GPIO register physical address from the bus address
+  uint32_t gpio_phys_addr = GPIO_BASE - BUS_REG_BASE + PHYS_REG_BASE;
+
+  // get a handle to the physical memory space
+  if ((int file_descriptor = open("/dev/mem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)
+
+  // allocate virtual memory (one page size) and map the physical address to a pointer
+  void *gpio_virt_addr_ptr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, gpio_phys_addr);
+
+
+Now ``gpio_virt_addr_ptr`` points to the start address of the GPIO register space. For access to the individual registers their specific address offsets are added:
+
+.. code-block:: c
+
+  // define memory pointer to access the specific registers
+  uint32_t *gpfsel0 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL0);
+  uint32_t *gpset0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_SET0);
+  uint32_t *gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
+  uint32_t *gplev0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_LEV0);
+
+Finally, the GPIO mode is set for a given pin which then can be used for output (or input) operations:
+
+.. code-block:: c
+
+  // Example: defining GPIO4 as output
+  *gpfsel0 = 0x001 << (12); // output mode: FSEL[3:0] = 0x001, GPIO4 FSEL filed starts a bit 12
+  // set output to '1'
+  *gpset0 = 4
+  // set output to '0'
+  *gpclr0 = 4
+  // read state from GPIO5
+  state = 0x01 & (*gplev0 >> 5);
+
+.. note::
+  This example has to be run with privileged permissions because the access to I/O resources (specifically the call to ``mmap("dev/mem/"...)``)
 
 
 Alternate GPIO Functions

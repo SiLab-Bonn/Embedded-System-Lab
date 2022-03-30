@@ -11,6 +11,7 @@
 #define GPIO_FSEL0      0x00
 #define GPIO_SET0       0x1C
 #define GPIO_CLR0       0x28
+#define GPIO_LEV0       0x34
 #define GPIO_MODE_IN    0x000
 #define GPIO_MODE_OUT   0x001
 #define GPIO_MODE_ALT0  0x100
@@ -29,11 +30,12 @@ uint32_t *gpio_virt_addr_ptr;  // pointer to virtual address
 uint32_t *gpfsel0;
 uint32_t *gpset0;
 uint32_t *gpclr0;
+uint32_t *gplev0;
 
 int setup_gpio_regs()
 {
   uint32_t  gpio_phys_addr;  // GPIO register CPU bus address 
-   int file_descriptor;  // handle for memory mapping
+  int file_descriptor;  // handle for memory mapping
 
   // calculate the physical address from the bus address
   gpio_phys_addr = GPIO_BASE - BUS_REG_BASE + PHYS_REG_BASE;
@@ -63,12 +65,14 @@ int setup_gpio_regs()
   gpfsel0 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL0);
   gpset0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_SET0);
   gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
+  gplev0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_LEV0);
 
   #ifdef DEBUG
     // print virtual addresses and register content
     printf("GPFSEL0 (%p): 0x%08x \n", (void *)gpfsel0, *gpfsel0);
     printf("GPSET0 (%p): 0x%08x \n", (void *)gpset0, *gpset0);
     printf("GPCLR0 (%p): 0x%08x \n", (void *)gpclr0, *gpclr0);
+    printf("GPLEV0 (%p): 0x%08x \n", (void *)gplev0, *gplev0);
   #endif  
   return(0);
 }
