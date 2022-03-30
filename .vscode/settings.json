@@ -1,3 +1,9 @@
 {
-    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\python.exe"
+    "files.associations": {
+        "unistd.h": "c",
+        "stdlib.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled",
+    "editor.tabSize": 2,
+    "code-runner.clearPreviousOutput": true
 }
