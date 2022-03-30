@@ -29,27 +29,17 @@ The operating system and the user programs run on a quad-core CPU (ARM Cortex A-
 
 The center column shows the address space as seen by the CPU. The system memory (implemented as synchronous random access memory, SDRAM) starts at address ``0x00000000`` and occupies a range according to the amount of memory available on the module (1 GB, 2 GB, 4 GB, or 8 GB). The I/O peripherals registers start at the address offset ``PHYS_REG_BASE`` which depends on the SOC version (see table below). The actual access to memory or I/O resources is managed via the VPU MMU. In the left column the address space of the VPU is shown. The VPU address space is four times larger than the physical address space which enables aliasing. That means that different access modes for the same physical address can be used. Depending on the chosen alias offset, the access is cached is various ways (L1 + L2, or L2 coherent or L2 only) or direct. The cached modes allow the fastest access since a copy of the SDRAM is found in the L1 or L2 memory which is directly accessed by the CPU. The downside of caching - for example in an I/O write operation - is that the content of the cache has to be written back to the I/O peripheral before ist takes effect, which can lead to additional latency. Therefore during access to I/O peripherals direct mode is usually preferred. A multi-tasking operating system, which is typically run on a computing system, cannot allow user code to direct access to the physical address space, since concurrent access from different tasks to the same resource would cause bus conflicts and corrupted data. Therefore, user code must use virtual addresses, which are mapped by the CPU MMU to the physical address space. This allows parallel running user (and kernel) task to access shared resources in an orderly way. The structure of this virtual address space is shown in the left column.
 
-.. note:: It is not possible to directly access these registers (i.e. reading/writing from/to the specific bus address). A user accessible (virtual) memory space has to be allocated first and than mapped to the register addresses. Since the register addresses used in the BCM2837-ARM-Peripherals document are referring to the VideoCore address space, the corresponding address offsets as seen by the CPU core have to be taken into account. Here is the description and the pseudo code of such mapping:
+.. note:: It is not possible to directly access physical registers or memory locations (i.e. reading/writing from/to the specific bus address). A user accessible (virtual) memory space has to be allocated first and than mapped to the register addresses. Since the register addresses used in the BCM2837-ARM-Peripherals document are referring to the VideoCore address space, the corresponding address offsets as seen by the CPU core have to be taken into account, too. 
 
-At first the address at which the CPU core can access the IO periphery register is calculated. This step converts the address at which the peripheral register is located on the VideoCore bus to the physical address the CPU core can access:
+A generic procedure to access peripheral resources looks like this: At first the address at which the CPU core can access the IO periphery register is calculated. This step converts the address at which the peripheral register is located on the VideoCore bus to the physical address the CPU core can access. Than a chunk of user accessible virtual memory has to be allocated and mapped to the physical address of the I/O resource. This is the pseudo code of such operation:
 
 .. code::
 
     reg_physical_address = reg_bus_address - BUS_REG_BASE + PHYS_REG_BASE
-
-Than a chunk of virtual memory has to be allocated: 
-
-.. code::
-
-    allocate_mem(virt_reg_address, size)
-
-And finally the physical address is mapped to user accessible virtual memory:
-
-.. code::
-
     mmap(virt_reg_address, reg_physical_address)
 
-The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms.
+    
+The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms, which have specific address offset values:
 
 .. table::
     
@@ -62,8 +52,7 @@ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for a
       RPi 4       BCM2711     0xFE000000      
     ===========  ==========  ==================
 
-
-
+A real implementation of an access to the GPIO registers will be shown in the section "Basic Programming Examples".
 
 
 
