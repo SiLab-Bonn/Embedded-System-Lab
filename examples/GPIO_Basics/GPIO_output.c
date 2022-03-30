@@ -16,6 +16,7 @@
 #define GPIO_FSEL_BITS  3
 
 #define GPIO_PIN 4  // pin to be used as output
+//#define DEBUG  // print debug information
 
 uint32_t  gpio_phys_addr;
 int       file_descriptor;
@@ -46,17 +47,21 @@ int main()
         printf("Error: can't map memory\n");
         exit(1);
     }
-    printf("Success: Map %p -> %p\n", (void *)gpio_phys_addr, gpio_virt_addr);
+    #ifdef DEBUG 
+      printf("Success: Map %p -> %p\n", (void *)gpio_phys_addr, gpio_virt_addr);
+    #endif
 
     // define variables to access the specific registers
     gpfsel0 = (uint32_t*)((void *)gpio_virt_addr + GPIO_FSEL0);
     gpset0  = (uint32_t*)((void *)gpio_virt_addr + GPIO_SET0);
     gpclr0  = (uint32_t*)((void *)gpio_virt_addr + GPIO_CLR0);
 
-    // print virtual addresses and register content
-    printf("GPFSEL0 (%p): 0x%08x \n", (void *)gpfsel0, *gpfsel0);
-    printf("GPSET0 (%p): 0x%08x \n", (void *)gpset0, *gpset0);
-    printf("GPCLR0 (%p): 0x%08x \n", (void *)gpclr0, *gpclr0);
+    #ifdef DEBUG
+      // print virtual addresses and register content
+      printf("GPFSEL0 (%p): 0x%08x \n", (void *)gpfsel0, *gpfsel0);
+      printf("GPSET0 (%p): 0x%08x \n", (void *)gpset0, *gpset0);
+      printf("GPCLR0 (%p): 0x%08x \n", (void *)gpclr0, *gpclr0);
+    #endif
 
     // configure GPIO as an output
     *gpfsel0 = GPIO_MODE_OUT << (GPIO_FSEL_BITS * GPIO_PIN);
