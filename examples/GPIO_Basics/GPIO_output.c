@@ -25,6 +25,7 @@
 #define GPIO_PIN 4  // pin to be used as output
 //#define DEBUG  // print debug information
 
+uint32_t *gpio_virt_addr_ptr;  // pointer to virtual address
 uint32_t *gpfsel0;
 uint32_t *gpset0;
 uint32_t *gpclr0;
@@ -32,8 +33,7 @@ uint32_t *gpclr0;
 int setup_gpio_regs()
 {
   uint32_t  gpio_phys_addr;  // GPIO register CPU bus address 
-  uint32_t *gpio_virt_addr_ptr;  // pointer to virtual address
-  int file_descriptor;  // handle for memory mapping
+   int file_descriptor;  // handle for memory mapping
 
   // calculate the physical address from the bus address
   gpio_phys_addr = GPIO_BASE - BUS_REG_BASE + PHYS_REG_BASE;
@@ -78,7 +78,7 @@ void cleanup_gpio()
   // set default mode (input)
   *gpfsel0 = 0;
   // free allocated memory
-  free(gpio_virt_addr_ptr);
+  munmap(gpio_virt_addr_ptr, 0x1000);
 }
 
 void set_gpio_mode(int pin, int mode)
@@ -87,7 +87,7 @@ void set_gpio_mode(int pin, int mode)
   *gpfsel0 = mode << (GPIO_FSEL_BITS * pin);
 }
 
-void set_gpio_out(int pin, bool level)
+void set_gpio_out(int pin, int level)
 {
   if (level)
     *gpset0 = 1 << pin; 
@@ -99,10 +99,14 @@ int main()
 {
   setup_gpio_regs();
   set_gpio_mode(4, GPIO_MODE_OUT);
-  set_gpio_out(4, 1); 
-  usleep(1);
+  
   set_gpio_out(4, 0);
-  usleep(1);
+  usleep(100);
+  set_gpio_out(4, 1); 
+  usleep(100);
+  set_gpio_out(4, 0);
+  usleep(100);
+ 
   cleanup_gpio();
   return(0);
 }
