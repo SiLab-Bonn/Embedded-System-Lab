@@ -36,7 +36,7 @@ A generic procedure to access peripheral resources looks like this: At first the
 .. code::
     
     reg_physical_address = reg_bus_address - BUS_REG_BASE + PHYS_REG_BASE
-    mmap(virt_reg_address, reg_physical_address)
+    virt_reg_address = mmap(reg_physical_address)
 
     
 The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms, which have specific address offset values:
@@ -52,7 +52,7 @@ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for a
       RPi 4       BCM2711     0xFE000000      
     ===========  ==========  ==================
 
-A real implementation of an access to the GPIO registers will be shown in the section "Basic Programming Examples".
+A real implementation of an access to the GPIO registers will be shown in the section :ref:`gpio:GPIO Programming Examples`.
 
 
 
