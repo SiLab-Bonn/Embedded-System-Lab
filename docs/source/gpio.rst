@@ -147,7 +147,7 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
   state = 0x01 & (*gplev0 >> 5);
 
 .. note::
-  This example has to be run with privileged permissions because the access to I/O resources (specifically the call to ``mmap("dev/mem/"...)``)
+  The function ``mmap("dev/mem/"...)`` returns a handle which allows unlimited access to system wide memory and I/O ressources. That is a security sensitve access which is only allowed with elevated access rights. Therefore, programs using that kind of functions have to be called as super user 
 
 
 Alternate GPIO Functions
