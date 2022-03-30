@@ -95,6 +95,8 @@ If separate registers for setting and clearing are available the following opera
 
  There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
 
+.. _gpio-programming-examples:
+
 GPIO Programming Example
 ========================
 This programming example describes the basic access to the GPIO registers. This register handling is made on "low level" (i.e. not using higher-level library functions calls) using C code. Here are samples from the ``GPIO.c`` file from ``examples/GPIO_Basics`` folder. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
