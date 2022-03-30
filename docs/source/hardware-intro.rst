@@ -52,7 +52,7 @@ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for a
       RPi 4       BCM2711     0xFE000000      
     ===========  ==========  ==================
 
-A real implementation of an access to the GPIO registers will be shown in the section :ref:`gpio:gpio-programming-examples`.
+A real implementation of an access to the GPIO registers will be shown in the section :ref:`gpio-programming-examples`.
 
 
 
