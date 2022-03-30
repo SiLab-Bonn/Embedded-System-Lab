@@ -45,9 +45,9 @@ The address space of the IO peripheral registers starts at 0x7E000000 of the Vid
     010   Alternate function 5
     ===== ===================
 
-As default, all GPIO are configured as input pins after a reboot unless otherwise defined in any start-up configuration script. The level of any of the GPIO pins can be detected reading the **Pin Level Register**
+As default, all GPIO are configured as input pins after a reboot unless otherwise defined in any start-up configuration script. The level of any of the GPIO pins can be detected reading the **Pin Input Level Register**
 
-.. table:: **GPIO Pin Output Set Registers (GPLEV0 @ 0x7E200034)**
+.. table:: **GPIO Pin Input Level Registers (GPLEV0 @ 0x7E200034)**
 
     =====  ===========  ======================  ====  =======
     Bit    Field Name   Description             Type  Default
@@ -149,31 +149,31 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
   state = 0x01 & (*gplev0 >> 5);
 
 .. note::
-  The function ``mmap("dev/mem/"...)`` returns a handle which allows unlimited access to system wide memory and I/O ressources. That is a security sensitve access which is only allowed with elevated access rights. Therefore, programs using that kind of functions have to be called as super user 
+  The function ``mmap("dev/mem/"...)`` returns a handle which allows unrestricted access to system wide memory and I/O ressources. Since this is a security sensitve access, it can only be executed with elevated access rights. Therefore, programs using that kind of functions have to be called as super user ``su ./<program_name>``.
 
 
 Alternate GPIO Functions
 ========================
-The GPIO ports can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols a supported directly be dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex and will not be described in detail. Typically, a user will call functions from a library to set-up and use the alternate function modes. Here is a table which shows the available alternate functions which can be selected via the appropriate GPFSEL registers for each GPIO pin. Note that all alternate functions require a number of consecutive pins to be set to the same mode.
+The GPIO ports can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols are directly supported with dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex. Typically, a user will call functions from a library to set-up and use the alternate function modes. This table shows the available alternate functions which can be selected via the appropriate GPFSEL registers for each GPIO pin. Note that all alternate functions require a number of consecutive pins to be set to the same mode.
 
 .. figure:: images/GPIO_Alt.png
     :width: 600
     :align: center
 
 
-Next, the properties of a few of those commonly used serial protocols are described.
+In the next section a few of commonly used serial protocols are described.
 
 
 UART
 ----
-The Universal-Asynchronous-Receiver-Transmitter (UART) protocol is widely used for communication between a pair of hardware components. It is a full-duplex peer-to-peer protocol which uses two separate data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) the two communicating devices can send data any time - there are no master or slaves roles. The data transmission is asynchronous because there is no additional clock signal needed to synchronize the transfer. However, to set-up a communication link via an UART bus, host and device have to use the same configuration settings for the data transfer engine:
+The Universal-Asynchronous-Receiver-Transmitter (UART) protocol is widely used for communication between a pair of hardware components. It is a full-duplex, point-to-point transfer protocol which uses two separate data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) both devides can send data any time and there are no master and slaves roles. The data transmission is asynchronous as there is no additional clock signal needed to synchronize the transfer. To set-up a communication link via an UART bus, host and device have to use the same configuration settings for the data transfer engine. The UART controller on the Raspberry Pi supports:
 
   - Data rate (also called baud rate): Typically multiples of 9600 up to 115200 
   - Number of data bits: 8 (but also 5, 6 or 7 bits are supported)
   - Number of stop bits: 1 or 2
   - Parity: odd, even or none
 
-In addition, other features for making the communication more robust (handshaking, software or hardware based) are sometimes used but will be omitted here. 
+Optional features for controlling the data transfer (handshaking), either using additional control lines or the transmission of special control characters are sometimes used but will be omitted here. 
 
 Data are being sent always one byte at a time. A data transmission starts by sending a start bit (always 0), then the data bits LSB first, the parity bit (if configured) and finally the stop bit(s) which are always 1. A typical UART configuration is 8 data bits, even parity, one stop bit (8E1) and thus one data byte is transferred using 11 bit-clock cycles. This is a timing diagram of an UART transfer of one byte with a 8E1 setting. The period of one bit cycle is 1/F_baud.
 
