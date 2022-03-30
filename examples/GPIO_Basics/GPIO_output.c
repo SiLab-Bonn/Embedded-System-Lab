@@ -6,27 +6,35 @@
 #include <sys/mman.h>
 
 #define BUS_REG_BASE    0x7E000000
-#define PHYS_REG_BASE   0xFE000000 // RPi 4
+#define PHYS_REG_BASE   0xFE000000 // RPi 4 
 #define GPIO_BASE       0x7E200000
 #define GPIO_FSEL0      0x00
 #define GPIO_SET0       0x1C
 #define GPIO_CLR0       0x28
-#define GPIO_MODE_IN    0
-#define GPIO_MODE_OUT   1
+#define GPIO_MODE_IN    0x000
+#define GPIO_MODE_OUT   0x001
+#define GPIO_MODE_ALT0  0x100
+#define GPIO_MODE_ALT1  0x101  
+#define GPIO_MODE_ALT2  0x110
+#define GPIO_MODE_ALT3  0x111
+#define GPIO_MODE_ALT4  0x011
+#define GPIO_MODE_ALT5  0x010
+
 #define GPIO_FSEL_BITS  3
 
 #define GPIO_PIN 4  // pin to be used as output
 //#define DEBUG  // print debug information
 
-uint32_t  gpio_phys_addr;
-int       file_descriptor;
-uint32_t *gpio_virt_addr;
 uint32_t *gpfsel0;
 uint32_t *gpset0;
 uint32_t *gpclr0;
 
 int setup_gpio_regs()
 {
+  uint32_t  gpio_phys_addr;  // GPIO register CPU bus address 
+  uint32_t *gpio_virt_addr_ptr;  // pointer to virtual address
+  int file_descriptor;  // handle for memory mapping
+
   // calculate the physical address from the bus address
   gpio_phys_addr = GPIO_BASE - BUS_REG_BASE + PHYS_REG_BASE;
 
@@ -38,23 +46,23 @@ int setup_gpio_regs()
   }
 
   // allocate virtual memory and map the physical address to it
-  gpio_virt_addr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, gpio_phys_addr);
+  gpio_virt_addr_ptr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, gpio_phys_addr);
   close(file_descriptor);
 
   // check the results
-  if (gpio_virt_addr == MAP_FAILED)
+  if (gpio_virt_addr_ptr == MAP_FAILED)
   {
       printf("Error: can't map memory\n");
       return(1);
   }
   #ifdef DEBUG 
-    printf("Success: Map %p -> %p\n", (void *)gpio_phys_addr, gpio_virt_addr);
+    printf("Success: Map %p -> %p\n", (void *)gpio_phys_addr, gpio_virt_addr_ptr);
   #endif
 
   // define variables to access the specific registers
-  gpfsel0 = (uint32_t*)((void *)gpio_virt_addr + GPIO_FSEL0);
-  gpset0  = (uint32_t*)((void *)gpio_virt_addr + GPIO_SET0);
-  gpclr0  = (uint32_t*)((void *)gpio_virt_addr + GPIO_CLR0);
+  gpfsel0 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL0);
+  gpset0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_SET0);
+  gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
 
   #ifdef DEBUG
     // print virtual addresses and register content
@@ -70,7 +78,7 @@ void cleanup_gpio()
   // set default mode (input)
   *gpfsel0 = 0;
   // free allocated memory
-  free(gpio_virt_addr);
+  free(gpio_virt_addr_ptr);
 }
 
 void set_gpio_mode(int pin, int mode)
