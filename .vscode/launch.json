@@ -4,11 +4,12 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
     {
         "name": "(gdb) Launch",
         "type": "cppdbg",
         "request": "launch",
-        "program": "enter program name, for example ${workspaceFolder}/a.exe",
+        "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe",
         "args": [],
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
@@ -29,12 +30,12 @@
             }
         ]
     },
-        {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        }
+    {
+        "name": "Python: Current File",
+        "type": "python",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal"
+    }
     ]
 }
