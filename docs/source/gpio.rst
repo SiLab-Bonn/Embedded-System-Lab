@@ -95,9 +95,7 @@ Note that there are two registers of each LEV-, SET- and CLR-type (GPxxx0 and GP
         GPIO_OUT_SET   = 0x04
         GPIO_OUT_CLEAR = 0x04
 
-
-
- There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
+There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
 
 .. _gpio-programming-examples:
 
