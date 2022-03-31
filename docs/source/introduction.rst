@@ -40,7 +40,7 @@ The capacitance of a semiconductor detector is an important parameter for the se
     :width: 300
     :align: center
 
-    Analog Front-end Module
+    CV-Meter Module
 
 Fast Pulse Sampler
 ------------------
@@ -50,7 +50,7 @@ High-speed signals need controlled impedance lines (transmission lines, TML) to 
     :width: 300
     :align: center
 
-   Fast Pulse Sampler
+    Fast Pulse Sampler
 
 In the course of each experiment, the user will:
 
