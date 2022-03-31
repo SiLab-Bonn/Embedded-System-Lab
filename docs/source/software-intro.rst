@@ -30,7 +30,7 @@ Start VisualCode and open the folder ``Embedded-System-Lab/code`` via the menu `
 
 .. note::
 
-  A few examples access physical memory or I/O resources from within the user space. This access needs privileged access rights to execute the code. These respective programs have to be run by calling ``sudo ./<program name>`` from a command line. Other examples which use higher level functions by including dedicated libraries access these ressources via kernel mode drivers which can be used from user space without special privileges. 
+  A few examples access physical memory or I/O resources from within the user space. This access needs privileged access rights to execute the code. Run these respective programs by calling `` sudo ./<program name>`` from a command line (terminal). Other examples which use higher level functions by including dedicated libraries, implement this access via kernel mode drivers which can be used from user space without special privileges. 
 
 
 
