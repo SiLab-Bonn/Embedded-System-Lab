@@ -1,13 +1,19 @@
 ==============
 GPIO Interface
 ==============
-The BCM2711 has 54 general purpose input/output ports of which 28 are available on the Raspberry Pi module (``GPIO[27:0]``). When a GPIO port is used as an output, its  state can be toggled between logic 0 and logic 1 and a high-impedance state (tri-state). Since the GPIO ports are powered from a 3.3 V supply, the voltage levels are 0 V and 3.3 V respectively. When used as an input, the port can read these levels.
+The BCM2711 has 54 general purpose input/output ports of which 28 are available on the Raspberry Pi module (``GPIO[27:0]``). When a GPIO port is used as an output, its  state can be toggled between logic 0 and logic 1 and a high-impedance state (tri-state). Since the GPIO ports are powered from a 3.3 V supply, the voltage levels are 0 V and 3.3 V respectively. When used as an input, the port can read these levels. Here is a simplified function diagram of a GPIO block showing the main control registers which are explained below. There are additional registers for interrupt modes, pull-up and pull-down configuration, drive strength and others, which are not shown in this diagram.
+
+.. figure:: images/GPIO_block.png
+    :width: 600
+    :align: center
+
+    GPIO block function diagram showing the main registers
 
 .. warning::
     The voltage applied to the GPIO pins **must not exceed 3.3 V**. When connected to circuits with higher output levels, appropriate levels shifters or resistive dividers must be used. 
 
-There are special control registers which configure the GPIO ports to become an input or output port according to the required functionality. For many control tasks this simple so-called bit-banging IO interface is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are available. To offload the CPU from implementing these protocols and to allow a precise protocol timing, special hardware blocks can be selected to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2835 (and not even the BCM2837, as the name suggests), which is used on the Raspberry Pi 1 modules. However, the given description of the GPIO port and other peripherals is still valid for the newer chip generations - apart from a few details like bus address offsets (see below).
-Here is the description of a few  basic **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
+There are control registers which configure the GPIO ports to become an input or output port according to the required functionality. For simple control tasks this basic I/O function is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are used. To offload the CPU from implementing these protocols and to allow a precise (i.e. hardware controlled) timing, special hardware blocks are available in the I/P periphery to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2835 (and not even the BCM2837, as the name suggests), which is used on the Raspberry Pi 1 modules. However, the description of the GPIO port and other peripherals is still valid for the newer chip generations - apart from a few details like bus address offsets (see below).
+Here is the description of the basic **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
 
 .. table:: **GPIO Function Select Register (GPFSEL0 @ 0x7E200000)**
@@ -144,9 +150,9 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
   // Example: defining GPIO4 as output
   *gpfsel0 = 0x001 << (12); // output mode: FSEL[3:0] = 0x001, GPIO4 FSEL filed starts a bit 12
   // set output to '1'
-  *gpset0 = 4
+  *gpset0 = 4;
   // set output to '0'
-  *gpclr0 = 4
+  *gpclr0 = 4;
   // read state from GPIO5
   state = 0x01 & (*gplev0 >> 5);
 
