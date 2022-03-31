@@ -30,10 +30,12 @@ The operating system and the user programs run on a quad-core CPU (ARM Cortex A-
     :width: 800
     :align: center
 
-    Address map for the system bus (left), the CPU bus (center) and the user/kernel virtual memory space (right)
+    Address maps for system bus (left), CPU (center) and virtual memory spaces (right)
 
 The center column shows the address space as seen by the CPU, also called **physical address** space. The system memory (implemented as synchronous random access memory, SDRAM) starts at address ``0x00000000`` and occupies a range according to the amount of memory available on the module (1 GB, 2 GB, 4 GB, or 8 GB). The I/O peripherals registers start at the address offset ``PHYS_REG_BASE`` which depends on the SOC version (see table below). 
+
 The actual access to memory or I/O resources is managed via the VPU MMU which controls the system bus. In the left column the system **bus address** space of the VPU is shown. The VPU address space is larger than the physical address space which enables so-called aliasing. That means that different access modes for the same physical address can be used. Depending on the chosen alias offset, the access is cached is various ways (L1 + L2, or L2 coherent or L2 only) or direct. Access to I/O peripherals always is done via coherent, non-allocating L2 Cache. 
+
 A multi-tasking operating system, which is typically run on a computing system, cannot allow user code to direct access to the physical address space, since concurrent access from different tasks to the same resource would compromise data integrity and security. Therefore, user code must use **virtual addresses**, which are mapped by the CPU MMU to the physical address space. This allows parallel running user (and kernel) task to access shared resources in an orderly way. The structure of this virtual address space is shown in the right column.
 
 .. note:: It is not possible to directly access I/O registers or memory locations. To use I/O or memory resources, a user accessible **virtual address** has to be mapped to the **physical addresses**. Since the register addresses values referenced in the BCM2837-ARM-Peripherals document are referring to the system **bus address** space handled by the VideoCore, the resulting address offsets as seen by the CPU have to be calculated. 
