@@ -1,5 +1,5 @@
 ============================
-Introduction to the Software
+Software Environment
 ============================
 
 The Raspberry Pi module runs a Debian-based operating system (32-bit Raspberry Pi OS) including a graphical user interface, which looks similar to many common desktops. For the experiments, manly these programs will be used:
