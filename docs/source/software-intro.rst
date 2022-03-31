@@ -29,9 +29,10 @@ The code examples and additional documentation is maintained on  `GitHub <https:
 
 Using VisualCode
 ================
-Start VisualCode and open the folder ``Embedded-System-Lab/code`` via the menu ``File->Open Folder``. In the explorer view one can find sub-folders for each experiment and additional helper functions. Most examples are written in Python while a few examples and low level functions (DMA access for fast ADC operation) are implemented in C code. The VisualCode editor will allow comfortable code and integrates tool chains to compile, build and run Python a C code.
+Start VisualCode and open the folder ``Embedded-System-Lab/code`` via the menu ``File->Open Folder``. In the explorer view one can find sub-folders for each experiment and additional helper functions. Most examples are written in Python while a few examples and low level functions (DMA access for fast ADC operation) are implemented in C code. The VisualCode editor will allow comfortable code and integrates tool chains to compile, build and run Python a C code. Here are simple code examples to test the installation and explain the basic methods of the VisualCode IDE.
 
 - Python Example
+Open the VisualCode Explorer panel and browse the ``code`` sub folder. Click on the file ``hello_world.py`` to open it in the editor window. To run the script, click the menu ``Run->Run without Debugging`` or press ``CTRL+F5``. This will invoke the Python interpreter and run the script. The output will be displayed in the Terminal panel at the bottom of the window. If the Terminal panel is not visible, open it via the menu ``View->Terminal``.
 
 - C Example
 
