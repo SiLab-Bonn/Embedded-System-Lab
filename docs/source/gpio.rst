@@ -76,22 +76,26 @@ To use a GPIO pin as an output, the value 0x001 has to be written to its corresp
 
 Note that there are two registers of each LEV-, SET- and CLR-type (GPxxx0 and GPxxx1) to cover all 56 GPIO pins. Writing a 0 to one of the SET/CLR-registers has no effect. 
 
-Having separate functions to set the logic levels to 1 and 0 respectively avoids the overhead of reading the current register before the actual modification and write-back. If only a single register for setting the output levels would be available a so-called read-modify-write operation has to be used. Here is an example which sets a register bit to 1 and back to 0:
+.. note::
 
-.. code::
+    Having separate functions to set the logic levels to 1 and 0 respectively avoids the overhead of reading the current register before the actual modification and write-back. If only a single register for setting the output levels would be available a so-called read-modify-write operation has to be used. Here is an example which sets a register bit to 1 and back to 0 (pseudo code, assuming GPIO_OUTxxx allows access to the respective I/O register):
 
-    temp     = GPIO_OUT     # read
-    temp     = temp | 0x01  # modify (set bit 0 to one)
-    GPIO_OUT = temp         # write
-    temp     = temp & ~0x01 # modify (set bit 0 to zero)
-    GPIO_OUT = temp         # write
+    .. code::
 
-If separate registers for setting and clearing are available the following operation will be faster:
+        temp     = GPIO_OUT     # read
+        temp     = temp | 0x04  # modify (set bit 4 to one)
+        GPIO_OUT = temp         # write
+        temp     = temp & ~0x04 # modify (set bit 4 to zero)
+        GPIO_OUT = temp         # write
 
-.. code::
+    If separate registers for setting and clearing are available the following operation will be faster:
 
-    GPIO_OUT_SET   = 0x01
-    GPIO_OUT_CLEAR = 0x01
+    .. code::
+
+        GPIO_OUT_SET   = 0x04
+        GPIO_OUT_CLEAR = 0x04
+
+
 
  There are more GPIO configuration registers (documented and undocumented) which control additional features like pull-up/pull-down resistor for inputs, sensitivity for interrupt usage (level- or edge-sensitivity and its polarity), drive strength for outputs and more, which are beyond the scope of exercise. 
 
