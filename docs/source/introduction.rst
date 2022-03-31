@@ -12,7 +12,7 @@ This modular lab course gives an introduction to selected aspects of analog sign
 
 The individual experiments are featuring dedicated add-on boards (modules) which are controlled from the Raspberry Pi via an SPI bus and other GPIO signals. The fast ADC on the base board will be used to record analog waveforms and also other lab equipment like power supplies can be remotely controlled with the Raspberry Pi. Here is overview of currently available add-on modules/experiments:  
 
-Successive-Approximation-Register ADC
+SAR ADC
 -------------------------------------
 This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) which consists of a sample and hold input stage, a comparator, and an 8-bit DAC. The user will implement the necessary SAR logic which controls the sampling stage and the DAC and develop scripts to characterize the ADC with automated measurements to specify various performance parameters (INL, DNL, noise, etc.).
 
@@ -22,8 +22,8 @@ This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) w
 
     Successive-Approximation-Register ADC Module
 
-Analog Front-end for a Semiconductor Detector
----------------------------------------------
+Analog Front-end 
+----------------
 In this experiment a typical analog signal processing chain for semiconductor detectors will be introduced and analyzed. The user will measure the system response to calibration signals and measure the electronic noise as a function of various sensor and circuit parameters. Advanced users can build a Multichannel-Spectrum-Analyzer (MCA) with this module which can be used to measure the energy spectrum of radioactive sources.
 
 .. figure:: images/afe.png
@@ -32,8 +32,8 @@ In this experiment a typical analog signal processing chain for semiconductor de
 
     Analog Front-end Module
 
-Detector Capacitance Measurement
---------------------------------
+Capacitance Measurement
+-----------------------
 The capacitance of a semiconductor detector is an important parameter for the sensor performance. This module measures the capacitance of a sensor diode as a function of the applied bias voltage (CV measurement). In this experiment the user will  developed scripts to control the capacitance measurement circuit, read the analog measurement value, and remote-control a power supply for the detector bias.
 
 .. figure:: images/cvm.png
