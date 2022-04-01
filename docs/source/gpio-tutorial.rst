@@ -58,7 +58,7 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
   state = 0x01 & (*gplev0 >> 5);
 
 .. note::
-  The function ``mmap("dev/mem/"...)`` returns a handle which allows unrestricted access to system wide memory and I/O ressources. Since this is a security sensitve access, it can only be executed with elevated access rights. Therefore, programs using that kind of functions have to be called as super user ``su ./<program_name>``.
+  The function ``mmap("dev/mem/"...)`` returns a handle which allows unrestricted access to system wide memory and I/O resources. Since this is a security sensitive access, it can only be executed with elevated access rights. Therefore, programs using that kind of functions have to be called as super user ``su ./<program_name>``.
 
 .. admonition:: Exercise 1
   Copy the file ``GPIO.c`` from the ``code/GPIO_Basics`` folder to your ``work`` folder.  Compile (``CTRL+F7``) and run the program by typing ``sudo ./GPIO`` from the terminal. Connect an oscilloscope probe to the GPIO4 pin on the base board and explain the trace that you see when you run the GPIO program. Make sure you select an appropriate horizontal resolution because the pulse will be very narrow (~ 30ns). Measure the output pulse width. Modify the code to extend the pulse width by inserting additional function calls (``sleep(), usleep(), asm("nop")``) between the writes to GPSET and GPCLR registers. Measure the pulse width again. Explain what you see.
