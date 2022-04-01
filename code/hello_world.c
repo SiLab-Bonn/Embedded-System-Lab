@@ -1,7 +1,7 @@
-#include <stdlib.h>
 #include <stdio.h>
 
-main()
+int main()
 {
-  frprint("Hello World!");
+  printf("Hello World!!");
+  return(0);
 }
