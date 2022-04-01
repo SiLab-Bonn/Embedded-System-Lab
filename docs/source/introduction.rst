@@ -58,4 +58,4 @@ In the course of each experiment, the user will:
 - Acquire various measurement data and
 - Document and analyze the measurements.
 
-Each experiment comes with basic code examples which can (but don't have to) be used to get started. The example code is mainly written in Python but C examples are also given in some places. 
+Each experiment comes with basic code examples which can (but don't have to) be used to get started. The example code is mainly written in Python but C examples are also given in some places. The experiments can be done in arbitrary sequence but is is recommended to start with the GPIO Basics tutorial.

@@ -14,6 +14,7 @@ Embedded System Lab
    software-intro   
    hardware-intro
    gpio
+   gpio-tutorial
    sar-adc
    fast-adc
    cvm
