@@ -50,7 +50,7 @@
 		},
 		{
 			"type": "cppbuild",
-			"label": "C/C++: gcc.exe build active file (Windows)",
+			"label": "C/C++: gcc build active file (Windows)",
 			"command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
 			"args": [
 				"-fdiagnostics-color=always",
