@@ -2,7 +2,7 @@
 GPIO Programming Tutorial
 =========================
 
-This part gives a practical introduction to basic GPIO port programming. It begins with an example for a low-level access to the GPIO registers which are described in section :ref:`GPIO Interface`.
+This part gives a practical introduction to basic GPIO port programming. It begins with an example for a low-level access to the GPIO registers which are described in section :ref:`gpio-interface`.
 
 .. _gpio-programming-examples:
 
