@@ -3,11 +3,7 @@
 	"tasks": [
 		{
 			"type": "cppbuild",
-<<<<<<< HEAD
 			"label": "C/C++: gcc build ADC lib - Linux",
-=======
-			"label": "C/C++: gcc build adc library",
->>>>>>> 49bec2643300374116e1b34a5e42bb51e9ca5e53
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-fdiagnostics-color=always",
