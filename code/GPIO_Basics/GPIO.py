@@ -1,20 +1,19 @@
 import time
 import sys
+
+# import the library and define the prefix for using its members
 import RPi.GPIO as GPIO
 
-# GPIO.setmode(GPIO.BOARD) # RPi.GPIO Layout verwenden (wie Pin-Nummern)
-GPIO.setmode(GPIO.BCM)
+# tell the library to use pin numbers according to the GPIO naming
+GPIO.setmode(GPIO.BCM) 
 
-#GPIO.setup(12, GPIO.OUT)
-#pwm12 = GPIO.PWM(12, 5000)  # set up PWM mode (software PWM!!!)
-#pwm12.start(50)
-
-
+# define GPIO4 as an output
 GPIO.setup(4, GPIO.OUT)
 
+# toggle th output state
 GPIO.output(4, GPIO.LOW)
-#time.sleep(0.0010)
 GPIO.output(4, GPIO.HIGH)
-#time.sleep(0.001)
 GPIO.output(4, GPIO.LOW)
+
+# set GPIO configuration back to default
 GPIO.cleanup()
