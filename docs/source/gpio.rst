@@ -1,3 +1,5 @@
+.. _gpio-interface:
+
 ==============
 GPIO Interface
 ==============
