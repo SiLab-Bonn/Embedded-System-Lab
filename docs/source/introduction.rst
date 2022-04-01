@@ -2,19 +2,19 @@
 Introduction 
 ============
 
-This modular lab course gives an introduction to selected aspects of analog signal processing and data acquisition techniques. An embedded system running user programs written in Python and/or C is used to directly interact with different signal processing circuits. The embedded system hardware is based on a Raspberry Pi single board computer which is mounted to a custom base board. The base board allows access to various interfaces (UART, I2C, SPI etc.) which are implemented via the general purpose IO ports (GPIO). In addition, the base board features a fast 12-bit ADC, which allows the Raspberry Pi to be used as a simple oscilloscope to sample waveforms for further processing, documentation, and analysis.
+This modular lab course gives an introduction to selected aspects of analog signal processing and data acquisition techniques. An embedded system running user programs written in Python and/or C is used to directly interact with the experiment module's hardware . The embedded system hardware is based on a Raspberry Pi single board computer which is mounted to a custom base board. The base board allows access to various interfaces (UART, I2C, SPI etc.) which are implemented via the general purpose IO ports (GPIO). In addition, the base board features a fast 12-bit ADC, which allows the Raspberry Pi to be used as a simple oscilloscope to sample waveforms for further processing, documentation, and analysis.
 
 .. figure:: images/base_board.png
     :width: 600
     :align: center
 
-    Picture of the Raspberry 4 together with the base board. 
+    Embedded System Lab base board with a Raspberry 4 module
 
 The individual experiments are featuring dedicated add-on boards (modules) which are controlled from the Raspberry Pi via an SPI bus and other GPIO signals. The fast ADC on the base board will be used to record analog waveforms and also other lab equipment like power supplies can be remotely controlled with the Raspberry Pi. Here is overview of currently available add-on modules/experiments:  
 
 SAR ADC
 -------------------------------------
-This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) which consists of a sample and hold input stage, a comparator, and an 8-bit DAC. The user will implement the necessary SAR logic which controls the sampling stage and the DAC and develop scripts to characterize the ADC with automated measurements to specify various performance parameters (INL, DNL, noise, etc.).
+This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) which consists of a sample and hold input stage, a comparator, and an 8-bit DAC. The user will write the code to implement the SAR logic which controls sampling stage and DAC and develop scripts for automated measurements to characterize the ADC's various performance parameters (linearity, noise, etc.).
 
 .. figure:: images/sar_adc.png
     :width: 300
@@ -24,7 +24,7 @@ This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) w
 
 Analog Front-end 
 ----------------
-In this experiment a typical analog signal processing chain for semiconductor detectors will be introduced and analyzed. The user will measure the system response to calibration signals and measure the electronic noise as a function of various sensor and circuit parameters. Advanced users can build a Multichannel-Spectrum-Analyzer (MCA) with this module which can be used to measure the energy spectrum of radioactive sources.
+In this experiment a typical analog signal processing chain for semiconductor detectors will be introduced and analyzed. The user will measure the system response to calibration signals and measure the electronic noise as a function of various sensor and circuit parameters. Advanced users can build a Multichannel-Spectrum-Analyzer (MCA) with this module to measure the energy spectrum of radioactive sources.
 
 .. figure:: images/afe.png
     :width: 600
@@ -54,8 +54,8 @@ High-speed signals need controlled impedance lines (transmission lines, TML) to 
 
 In the course of each experiment, the user will:
 
-- Develop the required scripts to control the given module, 
+- Develop scripts to control the given module, 
 - Acquire various measurement data and
-- Document and analyse the measurements.
+- Document and analyze the measurements.
 
 Each experiment comes with basic code examples which can (but don't have to) be used to get started. The example code is mainly written in Python but C examples are also given in some places. 
