@@ -66,7 +66,7 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
 
 .. admonition:: Exercise 1
 
-  Copy the file :file:`GPIO.c` from the :file:`code/GPIO_Basics` folder to your :file:`work` folder.  Compile ( :kbd:`CTRL` + :kbd:`F7`) and run the program by typing :file:`sudo ./GPIO` from the terminal. Connect an oscilloscope probe to the GPIO4 pin on the base board and explain the trace that you see when you run the GPIO program. Make sure you select an appropriate horizontal resolution because the pulse will be very narrow (~ 30ns). 
+  Copy the file :file:`GPIO.c` from the :file:`code/GPIO_Basics` folder to your :file:`work` folder.  Compile ( ``CTRL`` + ``F7``) and run the program by typing :file:`sudo ./GPIO` from the terminal. Connect an oscilloscope probe to the GPIO4 pin on the base board and explain the trace that you see when you run the GPIO program. Make sure you select an appropriate horizontal resolution because the pulse will be very narrow (~ 30ns). 
 
     - Measure the output minimum pulse width. 
     - Modify the code to extend the pulse width by inserting additional function calls (``sleep(), usleep(), asm("nop")``) between the writes to GPSET and GPCLR registers. Measure the pulse width again. Explain what you see.
