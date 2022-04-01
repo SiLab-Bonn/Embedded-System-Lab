@@ -70,29 +70,7 @@
 				"kind": "build",
 				"isDefault": false
 			},
-<<<<<<< HEAD
 			"detail": "compiler: C:\\msys64\\mingw64\\bin\\gcc.exe"
 		}
-=======
-			"detail": "compiler: /usr/bin/gcc"
-		},
-		{
-      "type": "shell",
-      "label": "cl.exe build active file",
-      "command": "cl.exe",
-      "args": [
-        "/Zi",
-        "/EHsc",
-        "/Fe:",
-        "${fileDirname}\\${fileBasenameNoExtension}.exe",
-        "${file}"
-      ],
-      "problemMatcher": ["$msCompile"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
-    }		
->>>>>>> 49bec2643300374116e1b34a5e42bb51e9ca5e53
 	]
 }
