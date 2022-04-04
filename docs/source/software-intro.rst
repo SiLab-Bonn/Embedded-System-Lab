@@ -14,13 +14,13 @@ Folder Structure
 
 The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_. The project structure on the Raspberry Pi file system is organized like this::
 
- |─ home
- |  |─ Embedded-System-Lab (GitHub root directory)
- |  |  |─ docs (sources for this documentation)
- |  |  |─ code (code examples in sub-folders for each experiment)
- |  |  |─ rpi-dma (C code functions for fast ADC readout)
- |  |  |─ hardware (documentation: schematics, datasheets)
- |  |─ work (user working directory, not synchronized to GitHub)
+ |__home
+ |  |__ Embedded-System-Lab (GitHub root directory)
+ |  |  |__ docs (sources for this documentation)
+ |  |  |__ code (code examples in sub-folders for each experiment)
+ |  |  |__ rpi-dma (C code functions for fast ADC readout)
+ |  |  |__ hardware (documentation: schematics, datasheets)
+ |  |__ work (user working directory, not synchronized to GitHub)
 
  
 .. note:: 
