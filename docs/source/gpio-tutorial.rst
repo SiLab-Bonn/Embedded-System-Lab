@@ -6,7 +6,7 @@ This part gives a practical introduction to basic GPIO port programming. It star
 
 .. _gpio-programming-examples:
 
-GPIO Programming Example
+Basic GPIO Example
 ========================
 This programming example describes the basic access to the GPIO registers. This register handling is made on "low level" (i.e. not using higher-level library functions calls) using **C code**. Here are samples from the ``GPIO.c`` file from ``code/GPIO_Basics`` folder. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
 
