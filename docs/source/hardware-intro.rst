@@ -58,7 +58,7 @@ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for a
       RPi 1       BCM2835     0x20000000     0.5 GB
       RPi 2       BCM2836     0x3F000000     1 GB
       RPi 3       BCM2837     0x3F000000     1 GB
-      RPi 4       BCM2711     0xFE000000     1, 2, 4, 8 GB      
+      RPi 4       BCM2711     0xFE000000     1, 2, 4, or 8 GB      
     ===========  ==========  ==============  ====
 
 An implementation of an access to the GPIO registers will be shown in the section :ref:`gpio-programming-examples`.
