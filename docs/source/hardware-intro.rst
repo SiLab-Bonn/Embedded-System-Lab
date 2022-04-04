@@ -32,7 +32,7 @@ The operating system and the user programs run on a quad-core CPU (ARM Cortex A-
 
     Address maps for system bus (left), CPU (center) and virtual memory spaces (right)
 
-The center column shows the address space as seen by the CPU, also called **physical address** space. The system memory (implemented as synchronous random access memory, SDRAM) starts at address ``0x00000000`` and occupies a range according to the amount of memory available on the module (1 GB, 2 GB, 4 GB, or 8 GB). The I/O peripherals registers start at the address offset ``PHYS_REG_BASE`` which depends on the SOC version (see table below). 
+The center column shows the address space as seen by the CPU, also called **physical address** space. The system memory (implemented as synchronous random access memory, SDRAM) starts at address ``0x00000000`` and occupies a range according to the amount of memory available on the module (1 GB, 2 GB, 4 GB, or 8 GB). The I/O peripherals registers start at the address offset ``PHYS_REG_BASE`` which depends on the SOC version and memory size (see table below). 
 
 The actual access to memory or I/O resources is managed via the VPU MMU which controls the system bus. In the left column the system **bus address** space of the VPU is shown. The VPU address space is larger than the physical address space which enables so-called aliasing. That means that depending on the two additional address bits, different access modes for the same physical address can be used. Depending on the chosen alias offset, the access is cached (L1 + L2, or L2 coherent or L2 only) or direct. Access to I/O peripherals always is done via coherent, non-allocating L2 Cache (address offset = 0x40000000 -> ``BUS_REG_BASE = 0x7E000000``). 
 
@@ -52,14 +52,14 @@ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for a
 
 .. table::
     
-    ===========  ==========  ==================
-     Model        Chip        PHYS_REG_BASE
-    ===========  ==========  ==================
-      RPi 1       BCM2835     0x20000000
-      RPi 2       BCM2836     0x3F000000
-      RPi 3       BCM2837     0x3F000000
-      RPi 4       BCM2711     0xFE000000      
-    ===========  ==========  ==================
+    ===========  ==========  ==============  ====
+     Model        Chip        PHYS_REG_BASE  RAM
+    ===========  ==========  ==============  ====
+      RPi 1       BCM2835     0x20000000     0.5 GB
+      RPi 2       BCM2836     0x3F000000     1 GB
+      RPi 3       BCM2837     0x3F000000     1 GB
+      RPi 4       BCM2711     0xFE000000     1, 2, 4, 8 GB      
+    ===========  ==========  ==============  ====
 
 An implementation of an access to the GPIO registers will be shown in the section :ref:`gpio-programming-examples`.
 
