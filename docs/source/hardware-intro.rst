@@ -24,7 +24,7 @@ The Raspberry Pi SOC is based on a highly integrated, low power video processor 
 
 Memory and I/O Access
 =====================
-The operating system and the user programs run on a quad-core CPU (ARM Cortex A-72) while graphics/video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral I/O blocks attached to the system bus. The address translation between system bus, CPU,  and user and kernel program space is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC/ARM MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces (see also section 1.2 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`):
+The operating system and the user programs run on a quad-core CPU (ARM Cortex A-72) while graphics/video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral I/O blocks attached to the system bus. The address translation between system bus, CPU, and user and kernel program space is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC/ARM MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces (see also section 1.2 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`):
 
 .. figure:: images/address_spaces.svg
     :width: 800
@@ -34,7 +34,7 @@ The operating system and the user programs run on a quad-core CPU (ARM Cortex A-
 
 The center column shows the address space as seen by the CPU, also called **physical address** space. The system memory (implemented as synchronous random access memory, SDRAM) starts at address ``0x00000000`` and occupies a range according to the amount of memory available on the module (1 GB, 2 GB, 4 GB, or 8 GB). The I/O peripherals registers start at the address offset ``PHYS_REG_BASE`` which depends on the SOC version (see table below). 
 
-The actual access to memory or I/O resources is managed via the VPU MMU which controls the system bus. In the left column the system **bus address** space of the VPU is shown. The VPU address space is larger than the physical address space which enables so-called aliasing. That means that different access modes for the same physical address can be used. Depending on the chosen alias offset, the access is cached is various ways (L1 + L2, or L2 coherent or L2 only) or direct. Access to I/O peripherals always is done via coherent, non-allocating L2 Cache. 
+The actual access to memory or I/O resources is managed via the VPU MMU which controls the system bus. In the left column the system **bus address** space of the VPU is shown. The VPU address space is larger than the physical address space which enables so-called aliasing. That means that depending on the two additional address bits, different access modes for the same physical address can be used. Depending on the chosen alias offset, the access is cached (L1 + L2, or L2 coherent or L2 only) or direct. Access to I/O peripherals always is done via coherent, non-allocating L2 Cache. 
 
 A multi-tasking operating system, which is typically run on a computing system, cannot allow user code to direct access to the physical address space, since concurrent access from different tasks to the same resource would compromise data integrity and security. Therefore, user code must use **virtual addresses**, which are mapped by the CPU MMU to the physical address space. This allows parallel running user (and kernel) task to access shared resources in an orderly way. The structure of this virtual address space is shown in the right column.
 
@@ -65,9 +65,9 @@ An implementation of an access to the GPIO registers will be shown in the sectio
 
 Further reading
 ---------------
-- `BCM2835 ARM Peripherals<https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf>`_
-- `BCM2835 data sheet errata<https://elinux.org/BCM2835_datasheet_errata>`_
-- `Raspberry Pi DMA programming in C<https://iosoft.blog/2020/05/25/raspberry-pi-dma-programming/>`_
+- `BCM2835 ARM Peripherals <https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf>`_
+- `BCM2835 data sheet errata <https://elinux.org/BCM2835_datasheet_errata>`_
+- `Raspberry Pi DMA programming in C <https://iosoft.blog/2020/05/25/raspberry-pi-dma-programming/>`_
 
 
 
