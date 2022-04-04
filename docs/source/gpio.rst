@@ -5,7 +5,7 @@ GPIO Interface
 ==============
 The BCM2711 has 54 general purpose input/output ports of which 28 are available on the Raspberry Pi module (``GPIO[27:0]``). When a GPIO port is used as an output, its  state can be toggled between logic 0 and logic 1 and a high-impedance state (tri-state). Since the GPIO ports are powered from a 3.3 V supply, the voltage levels are 0 V and 3.3 V respectively. When used as an input, the port can read these levels. Here is a simplified function diagram of a GPIO block showing the main control registers which are explained below. There are additional registers for interrupt modes, pull-up and pull-down configuration, drive strength and others, which are not shown in this diagram.
 
-.. figure:: images/GPIO_block.svg
+.. figure:: images/GPIO_block.png
     :width: 400
     :align: center
 

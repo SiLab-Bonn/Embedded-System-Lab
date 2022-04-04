@@ -16,7 +16,7 @@ The central part of the Raspberry Pi module is a system-on-chip (SOC). A SOC int
 
 The Raspberry Pi SOC is based on a highly integrated, low power video processor called VideoCore (sometimes also referred to as graphics- or video-processing-unit, GPU or VPU) with a multi-core ARM CPU attached to it. The following block diagram of the BCM2711 chip, which is used on the Raspberry Pi 4 modules, shows the SOC main function blocks which communicate and exchange data via an internal system bus (AMBA/AXI bus). The GPIO interface shown in the lower right corner will be described in more detail in the following sections.
 
-.. figure:: images/BCM2711.svg
+.. figure:: images/BCM2711.png
     :width: 600
     :align: center
 
@@ -26,7 +26,7 @@ Memory and I/O Access
 =====================
 The operating system and the user programs run on a quad-core CPU (ARM Cortex A-72) while graphics/video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral I/O blocks attached to the system bus. The address translation between system bus, CPU, and user and kernel program space is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC/ARM MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces (see also section 1.2 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`):
 
-.. figure:: images/address_spaces.svg
+.. figure:: images/address_spaces.png
     :width: 800
     :align: center
 
