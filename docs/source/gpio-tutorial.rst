@@ -71,7 +71,7 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
   1. Measure the output minimum pulse width. 
   2. Modify the code to extend the pulse width by inserting additional function calls (``sleep(), usleep(), asm("nop")``) between the writes to GPSET and GPCLR registers. Measure the pulse width again. Explain what you see.
 
-The **Python** example uses the `Rpi.GPIO library<https://sourceforge.net/p/raspberry-gpio-python/wiki/Home/>`_ library. Setting up the access to the GPIO registers is done in a similar way as in the C-code example. However, the detailed implementation is hidden in the library. 
+The **Python** example uses the `Rpi.GPIO library <https://sourceforge.net/p/raspberry-gpio-python/wiki/Home/>`_ library. Setting up the access to the GPIO registers is done in a similar way as in the C-code example. However, the detailed implementation is hidden in the library. 
 
 .. code-block:: python
   
