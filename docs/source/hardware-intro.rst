@@ -26,7 +26,7 @@ Memory and I/O Access
 =====================
 The operating system and the user programs run on a quad-core CPU (ARM Cortex A-72) while graphics/video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral I/O blocks attached to the system bus. The address translation between system bus, CPU,  and user and kernel program space is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC/ARM MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces (see also section 1.2 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`):
 
-.. figure:: images/address_spaces.png
+.. figure:: images/address_spaces.svg
     :width: 800
     :align: center
 
@@ -62,6 +62,12 @@ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for a
     ===========  ==========  ==================
 
 An implementation of an access to the GPIO registers will be shown in the section :ref:`gpio-programming-examples`.
+
+Further reading
+---------------
+- `BCM2835 ARM Peripherals<https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf>`_
+- `BCM2835 data sheet errata<https://elinux.org/BCM2835_datasheet_errata>`_
+- `Raspberry Pi DMA programming in C<https://iosoft.blog/2020/05/25/raspberry-pi-dma-programming/>`_
 
 
 
