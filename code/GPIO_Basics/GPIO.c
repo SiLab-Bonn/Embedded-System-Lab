@@ -107,7 +107,12 @@ int main()
   set_gpio_out(4, 0);
   usleep(100);
   set_gpio_out(4, 1); 
-  usleep(100);
+  for(int i = 0; i < 400; i++)
+   asm("nop");
+  // asm("nop");
+  // asm("nop");
+  // asm("nop");
+  // asm("nop");
   set_gpio_out(4, 0);
   usleep(100);
  
