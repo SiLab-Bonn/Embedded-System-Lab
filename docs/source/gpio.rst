@@ -158,7 +158,9 @@ For writing data from host to a device, the address of the selected device is se
 
 Every transfer consists of one ore more bytes. Each byte is send MSB first and the data on the SDA line must be valid during the high phase of the SCL clock. A change of the data line state during the high phase of the clock would be interpreted as a **START** or **STOP** condition (see above). After eight clock cycles for sending the data, a ninth clock cycle is used to let the receiver respond to the reception of the transferred byte: The receiver will hold the SDA low during the ninth SCL period to indicate an acknowledgement (**ACK**). In case the receiver detected an error during the last transmission it will generate a not-acknowledge (**NACK)** by letting the SDA line go high.
 
-The SDA and SCL line drivers are implemented as so-called open-drain buffers. These buffers can drive the line only to a low state. The high state is generated with an external pull-up resistor which is mandatory for both SDA and SCL lines. This configuration imposes a practical limit on the data rate because of the inherent RC time constant given by the value of the pull-up resistor (typically in the range of 1 kOhm to 10 kOhm) and the parasitic capacitance of the bus.
+The SDA and SCL line drivers are implemented as so-called open-drain buffers. These buffers can drive the line only to a low state. The high state is generated with an external pull-up resistor which is mandatory for both SDA and SCL lines. This configuration avoids bus conflicts which would arise when a line would be actively driven high and low at the same time.
+
+imposes a practical limit on the data rate because of the inherent RC time constant given by the value of the pull-up resistor (typically in the range of 1 kOhm to 10 kOhm) and the parasitic capacitance of the bus.
 
 SPI
 ---
