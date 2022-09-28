@@ -65,11 +65,12 @@
 
 // GPIO pin numbers
 #define ADC_D0_PIN      12  // data bus @GPIO[23:12]
-#define ADC_NPINS       14  // 12 data bits + GPIO24/25
+#define ADC_NPINS       12  // 12 data bits (+ GPIO24/25 ?)
 #define SMI_SOE_PIN     6
 #define SMI_SWE_PIN     7
 #define SMI_ACK_PIN     24
 #define SMI_DREQ_PIN    25
+#define ADC_ENABLE      25
 #define TEST_PIN        26
 #define USE_TEST_PIN    1
 
@@ -148,7 +149,9 @@ void init_device(uint16_t *adc_data, int samples, int time_base, int wait_trigge
   
   for (int i=0; i<ADC_NPINS; i++)
     gpio_mode(ADC_D0_PIN+i, GPIO_IN);
+ 
   gpio_mode(SMI_SOE_PIN, GPIO_ALT1);
+  gpio_mode(ADC_ENABLE, GPIO_OUT);
 
   switch (time_base)
   {
@@ -169,6 +172,7 @@ void init_device(uint16_t *adc_data, int samples, int time_base, int wait_trigge
 
 void take_data(void)
 {
+    gpio_out(ADC_ENABLE, 1);
 //  smi_cs->enable = 1;
 //  smi_cs->clear = 1;  
   rx_buffer_ptr = adc_dma_start(&vc_mem, num_samples);
@@ -186,6 +190,7 @@ void take_data(void)
   smi_dmc->dmaen = 0;
   smi_cs->enable = 0;
   smi_dcs->enable = 0;	
+  gpio_out(ADC_ENABLE, 0);
 }
 
 void close_device(void)
@@ -204,6 +209,8 @@ void close_device(void)
   unmap_periph_mem(&smi_regs);
   unmap_periph_mem(&dma_regs);
   unmap_periph_mem(&gpio_regs);
+
+  //gpio_mode(ADC_ENABLE, GPIO_IN);
 }
 
 // Initialise SMI, given data width, time step, and setup/hold/strobe counts
