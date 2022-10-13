@@ -23,7 +23,7 @@ GPIO.setup(COMP, GPIO.IN)
 
 adc_data = np.array([])
 
-for i in range(100000):
+for i in range(1000):
   # trigger sample switch
   GPIO.output(SAMPLE, GPIO.HIGH)
   time.sleep(0.0001)
@@ -50,8 +50,9 @@ for i in range(100000):
   #time.sleep(0.1)
 
 #print(adc_data)
-
-plt.hist(adc_data, bins = range(0, 256, 1))
+hist, bin_edges = np.histogram(adc_data, bins=256, range=(0,256))
+#plt.hist(adc_data, bins = range(0, 255, 1))
+plt.stairs(hist, bin_edges, fill=True)
 plt.show()
 
 #print("dac_value", dac_value)
