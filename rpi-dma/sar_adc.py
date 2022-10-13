@@ -1,13 +1,13 @@
 import time
 import RPi.GPIO as GPIO
 import spidev as SPI
-# GPIO.setmode(GPIO.BOARD) # RPi.GPIO Layout verwenden (wie Pin-Nummern)
+
 GPIO.setmode(GPIO.BCM)
 
 spi = SPI.SpiDev()
 spi.open(0,0)  # (bus, device)
 spi.mode = 0
-spi.max_speed_hz = 10000000
+spi.max_speed_hz = 1000000
 
 dac_resolution = 8 # resolution in bits
 
