@@ -23,7 +23,7 @@ GPIO.setup(COMP, GPIO.IN)
 
 adc_data = np.array([])
 
-for i in range(1000):
+for i in range(100000):
   # trigger sample switch
   GPIO.output(SAMPLE, GPIO.HIGH)
   time.sleep(0.0001)
@@ -38,21 +38,40 @@ for i in range(1000):
     dac_value |= 1 << (dac_bit) 
     # write DAC value 
     spi.xfer([dac_value])
+    #time.sleep(0.0001) # settling time for DAC and comparator
 
     # get result from comparator 
     result = GPIO.input(COMP)
     if not (result): # input voltage is lower than DAC voltage
-      dac_value -= 1 << (dac_bit)  # substract DAC bit value
+      dac_value -= 1 << (dac_bit)  # subtract DAC bit value
     #print(dac_bit, dac_value, result)
 
   spi.xfer([dac_value]) # write final DAC value with correct LSB
   adc_data = np.append(adc_data, [dac_value])
   #time.sleep(0.1)
 
-#print(adc_data)
-hist, bin_edges = np.histogram(adc_data, bins=256, range=(0,256))
+# adc data distribution plot
+
+# limits
+lower_bound = 10
+upper_bound = 250
+
+adc_hist, bin_edges = np.histogram(adc_data, bins=upper_bound-lower_bound, range=(lower_bound,upper_bound))
+
+# calculate average bin height 
+adc_hist_avg = np.average(adc_hist)
+# normalize the histogram and calculate deviation
+adc_dnl = (adc_hist-adc_hist_avg)/adc_hist_avg
+print(adc_hist_avg)
 #plt.hist(adc_data, bins = range(0, 255, 1))
-plt.stairs(hist, bin_edges, fill=True)
+figure, plot = plt.subplots(2, 1)
+plot[0].stairs(adc_hist, bin_edges, fill=True)
+plot[0].set_xticks(range(0, 260, 32))
+plot[0].set_title("ADC data histogram")
+plot[1].stairs(adc_dnl, bin_edges)
+plot[1].set_ylim(-2, 2)
+plot[1].set_xticks(range(0, 260, 32))
+plot[1].set_title("ADC DNL")
 plt.show()
 
 #print("dac_value", dac_value)
