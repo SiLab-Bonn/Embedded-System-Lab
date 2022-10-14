@@ -1,6 +1,8 @@
 import time
 import RPi.GPIO as GPIO
 import spidev as SPI
+import matplotlib.pyplot as plt
+import numpy as np
 
 GPIO.setmode(GPIO.BCM)
 
@@ -12,35 +14,48 @@ spi.max_speed_hz = 100000
 dac_resolution = 8 # resolution in bits
 
 SAMPLE = 4 # GPIO4
+GPIO.setwarnings(False)
 GPIO.setup(SAMPLE, GPIO.OUT)
 GPIO.output(SAMPLE, GPIO.LOW)
 
 COMP = 5  # GPIO5
 GPIO.setup(COMP, GPIO.IN)
 
-# trigger sample switch
-GPIO.output(SAMPLE, GPIO.HIGH)
-time.sleep(0.0001)
-GPIO.output(SAMPLE, GPIO.LOW)
+adc_data = np.array([])
 
-# reset dac value
-dac_value = 0
+for i in range(1000):
+  # trigger sample switch
+  GPIO.output(SAMPLE, GPIO.HIGH)
+  time.sleep(0.0001)
+  GPIO.output(SAMPLE, GPIO.LOW)
 
-# successive approximation loop, MSB to LSB
-for dac_bit in reversed(range(dac_resolution)):
-  #set DAC value
-  dac_value |= 1 << (dac_bit) 
-  spi.xfer([dac_value])
+  # reset dac value
+  dac_value = 0
 
-  # get result from comparator 
-  result = GPIO.input(COMP)
-  if not (result):
-    dac_value -= 1 << (dac_bit)
-  print(dac_bit, dac_value, result)
-spi.xfer([dac_value])
-    
+  # succesive approximation loop from bit 7 (MSB) down to bit 0 (LSB)
+  for dac_bit in reversed(range(dac_resolution)):
+    # set next DAC bit value
+    dac_value |= 1 << (dac_bit) 
+    # write DAC value 
+    spi.xfer([dac_value])
 
-print("dac_value", dac_value)
+    # get result from comparator 
+    result = GPIO.input(COMP)
+    if not (result): # input voltage is lower than DAC voltage
+      dac_value -= 1 << (dac_bit)  # substract DAC bit value
+    #print(dac_bit, dac_value, result)
+
+  spi.xfer([dac_value]) # write final DAC value with correct LSB
+  adc_data = np.append(adc_data, [dac_value])
+  #time.sleep(0.1)
+
+#print(adc_data)
+hist, bin_edges = np.histogram(adc_data, bins=256, range=(0,256))
+#plt.hist(adc_data, bins = range(0, 255, 1))
+plt.stairs(hist, bin_edges, fill=True)
+plt.show()
+
+#print("dac_value", dac_value)
 
 
 
