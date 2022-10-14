@@ -62,16 +62,21 @@ adc_hist, bin_edges = np.histogram(adc_data, bins=upper_bound-lower_bound, range
 adc_hist_avg = np.average(adc_hist)
 # normalize the histogram and calculate deviation
 adc_dnl = (adc_hist-adc_hist_avg)/adc_hist_avg
+adc_inl = np.cumsum(adc_dnl)
 print(adc_hist_avg)
 #plt.hist(adc_data, bins = range(0, 255, 1))
-figure, plot = plt.subplots(2, 1)
+figure, plot = plt.subplots(3, 1)
 plot[0].stairs(adc_hist, bin_edges, fill=True)
 plot[0].set_xticks(range(0, 260, 32))
 plot[0].set_title("ADC data histogram")
 plot[1].stairs(adc_dnl, bin_edges)
 plot[1].set_ylim(-2, 2)
 plot[1].set_xticks(range(0, 260, 32))
-plot[1].set_title("ADC DNL")
+plot[1].set_title("DNL")
+plot[2].stairs(adc_inl, bin_edges)
+plot[2].set_ylim(-2, 2)
+plot[2].set_xticks(range(0, 260, 32))
+plot[2].set_title("INL")
 plt.show()
 
 #print("dac_value", dac_value)
