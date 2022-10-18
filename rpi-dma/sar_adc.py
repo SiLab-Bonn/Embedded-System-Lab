@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 import spidev as SPI
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
 
 GPIO.setmode(GPIO.BCM)
 
@@ -23,7 +24,7 @@ GPIO.setup(COMP, GPIO.IN)
 
 adc_data = np.array([])
 
-for i in range(100000):
+for i in tqdm(range(100000)):
   # trigger sample switch
   GPIO.output(SAMPLE, GPIO.HIGH)
   time.sleep(0.0001)
@@ -32,7 +33,7 @@ for i in range(100000):
   # reset dac value
   dac_value = 0
 
-  # succesive approximation loop from bit 7 (MSB) down to bit 0 (LSB)
+  # successive approximation loop from bit 7 (MSB) down to bit 0 (LSB)
   for dac_bit in reversed(range(dac_resolution)):
     # set next DAC bit value
     dac_value |= 1 << (dac_bit) 
@@ -50,36 +51,36 @@ for i in range(100000):
   adc_data = np.append(adc_data, [dac_value])
   #time.sleep(0.1)
 
-# adc data distribution plot
-
-# limits
+# set limits (cut the over- and underflow bins)
 lower_bound = 10
-upper_bound = 250
+upper_bound = 254
 
-adc_hist, bin_edges = np.histogram(adc_data, bins=upper_bound-lower_bound, range=(lower_bound,upper_bound))
+# count histogram
+adc_hist, bin_edges = np.histogram(adc_data, bins=upper_bound-lower_bound, range=(lower_bound,upper_bound-1))
 
-# calculate average bin height 
+# average bin height 
 adc_hist_avg = np.average(adc_hist)
-# normalize the histogram and calculate deviation
+
+# differential non-linearity
 adc_dnl = (adc_hist-adc_hist_avg)/adc_hist_avg
+
+# integral non-linearity
 adc_inl = np.cumsum(adc_dnl)
-print(adc_hist_avg)
-#plt.hist(adc_data, bins = range(0, 255, 1))
+
+# prepare plots
 figure, plot = plt.subplots(3, 1)
 plot[0].stairs(adc_hist, bin_edges, fill=True)
 plot[0].set_xticks(range(0, 260, 32))
-plot[0].set_title("ADC data histogram")
+plot[0].set_ylabel("Counts")
 plot[1].stairs(adc_dnl, bin_edges)
 plot[1].set_ylim(-2, 2)
 plot[1].set_xticks(range(0, 260, 32))
-plot[1].set_title("DNL")
+plot[1].set_ylabel("DNL")
 plot[2].stairs(adc_inl, bin_edges)
 plot[2].set_ylim(-2, 2)
 plot[2].set_xticks(range(0, 260, 32))
-plot[2].set_title("INL")
+plot[2].set_ylabel("INL")
 plt.show()
-
-#print("dac_value", dac_value)
 
 
 
