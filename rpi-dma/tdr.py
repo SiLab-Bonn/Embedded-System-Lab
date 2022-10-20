@@ -11,7 +11,7 @@ GPIO.setwarnings(False)
 spi = SPI.SpiDev()
 spi.open(0,0)  # (bus, device)
 spi.mode = 0
-spi.max_speed_hz = 5000000
+spi.max_speed_hz = 1000000
 
 COMP = 5
 GPIO.setup(COMP, GPIO.IN)
@@ -66,7 +66,7 @@ for sample_delay in tqdm(range(max_delay)):
 
     # trigger pulse step
     GPIO.output(TRIGGER, GPIO.HIGH)
-    time.sleep(0.00001)
+    time.sleep(0.0005)
     # sample comparator result
     result = GPIO.input(COMP)
     # reset pulse output
