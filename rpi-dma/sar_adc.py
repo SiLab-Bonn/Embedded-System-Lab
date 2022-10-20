@@ -10,7 +10,7 @@ GPIO.setmode(GPIO.BCM)
 spi = SPI.SpiDev()
 spi.open(0,0)  # (bus, device)
 spi.mode = 0
-spi.max_speed_hz = 100000
+spi.max_speed_hz = 1000000
 
 dac_resolution = 8 # resolution in bits
 
@@ -24,7 +24,7 @@ GPIO.setup(COMP, GPIO.IN)
 
 adc_data = np.array([])
 
-for i in tqdm(range(100000)):
+for i in tqdm(range(10000)):
   # trigger sample switch
   GPIO.output(SAMPLE, GPIO.HIGH)
   time.sleep(0.0001)

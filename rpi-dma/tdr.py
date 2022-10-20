@@ -1,13 +1,17 @@
 import time
 import RPi.GPIO as GPIO
 import spidev as SPI
+import matplotlib.pyplot as plt
+import numpy as np
+from tqdm import tqdm
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 spi = SPI.SpiDev()
 spi.open(0,0)  # (bus, device)
 spi.mode = 0
-spi.max_speed_hz = 1000000
+spi.max_speed_hz = 5000000
 
 COMP = 5
 GPIO.setup(COMP, GPIO.IN)
@@ -37,33 +41,55 @@ delay_size = 1 # number of delay steps
 
 dac_cmd      = 0x3000 # DAC enable, gain = 1: VDAC = [0..2047]mV
 threshold    = 2048
-pulse_delay  = 100 #0x07f
-sample_delay = 1000
+pulse_delay  =  0
+sample_delay =    0
+max_delay    =  1023  
+max_threshold = 4095
+delay_unit   =    5
 
 # update_spi_regs(3000, pulse_delay, sample_delay)
 # GPIO.output(TRIGGER, GPIO.HIGH)
 # GPIO.output(TRIGGER, GPIO.LOW)
 
-for t in range(1000):
-  #set delay value
-  pulse_delay = t
+amplitude_data = np.array([])
+time_steps = np.array([])
+
+for sample_delay in tqdm(range(max_delay)):
+  time_steps = np.append(time_steps, [sample_delay * delay_unit])
   threshold = 2048 # start with mid-level DAC output for SAR ADC conversion
 
-  for dac_bit in reversed(range(dac_resolution)):
+  for dac_bit in reversed(range(dac_resolution)): # SAR conversion from MSB to LSB
     #set DAC value
     threshold |= 1 << (dac_bit)
+    # update comparator threshold
     update_spi_regs(threshold, pulse_delay, sample_delay)
 
     # trigger pulse step
     GPIO.output(TRIGGER, GPIO.HIGH)
-    GPIO.output(TRIGGER, GPIO.LOW)
-    GPIO.output(TRIGGER, GPIO.HIGH)
-    
+    time.sleep(0.00001)
+    # sample comparator result
     result = GPIO.input(COMP)
-    #print(dac_bit, threshold, result)
-    if result:
+    # reset pulse output
+    GPIO.output(TRIGGER, GPIO.LOW)
+
+    if result: # set next DAC bit
       threshold -= 1 << (dac_bit)
-  print("input level", threshold)
+
+  amplitude_data = np.append(amplitude_data, [max_threshold - threshold])
+
+# plot the waveform data
+fig, waveform = plt.subplots(2,1)
+waveform[0].plot(time_steps, amplitude_data)
+waveform[0].set_xlabel("time [ps]")
+waveform[0].set_ylabel("voltage [#DAC]")
+waveform[0].set_ylim(2500, 4500)
+waveform[1].plot(time_steps, amplitude_data)
+waveform[1].set_xlabel("time [ps]")
+waveform[1].set_ylabel("voltage [#DAC]")
+waveform[1].set_ylim(3500, 4000)
+
+plt.show()
+
 
 spi.close()
 
