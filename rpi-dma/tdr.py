@@ -11,7 +11,7 @@ GPIO.setwarnings(False)
 spi = SPI.SpiDev()
 spi.open(0,0)  # (bus, device)
 spi.mode = 0
-spi.max_speed_hz = 1000000
+spi.max_speed_hz = 5000000
 
 COMP = 5
 GPIO.setup(COMP, GPIO.IN)
@@ -37,60 +37,45 @@ def update_spi_regs(threshold, pulse_delay, sample_delay):
   spi.xfer(bytearray(spi_data.to_bytes(5, byteorder='big')))
 
 dac_resolution = 12 # resolution in bits
-delay_size = 1 # number of delay steps
+delay_size = 1 # numer of delay steps
 
-dac_cmd      = 0x3000 # DAC enable, gain = 1: VDAC = [0..2047]mV
-threshold    = 2048
-pulse_delay  =  0
-sample_delay =    0
-max_delay    =  1023  
-max_threshold = 4095
-delay_unit   =    5
+spi_array = bytearray(6)
+dac_value   = 0
+delay_value = 0
+spi_array = [dac_value >> 8, dac_value & 0xff, delay_value >> 8, delay_value & 0xff]
+ 
 
-# update_spi_regs(3000, pulse_delay, sample_delay)
-# GPIO.output(TRIGGER, GPIO.HIGH)
-# GPIO.output(TRIGGER, GPIO.LOW)
+TRIGGER = 4
+GPIO.setup(TRIGGER, GPIO.OUT)
+GPIO.output(TRIGGER, GPIO.LOW)
 
-amplitude_data = np.array([])
-time_steps = np.array([])
+COMP = 5
+GPIO.setup(COMP, GPIO.IN)
 
-for sample_delay in tqdm(range(max_delay)):
-  time_steps = np.append(time_steps, [sample_delay * delay_unit])
-  threshold = 2048 # start with mid-level DAC output for SAR ADC conversion
+for t in range(delay_size):
+  #set delay value
+  delay_value = t
+  spi_array = [dac_value >> 8, dac_value & 0xff, delay_value >> 8, delay_value & 0xff]
+  spi.xfer(spi_array)
+  #reset dac output 
+  dac_value = 0
 
-  for dac_bit in reversed(range(dac_resolution)): # SAR conversion from MSB to LSB
+  for dac_bit in reversed(range(dac_resolution)):
     #set DAC value
-    threshold |= 1 << (dac_bit)
-    # update comparator threshold
-    update_spi_regs(threshold, pulse_delay, sample_delay)
+    dac_value |= 1 << (dac_bit)
+    spi_array = [dac_value >> 8, dac_value & 0xff, delay_value >> 8, delay_value & 0xff]
+    spi.xfer(spi_array)
 
     # trigger pulse step
     GPIO.output(TRIGGER, GPIO.HIGH)
-    time.sleep(0.0005)
-    # sample comparator result
-    result = GPIO.input(COMP)
-    # reset pulse output
     GPIO.output(TRIGGER, GPIO.LOW)
 
-    if result: # set next DAC bit
-      threshold -= 1 << (dac_bit)
-
-  amplitude_data = np.append(amplitude_data, [max_threshold - threshold])
-
-# plot the waveform data
-fig, waveform = plt.subplots(2,1)
-waveform[0].plot(time_steps, amplitude_data)
-waveform[0].set_xlabel("time [ps]")
-waveform[0].set_ylabel("voltage [#DAC]")
-waveform[0].set_ylim(2500, 4500)
-waveform[1].plot(time_steps, amplitude_data)
-waveform[1].set_xlabel("time [ps]")
-waveform[1].set_ylabel("voltage [#DAC]")
-waveform[1].set_ylim(3500, 4000)
-
-plt.show()
+    result = 253 >= dac_value #GPIO.input(COMP)
+    print(dac_bit, dac_value, result)
+    if not result:
+      dac_value -= 1 << (dac_bit)
+print("dac_value", dac_value)
 
 
-spi.close()
 
 
