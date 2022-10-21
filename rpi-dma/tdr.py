@@ -37,7 +37,7 @@ def update_spi_regs(threshold, pulse_delay, sample_delay):
   spi.xfer(bytearray(spi_data.to_bytes(5, byteorder='big')))
 
 dac_resolution = 12 # resolution in bits
-delay_size = 1 # number of delay steps
+delay_size = 1 # numer of delay steps
 
 dac_cmd      = 0x3000 # DAC enable, gain = 1: VDAC = [0..2047]mV
 threshold    = 2048
@@ -91,6 +91,5 @@ waveform[1].set_ylim(3500, 4000)
 plt.show()
 
 
-spi.close()
 
 
