@@ -41,7 +41,7 @@ delay_size = 1 # number of delay steps
 
 dac_cmd      = 0x3000 # DAC enable, gain = 1: VDAC = [0..2047]mV
 threshold    = 2048
-pulse_delay  =  0
+pulse_delay  =    0
 sample_delay =    0
 max_delay    =  1023  
 max_threshold = 4095
@@ -63,16 +63,16 @@ for sample_delay in tqdm(range(max_delay)):
     threshold |= 1 << (dac_bit)
     # update comparator threshold
     update_spi_regs(threshold, pulse_delay, sample_delay)
-
     # trigger pulse step
     GPIO.output(TRIGGER, GPIO.HIGH)
-    time.sleep(0.00001)
-    # sample comparator result
+    # wait for comparator to settle
+    time.sleep(0.000001)
+    # read comparator result
     result = GPIO.input(COMP)
     # reset pulse output
     GPIO.output(TRIGGER, GPIO.LOW)
 
-    if result: # set next DAC bit
+    if result: # set next DAC bit, VTHR ~ 3.1V - VDAC/k
       threshold -= 1 << (dac_bit)
 
   amplitude_data = np.append(amplitude_data, [max_threshold - threshold])
@@ -82,7 +82,7 @@ fig, waveform = plt.subplots(2,1)
 waveform[0].plot(time_steps, amplitude_data)
 waveform[0].set_xlabel("time [ps]")
 waveform[0].set_ylabel("voltage [#DAC]")
-waveform[0].set_ylim(2500, 4500)
+waveform[0].set_ylim(0, 4500)
 waveform[1].plot(time_steps, amplitude_data)
 waveform[1].set_xlabel("time [ps]")
 waveform[1].set_ylabel("voltage [#DAC]")
