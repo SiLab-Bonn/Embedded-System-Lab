@@ -110,6 +110,7 @@ uint16_t *adc_data_ptr;
 
 // number of samples
 int num_samples;
+float time_base;
 
 // Non-volatile memory size
 #define VC_MEM_SIZE(nsamp) (PAGE_SIZE + ((nsamp)+4)*SAMPLE_SIZE)
@@ -123,6 +124,10 @@ void disp_smi(void);
 void mode_word(uint32_t *wp, int n, uint32_t mode);
 void disp_reg_fields(char *regstrs, char *name, uint32_t val);
 
+float get_time_base(void)
+{
+  return time_base;
+}
 char* Hello(void)
 {
   //system("grep -o BCM2711 /proc/cpuinfo"); 
@@ -140,7 +145,7 @@ void map_devices(void)
     map_periph(&smi_regs, (void *)SMI_BASE, PAGE_SIZE);
 }
 
-void init_device(uint16_t *adc_data, int samples, int time_base, int wait_trigger)
+void init_device(uint16_t *adc_data, int samples, int time_base_index, int wait_trigger)
 {
   num_samples = samples;
   adc_data_ptr = adc_data;
@@ -153,14 +158,14 @@ void init_device(uint16_t *adc_data, int samples, int time_base, int wait_trigge
   gpio_mode(SMI_SOE_PIN, GPIO_ALT1);
   gpio_mode(ADC_ENABLE, GPIO_OUT);
 
-  switch (time_base)
+  switch (time_base_index)
   {
-      case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); break;
-      case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); break;
-      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,   wait_trigger); break;
-      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M,   wait_trigger); break;
-      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M,   wait_trigger); break;
-      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,  wait_trigger); break;
+      case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); time_base = 5.0; break;
+      case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); time_base = 2.0; break;
+      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,   wait_trigger); time_base = 1.0; break;
+      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M,   wait_trigger); time_base = 0.5; break;
+      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M,   wait_trigger); time_base = 0.2; break;
+      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,  wait_trigger); time_base = 1.0; break;
   }
 
 #if USE_TEST_PIN
@@ -168,49 +173,6 @@ void init_device(uint16_t *adc_data, int samples, int time_base, int wait_trigge
     gpio_out(TEST_PIN, 0);
 #endif  
   map_uncached_mem(&vc_mem, VC_MEM_SIZE(num_samples+PRE_SAMP)); 
-}
-
-void take_data(void)
-{
-    gpio_out(ADC_ENABLE, 1);
-//  smi_cs->enable = 1;
-//  smi_cs->clear = 1;  
-  rx_buffer_ptr = adc_dma_start(&vc_mem, num_samples);
-
-  smi_dmc->dmaen = 1;
-  smi_l->len = num_samples + PRE_SAMP;
-  smi_cs->pxldat = 1;  // pack bytes to words
-  smi_cs->enable = 1;
-  smi_cs->clear  = 1;
-  smi_cs->start  = 1;  
-  while (dma_active(DMA_CHAN_A)) 
-    ;
-  map_adc_data(rx_buffer_ptr, adc_data_ptr, num_samples);
-  //disp_reg_fields(smi_cs_regstrs, "CS", *REG32(smi_regs, SMI_CS));
-  smi_dmc->dmaen = 0;
-  smi_cs->enable = 0;
-  smi_dcs->enable = 0;	
-  gpio_out(ADC_ENABLE, 0);
-}
-
-void close_device(void)
-{
-  int i;
-
-  if (gpio_regs.virt)
-  {
-    for (i=0; i<ADC_NPINS; i++)
-      gpio_mode(ADC_D0_PIN+i, GPIO_IN);
-  }
-  if (smi_regs.virt)
-      *REG32(smi_regs, SMI_CS) = 0;
-  stop_dma(DMA_CHAN_A);
-  unmap_periph_mem(&vc_mem);
-  unmap_periph_mem(&smi_regs);
-  unmap_periph_mem(&dma_regs);
-  unmap_periph_mem(&gpio_regs);
-
-  //gpio_mode(ADC_ENABLE, GPIO_IN);
 }
 
 // Initialise SMI, given data width, time step, and setup/hold/strobe counts
@@ -266,6 +228,49 @@ void smi_init(int width, int ns, int setup, int strobe, int hold, int wait_trigg
       smi_dsr->rdreq = 0;
       smi_dmc->dmap = 0;
     }
+}
+
+void take_data(void)
+{
+    gpio_out(ADC_ENABLE, 1);
+//  smi_cs->enable = 1;
+//  smi_cs->clear = 1;  
+  rx_buffer_ptr = adc_dma_start(&vc_mem, num_samples);
+
+  smi_dmc->dmaen = 1;
+  smi_l->len = num_samples + PRE_SAMP;
+  smi_cs->pxldat = 1;  // pack bytes to words
+  smi_cs->enable = 1;
+  smi_cs->clear  = 1;
+  smi_cs->start  = 1;  
+  while (dma_active(DMA_CHAN_A)) 
+    ;
+  map_adc_data(rx_buffer_ptr, adc_data_ptr, num_samples);
+  //disp_reg_fields(smi_cs_regstrs, "CS", *REG32(smi_regs, SMI_CS));
+  smi_dmc->dmaen = 0;
+  smi_cs->enable = 0;
+  smi_dcs->enable = 0;	
+  gpio_out(ADC_ENABLE, 0);
+}
+
+void close_device(void)
+{
+  int i;
+
+  if (gpio_regs.virt)
+  {
+    for (i=0; i<ADC_NPINS; i++)
+      gpio_mode(ADC_D0_PIN+i, GPIO_IN);
+  }
+  if (smi_regs.virt)
+      *REG32(smi_regs, SMI_CS) = 0;
+  stop_dma(DMA_CHAN_A);
+  unmap_periph_mem(&vc_mem);
+  unmap_periph_mem(&smi_regs);
+  unmap_periph_mem(&dma_regs);
+  unmap_periph_mem(&gpio_regs);
+
+  //gpio_mode(ADC_ENABLE, GPIO_IN);
 }
 
 // Start SMI, given number of samples, optionally pack bytes into words
