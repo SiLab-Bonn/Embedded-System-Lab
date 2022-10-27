@@ -8,7 +8,7 @@ from tqdm import tqdm
 GPIO.setmode(GPIO.BCM) # GPIO port numbering
 GPIO.setwarnings(False)
 
-ADC = ctypes.CDLL("./adc.so")
+ADC = ctypes.CDLL("../lib/fast_adc.so")
 
 TRIGGER = 4
 GPIO.setup(TRIGGER, GPIO.OUT)
