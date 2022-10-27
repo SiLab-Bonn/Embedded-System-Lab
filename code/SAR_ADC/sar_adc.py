@@ -21,7 +21,7 @@ COMP = 5  # GPIO5 reads the comparator output
 GPIO.setup(COMP, GPIO.IN)
 
 dac_resolution = 8 # resolution in bits
-num_samples = 10000 # number of ADC samples
+num_samples = 100000 # number of ADC samples
 
 adc_samples = np.zeros(num_samples) # create array to store the ADC data
 
@@ -40,7 +40,6 @@ for i in tqdm(range(num_samples)):
     result = GPIO.input(COMP) # get result from comparator 
     if not (result): # input voltage is lower than DAC voltage
       dac_value -= 1 << (dac_bit)  # subtract DAC bit value
-    #print(dac_bit, dac_value, result)
 
   spi.xfer([dac_value]) # write final DAC value with correct LSB
   adc_samples[i] = dac_value #  write ADC value to sample array
@@ -61,7 +60,6 @@ adc_dnl = (adc_hist-adc_hist_avg)/adc_hist_avg
 adc_dnl[upper_bound:] = 0
 adc_dnl[:lower_bound] = 0
 adc_dnl_std = np.std(adc_dnl)
-print(adc_dnl_std)
 
 # integral non-linearity
 adc_inl = np.cumsum(adc_dnl)
