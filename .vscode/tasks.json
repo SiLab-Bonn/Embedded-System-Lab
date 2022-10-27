@@ -12,7 +12,7 @@
 				"-Wall",
 				"-shared",
 				"-o",
-				"adc.so",
+				"../lib/adc.so",
 				"adc.c",
 				"rpi_dma_utils.c"
 			],
