@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -30,20 +31,20 @@ def update_spi_regs(threshold, pulse_delay, sample_delay):
   # MCP4811 DAC samples first 16 bits after CS falling edge (MSB first)
   # SY89297 delay line samples last 20 bits before CS rising edge (LSB first)
   # Both device connect in parallel to the MOSI line (not daisy chained!)
-  spi_data = ((threshold | dac_cmd) << 24) + \
+  spi_data = ((((0x3ff & threshold) << 2)| dac_cmd) << 24) + \
              ((0x3ff & reverse_bits(pulse_delay,  10)) << 10) + \
              ((0x3ff & reverse_bits(sample_delay, 10)) << 0)
   #print(bin(spi_data))
   spi.xfer(bytearray(spi_data.to_bytes(5, byteorder='big')))
 
-dac_resolution = 12 # resolution in bits
+dac_resolution = 10 # resolution in bits
 
 dac_cmd      = 0x3000 # DAC enable, gain = 1: VDAC = [0..2047]mV
-threshold    = 2048
+threshold    =  512
 pulse_delay  =    0
 sample_delay =    0
 max_delay    =  1024  
-max_threshold = 4095
+max_threshold = 1024
 delay_unit   =    5
 average = 1
 
@@ -57,12 +58,12 @@ plot1, = waveform[0].plot(time_steps, amplitude_data)
 waveform[0].set_xlabel("time [ps]")
 waveform[0].set_ylabel("voltage [#DAC]")
 waveform[0].set_xlim(0, max_delay * delay_unit)
-waveform[0].set_ylim(0, 4500)
+waveform[0].set_ylim(0, 1100)
 plot2, = waveform[1].plot(time_steps, amplitude_data)
 waveform[1].set_xlabel("time [ps]")
 waveform[1].set_ylabel("voltage [#DAC]")
 waveform[1].set_xlim(0, max_delay * delay_unit)
-waveform[1].set_ylim(2500, 3500)
+waveform[1].set_ylim(350, 850)
 
 
 while True:
@@ -73,7 +74,7 @@ while True:
     average_threshold = 0
 
     for avg in range(average):
-      threshold = 2048 # start SAR ADC conversion with MSB set to '1'
+      threshold = 512 # start SAR ADC conversion with MSB set to '1'
 
       for dac_bit in reversed(range(dac_resolution)): # SAR conversion from MSB to LSB
         #set DAC value
@@ -83,7 +84,7 @@ while True:
         # trigger pulse step
         GPIO.output(TRIGGER, GPIO.HIGH)
         # wait for comparator to settle
-        time.sleep(0.00001)
+        #time.sleep(0.00001)
         # read comparator result
         result = GPIO.input(COMP)
         # reset pulse output
