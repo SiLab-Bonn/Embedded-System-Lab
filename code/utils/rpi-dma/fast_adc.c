@@ -65,10 +65,10 @@
 
 // GPIO pin numbers
 #define ADC_D0_PIN      12  // data bus @GPIO[23:12]
-#define ADC_NPINS       12  // 12 data bits (+ GPIO24/25 ?)
+#define ADC_NPINS       13  // 12 data bits + GPIO24
 #define SMI_SOE_PIN     6
 #define SMI_SWE_PIN     7
-#define SMI_ACK_PIN     24
+#define SMI_ACK_PIN     24 
 #define SMI_DREQ_PIN    25
 #define ADC_ENABLE      25
 #define TEST_PIN        26
