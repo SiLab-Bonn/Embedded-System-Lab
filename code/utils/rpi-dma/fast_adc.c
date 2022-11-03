@@ -16,7 +16,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// V0.1 HK 29.11.21
+// V0.1 HK 29.11.21 - modified for triggered ADC read-out
+// v0.2 HK 03.11.22 - more clean-up, added selectable sample rate
 
 #include <stdio.h>
 #include <signal.h>
@@ -56,20 +57,18 @@
 #define SMI_TIMING_50M   2,  3,  5,  2  // 50 MS/s
 #endif
 
-// Number of samples to be discarded
-#define PRE_SAMP        22																										
-// Number of samples to be captured
-//#define NSAMPLES        2000
+// Number of samples to be discarded to compensate ADC latency
+#define PRE_SAMP        7																										
 // Number of raw bytes per ADC sample
 #define SAMPLE_SIZE     2
 
 // GPIO pin numbers
 #define ADC_D0_PIN      12  // data bus @GPIO[23:12]
-#define ADC_NPINS       13  // 12 data bits + GPIO24
+#define ADC_NPINS       13  // 12 data bits + GPIO24 (DREQ for triggered DMA access)
 #define SMI_SOE_PIN     6
 #define SMI_SWE_PIN     7
-#define SMI_ACK_PIN     24 
-#define SMI_DREQ_PIN    25
+// #define SMI_ACK_PIN     24 // ?? CHECK ??
+#define SMI_DREQ_PIN    24
 #define ADC_ENABLE      25
 #define TEST_PIN        26
 #define USE_TEST_PIN    1
