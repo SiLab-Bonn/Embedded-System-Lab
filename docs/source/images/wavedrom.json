@@ -1,0 +1,4 @@
+{signal: [
+  {name: 'SDA', wave: '10.2.2.2.2.2.2.2.2.0.1', data: ["ADDR6", "ADRR5", "ADDR4", "ADDR3", "ADDR2", "ADDR1", "R/W", "(N)ACK"], phase: 0.5},
+  {name: 'SCL', wave: '1.010101010101010101.', phase: 0}
+]}

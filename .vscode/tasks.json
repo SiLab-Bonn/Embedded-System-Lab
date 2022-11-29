@@ -12,8 +12,8 @@
 				"-Wall",
 				"-shared",
 				"-o",
-				"adc.so",
-				"adc.c",
+				"../../lib/fast_adc.so",
+				"fast_adc.c",
 				"rpi_dma_utils.c"
 			],
 			"options": {

@@ -16,7 +16,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// V0.1 HK 29.11.21
+// V0.1 HK 29.11.21 - modified for triggered ADC read-out
+// v0.2 HK 03.11.22 - more clean-up, added selectable sample rate
 
 #include <stdio.h>
 #include <signal.h>
@@ -56,20 +57,19 @@
 #define SMI_TIMING_50M   2,  3,  5,  2  // 50 MS/s
 #endif
 
-// Number of samples to be discarded
-#define PRE_SAMP        0																											
-// Number of samples to be captured
-//#define NSAMPLES        2000
+// Number of samples to be discarded to compensate ADC latency
+#define PRE_SAMP        7																										
 // Number of raw bytes per ADC sample
 #define SAMPLE_SIZE     2
 
 // GPIO pin numbers
 #define ADC_D0_PIN      12  // data bus @GPIO[23:12]
-#define ADC_NPINS       14  // 12 data bits + GPIO24/25
+#define ADC_NPINS       13  // 12 data bits + GPIO24 (DREQ for triggered DMA access)
 #define SMI_SOE_PIN     6
 #define SMI_SWE_PIN     7
-#define SMI_ACK_PIN     24
-#define SMI_DREQ_PIN    25
+// #define SMI_ACK_PIN     24 // ?? CHECK ??
+#define SMI_DREQ_PIN    24
+#define ADC_ENABLE      25
 #define TEST_PIN        26
 #define USE_TEST_PIN    1
 
@@ -88,8 +88,8 @@ char *smi_regstrs[] = {
 char *smi_cs_regstrs = STRS(SMI_CS_FIELDS);
 
 // Structures for mapped I/O devices, and non-volatile memory
-extern MEM_MAP gpio_regs, dma_regs;
-MEM_MAP vc_mem, clk_regs, smi_regs;
+extern MEM_MAP gpio_regs, clk_regs, dma_regs;
+MEM_MAP vc_mem,  smi_regs;
 
 // Pointers to SMI registers
 volatile SMI_CS_REG  *smi_cs;
@@ -109,13 +109,10 @@ uint16_t *adc_data_ptr;
 
 // number of samples
 int num_samples;
+float time_base;
 
 // Non-volatile memory size
 #define VC_MEM_SIZE(nsamp) (PAGE_SIZE + ((nsamp)+4)*SAMPLE_SIZE)
-
-void init(uint16_t *adc_data, int samples, int time_base, int wait_trigger);
-void take_data(void);
-void close(void);
 
 void map_devices(void);
 void smi_start(int nsamples, int packed);
@@ -126,8 +123,14 @@ void disp_smi(void);
 void mode_word(uint32_t *wp, int n, uint32_t mode);
 void disp_reg_fields(char *regstrs, char *name, uint32_t val);
 
+float get_time_base(void)
+{
+  return time_base;
+}
 char* Hello(void)
 {
+  //system("grep -o BCM2711 /proc/cpuinfo"); 
+  system("cat /proc/cpuinfo | grep 'Hardware' | awk '{print $3}'> NULL"); 
   return("Hello World!");
 }
 
@@ -141,7 +144,7 @@ void map_devices(void)
     map_periph(&smi_regs, (void *)SMI_BASE, PAGE_SIZE);
 }
 
-void init(uint16_t *adc_data, int samples, int time_base, int wait_trigger)
+void init_device(uint16_t *adc_data, int samples, int time_base_index, int wait_trigger)
 {
   num_samples = samples;
   adc_data_ptr = adc_data;
@@ -150,16 +153,18 @@ void init(uint16_t *adc_data, int samples, int time_base, int wait_trigger)
   
   for (int i=0; i<ADC_NPINS; i++)
     gpio_mode(ADC_D0_PIN+i, GPIO_IN);
+ 
   gpio_mode(SMI_SOE_PIN, GPIO_ALT1);
+  gpio_mode(ADC_ENABLE, GPIO_OUT);
 
-  switch (time_base)
+  switch (time_base_index)
   {
-      case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); break;
-      case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); break;
-      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M, wait_trigger); break;
-      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M, wait_trigger); break;
-      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M, wait_trigger); break;
-      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M, wait_trigger); break;
+      case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); time_base = 5.0; break;
+      case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); time_base = 2.0; break;
+      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,   wait_trigger); time_base = 1.0; break;
+      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M,   wait_trigger); time_base = 0.5; break;
+      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M,   wait_trigger); time_base = 0.2; break;
+      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,  wait_trigger); time_base = 1.0; break;
   }
 
 #if USE_TEST_PIN
@@ -167,45 +172,6 @@ void init(uint16_t *adc_data, int samples, int time_base, int wait_trigger)
     gpio_out(TEST_PIN, 0);
 #endif  
   map_uncached_mem(&vc_mem, VC_MEM_SIZE(num_samples+PRE_SAMP)); 
-}
-
-void take_data(void)
-{
-//  smi_cs->enable = 1;
-//  smi_cs->clear = 1;  
-  rx_buffer_ptr = adc_dma_start(&vc_mem, num_samples);
-
-  smi_dmc->dmaen = 1;
-  smi_l->len = num_samples + PRE_SAMP;
-  smi_cs->pxldat = 1;  // pack bytes to words
-  smi_cs->enable = 1;
-  smi_cs->clear  = 1;
-  smi_cs->start  = 1;  
-  while (dma_active(DMA_CHAN_A)) 
-    ;
-  map_adc_data(rx_buffer_ptr, adc_data_ptr, num_samples);
-  //disp_reg_fields(smi_cs_regstrs, "CS", *REG32(smi_regs, SMI_CS));
-  smi_dmc->dmaen = 0;
-  smi_cs->enable = 0;
-  smi_dcs->enable = 0;	
-}
-
-void close(void)
-{
-  int i;
-
-  if (gpio_regs.virt)
-  {
-    for (i=0; i<ADC_NPINS; i++)
-      gpio_mode(ADC_D0_PIN+i, GPIO_IN);
-  }
-  if (smi_regs.virt)
-      *REG32(smi_regs, SMI_CS) = 0;
-  stop_dma(DMA_CHAN_A);
-  unmap_periph_mem(&vc_mem);
-  unmap_periph_mem(&smi_regs);
-  unmap_periph_mem(&dma_regs);
-  unmap_periph_mem(&gpio_regs);
 }
 
 // Initialise SMI, given data width, time step, and setup/hold/strobe counts
@@ -243,12 +209,13 @@ void smi_init(int width, int ns, int setup, int strobe, int hold, int wait_trigg
     if (smi_cs->seterr) // clear error flag
         smi_cs->seterr = 1;
  
-    smi_dsr->rwidth = smi_dsw->wwidth = width;   
-    smi_dsr->rsetup = smi_dsw->wsetup = setup;
+    smi_dsr->rwidth  = smi_dsw->wwidth  = width;   
+    smi_dsr->rsetup  = smi_dsw->wsetup  = setup;
     smi_dsr->rstrobe = smi_dsw->wstrobe = strobe;
-    smi_dsr->rhold = smi_dsw->whold = hold;
-    smi_dmc->panicr = smi_dmc->panicw = 8;
-    smi_dmc->reqr = smi_dmc->reqw = REQUEST_THRESH;
+    smi_dsr->rhold   = smi_dsw->whold   = hold;
+    smi_dmc->panicr  = smi_dmc->panicw  = 8;
+    smi_dmc->reqr    = smi_dmc->reqw    = REQUEST_THRESH;
+
     // external DREQ setup
     if (wait_trigger)
     {
@@ -260,6 +227,49 @@ void smi_init(int width, int ns, int setup, int strobe, int hold, int wait_trigg
       smi_dsr->rdreq = 0;
       smi_dmc->dmap = 0;
     }
+}
+
+void take_data(void)
+{
+    gpio_out(ADC_ENABLE, 1);
+//  smi_cs->enable = 1;
+//  smi_cs->clear = 1;  
+  rx_buffer_ptr = adc_dma_start(&vc_mem, num_samples);
+
+  smi_dmc->dmaen = 1;
+  smi_l->len = num_samples + PRE_SAMP;
+  smi_cs->pxldat = 1;  // pack bytes to words
+  smi_cs->enable = 1;
+  smi_cs->clear  = 1;
+  smi_cs->start  = 1;  
+  while (dma_active(DMA_CHAN_A)) 
+    ;
+  map_adc_data(rx_buffer_ptr, adc_data_ptr, num_samples);
+  //disp_reg_fields(smi_cs_regstrs, "CS", *REG32(smi_regs, SMI_CS));
+  smi_dmc->dmaen = 0;
+  smi_cs->enable = 0;
+  smi_dcs->enable = 0;	
+  gpio_out(ADC_ENABLE, 0);
+}
+
+void close_device(void)
+{
+  int i;
+
+  if (gpio_regs.virt)
+  {
+    for (i=0; i<ADC_NPINS; i++)
+      gpio_mode(ADC_D0_PIN+i, GPIO_IN);
+  }
+  if (smi_regs.virt)
+      *REG32(smi_regs, SMI_CS) = 0;
+  stop_dma(DMA_CHAN_A);
+  unmap_periph_mem(&vc_mem);
+  unmap_periph_mem(&smi_regs);
+  unmap_periph_mem(&dma_regs);
+  unmap_periph_mem(&gpio_regs);
+
+  //gpio_mode(ADC_ENABLE, GPIO_IN);
 }
 
 // Start SMI, given number of samples, optionally pack bytes into words
@@ -379,7 +389,7 @@ int map_adc_data(void *rxbuff, uint16_t *adc_data, int nsamp)
     for (i=0; i<nsamp+PRE_SAMP; i++)
     {
         if (i >= PRE_SAMP)
-            *adc_data++ = bp[i] >> 4;
+            *adc_data++ = (bp[i] >> 4) & 0xfff;
     }
     return(nsamp);
 }
