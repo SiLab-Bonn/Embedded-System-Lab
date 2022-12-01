@@ -31,21 +31,24 @@ def update_spi_regs(threshold, injected_signal, time_constant):
   #set DAC channel A (threshold voltage)
   spi_data = ((((0xfff & threshold) | dac_cmd_a) << 8) + \
                 ( 0x07 & time_constant))
-  print(bin(spi_data)[2:].zfill(24))
+  #print(bin(spi_data)[2:].zfill(24))
   spi.xfer(bytearray(spi_data.to_bytes(3, byteorder='big')))
 
   #set DAC channel B (injection signal)
   spi_data = ((((0xfff & injected_signal) | dac_cmd_b) << 8) + \
                 ( 0x07 & time_constant))
-  print(bin(spi_data)[2:].zfill(24))
+  #print(bin(spi_data)[2:].zfill(24))
   spi.xfer(bytearray(spi_data.to_bytes(3, byteorder='big')))
 
-update_spi_regs(1000, 100, 7)
+update_spi_regs(450, 50, 6)
 
-# while True:
-#   GPIO.output(INJECT, GPIO.HIGH)
-#   time.sleep(0.0005)
-#   GPIO.output(INJECT, GPIO.LOW)
-#   time.sleep(0.0002)
+while True:
+  for tau in range(7):
+    update_spi_regs(450, 150, tau)
+    for i in range (1000): 
+      GPIO.output(INJECT, GPIO.HIGH)
+      time.sleep(0.0005)
+      GPIO.output(INJECT, GPIO.LOW)
+      time.sleep(0.0002)
 
 spi.close()
