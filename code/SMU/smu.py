@@ -43,26 +43,32 @@ voltage_data = np.arange(0, 4.1, 0.05)
 current0_data = np.array([])
 current1_data = np.array([])
 
-SetVoltage(1, 1)  # drain
+SetVoltage(1, 1.1)  # gate
 
 for voltage in voltage_data:
-  SetVoltage(0, voltage) # gate
+  SetVoltage(0, voltage) # drain
   current0 = GetCurrent(0, average=True) 
   current0_data = np.append(current0_data, current0)  
- 
-SetVoltage(1, 1.1)  # drain
 
+fig, ax = plt.subplots(2,1)
+ax[0].plot(voltage_data, current0_data)
+
+
+ax[0].set(xlabel='Uds (V)', ylabel='Id (uA)')
+ax[0].grid()
+
+SetVoltage(0, 0.1)  # drain
 for voltage in voltage_data:
-  SetVoltage(0, voltage) # gate
+  SetVoltage(1, voltage) # gate
   current1 = GetCurrent(0, average=True)
   current1_data = np.append(current1_data, current1)
 
-fig, ax = plt.subplots()
-ax.plot(voltage_data, current0_data)
-ax.plot(voltage_data, current1_data)
+ax[1].plot(voltage_data, current1_data)
 
-ax.set(xlabel='Voltage (V)', ylabel='Current (uA)', title='I-V Curve')
-ax.grid()
+ax[1].set(xlabel='Ugs (V)', ylabel='Id (uA)')
+ax[1].grid()
+
+
 plt.show()
 
 DAC.close() # close device
