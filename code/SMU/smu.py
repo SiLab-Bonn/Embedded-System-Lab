@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
+#DAC channels
+CH1 = 1
+CH2 = 2
+
 # source voltage DAC
 DAC = I2C(0x60, 1)  # init DAC as I2C device on bus 1
 DAC.write(b'\x40\x00\x05') # external VREF, unbuffered
@@ -15,12 +19,13 @@ ADC.write(b'\xa2\x03') # configuration byte, setup byte (scan ch0-ch1)
 
 def SetVoltage(channel, volt):
   dac_value = int((volt / 16) * 1000) # 8 bit DAC!!! VOUT = #DAC/256 * 4096 mV
-  channel = channel * 8
+  channel = (channel-1) * 8
   i2c_data = bytes([channel, 0, dac_value])
   #print(i2c_data)
   DAC.write(i2c_data)
 
 def GetCurrent(channel, average=False):
+  channel = channel -1 # 1,2 -> 0,1
   if average:
     setup_data = bytes([0x21 | (channel << 1)])
   else:
@@ -39,35 +44,21 @@ def GetCurrent(channel, average=False):
 
   return current
 
-voltage_data = np.arange(0, 4.1, 0.05)
-current0_data = np.array([])
-current1_data = np.array([])
+fig, ax = plt.subplots(1,1)
 
-SetVoltage(1, 1.1)  # gate
+voltage_sweep  = np.arange(0, 4.1, 0.05)
+current_data_array = np.empty([2, voltage_sweep.size])
 
-for voltage in voltage_data:
-  SetVoltage(0, voltage) # drain
-  current0 = GetCurrent(0, average=True) 
-  current0_data = np.append(current0_data, current0)  
+for voltage_step, voltage in enumerate(voltage_sweep):
+  SetVoltage(CH1, voltage) 
+  SetVoltage(CH2, voltage) 
+  current_data_array[0][voltage_step] = GetCurrent(CH1, average=True) 
+  current_data_array[1][voltage_step] = GetCurrent(CH2, average=True) 
+ax.plot(voltage_sweep, current_data_array[0])
+ax.plot(voltage_sweep, current_data_array[1])
 
-fig, ax = plt.subplots(2,1)
-ax[0].plot(voltage_data, current0_data)
-
-
-ax[0].set(xlabel='Uds (V)', ylabel='Id (uA)')
-ax[0].grid()
-
-SetVoltage(0, 0.1)  # drain
-for voltage in voltage_data:
-  SetVoltage(1, voltage) # gate
-  current1 = GetCurrent(0, average=True)
-  current1_data = np.append(current1_data, current1)
-
-ax[1].plot(voltage_data, current1_data)
-
-ax[1].set(xlabel='Ugs (V)', ylabel='Id (uA)')
-ax[1].grid()
-
+ax.set(xlabel='U (V)', ylabel='I (uA)')
+ax.grid()
 
 plt.show()
 
