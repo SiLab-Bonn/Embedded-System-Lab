@@ -40,15 +40,15 @@ def update_spi_regs(threshold, injected_signal, time_constant):
   #print(bin(spi_data)[2:].zfill(24))
   spi.xfer(bytearray(spi_data.to_bytes(3, byteorder='big')))
 
-update_spi_regs(450, 50, 6)
+update_spi_regs(600, 100, 6)
 
 while True:
-  for tau in range(7):
+  for tau in range(8):
     update_spi_regs(450, 150, tau)
     for i in range (1000): 
       GPIO.output(INJECT, GPIO.HIGH)
       time.sleep(0.0005)
       GPIO.output(INJECT, GPIO.LOW)
-      time.sleep(0.0002)
+      time.sleep(0.0005)
 
 spi.close()

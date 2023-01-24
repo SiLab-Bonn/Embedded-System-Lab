@@ -37,7 +37,7 @@ def GetCurrent(channel, average=False):
     current = 0
     for i in range(8):
       current += 0x0fff & int.from_bytes(i2c_data[(2*i):(2*i+2)],"big")
-    current = current >> 3
+    current = current / 8.0
   else:
     i2c_data = ADC.read(2)
     current = 0x0fff & int.from_bytes(i2c_data,"big")
