@@ -179,7 +179,7 @@ Each transfer consists of one ore more bytes. Each byte is send MSB first and th
 For writing data from host to a device, the address of the selected device is sent first followed by one ore more data bytes. When the host wants to read data from a device, the host first sends the device address with the R/W bit (LSB of the address) set to one. Then the host releases the data line and the selected device sends the requested data. 
 
 .. figure:: images/I2C_timing.png
-    :width: 600
+    :width: 700
     :align: center
     
     I2C bus activity during a address transfer: **START** condition, address byte, **ACK** bit (driven by receiver), and **STOP** condition. 
@@ -188,6 +188,7 @@ The I2C protocol is often used for distributing non timing-critical configuratio
 
 SPI
 -----
+
 The Serial Peripheral Interface (SPI) is a synchronous bus which typically uses four wires: 
   - MOSI, data line from master to slave (master out, slave in)
   - MISO, data line form slave to master (master in, slave out)
