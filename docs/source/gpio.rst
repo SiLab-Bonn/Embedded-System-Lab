@@ -121,7 +121,14 @@ In the next section a few of commonly used serial protocols are described.
 
 UART
 ----
-The Universal-Asynchronous-Receiver-Transmitter (UART) is a widely used communication protocol. It is a full-duplex, point-to-point protocol which uses two data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) both devices can send data any time and there are no master and slaves roles. The data transmission is asynchronous as there is no additional clock signal involved to synchronize the transfer. To set-up a communication link via an UART interface, host and device have to use the same configuration settings for the data transfer engine. The UART controller on the Raspberry Pi supports:
+The Universal-Asynchronous-Receiver-Transmitter (UART) is a widely used communication protocol. It is a full-duplex, point-to-point protocol which uses two data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) both devices can send data any time and there are no master and slaves roles. 
+
+.. figure:: images/UART_bus.png
+    :width: 400
+    :align: center
+
+
+The data transmission is asynchronous as there is no additional clock signal involved to synchronize the transfer. To set-up a communication link via an UART interface, host and device have to use the same configuration settings for the data transfer engine. The UART controller on the Raspberry Pi supports:
 
   - Data rate (also called baud rate): Typically multiples of 9600 up to 115200 
   - Number of data bits: 8 (but also 5, 6 or 7 bits are supported)
@@ -134,7 +141,7 @@ Optional features for controlling the data transfer (handshaking), either using 
 
 Data are being sent always one byte at a time. A data transmission starts by sending a start bit (always 0), then the data bits LSB first, the parity bit (if configured) and finally the stop bit(s) which are always 1. The period of one bit cycle is 1/F_baud.
 
-.. figure:: images/UART.png
+.. figure:: images/UART_timing.png
     :width: 600
     :align: center
 Timing diagram of an UART transfer of one byte (0xcd): one start bit, 8 data bits, even parity, and one stop bit (8E1).
@@ -150,30 +157,48 @@ In the GPIO alternate modes table, the UART signals are marked in red with the n
 
 I2C
 ---
-The Inter-Integrated-Circuit protocol (I2C) is a two-wire serial interface. It uses bidirectional data (**SDA**) and clock (**SCL**) lines to transfer data between a host and one or more peripheral devices. The clock line is usually driven by the host while the data line will be controlled by the host or the device depending on the transfer direction. There are extensions to this standard functionality (multiple masters, clock stretching) which are not covered here. The data rate is typically 100 kHz with options for faster modes like 400 kHz and 1 MHz. 
+The Inter-Integrated-Circuit (I2C) bus is a synchronous two-wire serial interface which can transfer data between a master and multiple slaves. It uses bidirectional data (**SDA**) and clock (**SCL**) lines to transfer the data. The clock line is usually driven by the host while the data line will be controlled by the host or the device depending on the transfer direction. There are extensions to this standard functionality (multiple masters, clock stretching) which are not covered here. The data rate is typically 100 kHz with options for faster modes like 400 kHz and 1 MHz. 
+
+.. figure:: images/I2C_bus.png
+    :width: 400
+    :align: center
 
 The SDA and SCL line drivers are implemented as so-called open-drain buffers. These buffers can drive the line only to a low state. The high state is generated with an external pull-up resistor which is mandatory for both SDA and SCL lines. This configuration avoids bus conflicts which would arise when a line would be actively driven high and low at the same time. This imposes a practical limit on the data rate because of the inherent RC time constant given by the value of the pull-up resistor (typically in the range of 1 kOhm to 10 kOhm) and the parasitic capacitance of the bus (max. 400 pF).
 
 .. figure:: images/I2C_phy.png
-    :width: 600
+    :width: 500
     :align: center
 Implementation of SDA/SCL driver and receiver. The open drain outputs (driven by the inverted output signal TX_B) avoid potential bus conflicts when master and one or more slaves try to drive the SDA line with different logic levels.
 
-Unlike the standard UART protocol, I2C communication is always initiated by the host. It begins by sending a **START** condition (falling edge on the SDA line while SCL level is HIGH) which initializes the I2C interfaces of the devices connected to the bus. Similar to the start condition, a **STOP** condition is send after the communication is finished (rising edge on the SDA line while SCL level is HIGH).
+A I2C transmission is initiated by the master sending a **START** condition (falling edge on the SDA line while SCL level is HIGH) which initializes the I2C interfaces of the devices on the bus. Similar to the start condition, a **STOP** condition is send after the communication has finished (rising edge on the SDA line while SCL level is HIGH).
+
+Each transfer consists of one ore more bytes. Each byte is send MSB first and the data on the SDA line must be valid during the high phase of the SCL clock. A change of the data line state during the high phase of the clock would be interpreted as a **START** or **STOP** condition (see above). After eight clock cycles for sending the data, a ninth clock cycle is used to let the receiver respond to the reception of the transferred byte: The receiver will hold the SDA low during the ninth SCL period to indicate an acknowledgement (**ACK**). In case the receiver detected an error during the last transmission it will generate a not-acknowledge (**NACK)** by letting the SDA line go high.
 
 For writing data from host to a device, the address of the selected device is sent first followed by one ore more data bytes. When the host wants to read data from a device, the host first sends the device address with the R/W bit (LSB of the address) set to one. Then the host releases the data line and the selected device sends the requested data. 
 
-.. figure:: images/I2C_addr_frame.png
+.. figure:: images/I2C_timing.png
     :width: 600
     :align: center
 I2C bus activity during a address transfer: **START** condition, address byte, **ACK** bit (driven by receiver), and **STOP** condition. 
 
-Every transfer consists of one ore more bytes. Each byte is send MSB first and the data on the SDA line must be valid during the high phase of the SCL clock. A change of the data line state during the high phase of the clock would be interpreted as a **START** or **STOP** condition (see above). After eight clock cycles for sending the data, a ninth clock cycle is used to let the receiver respond to the reception of the transferred byte: The receiver will hold the SDA low during the ninth SCL period to indicate an acknowledgement (**ACK**). In case the receiver detected an error during the last transmission it will generate a not-acknowledge (**NACK)** by letting the SDA line go high.
-
-The I2C protocol is often used for distributing configuration data form a central host (CPU or MCU) to a number of peripheral chips on a board. But also for exchanging configuration and status data across components, for example between a graphics adapter and monitor connected via DisplayPort or HDMI cable (resolution, content protection encryption keys), or a battery pack and system controller of a notebook.
+The I2C protocol is often used for distributing non timing-critical configuration data form a central host (CPU or MCU) to a number of peripheral chips on a PCB. But also for exchanging configuration and status data across components, for example between a graphics adapter and monitor connected via DisplayPort or HDMI cable (resolution, content protection encryption keys), or a battery pack and system controller of a notebook or an e-bike. In this lab course an I2C bus is used for communicating with the SMU module where it connects to the ADC and the DAC chips.
 
 SPI
 ---
+The Serial Peripheral Interface (SPI) is a synchronous bus which typically uses four wires: 
+  - MOSI, data line from master to slave (master out, slave in)
+  - MISO, data line form slave to master (master in, slave out)
+  - SCLK, clock line from master to slave(s)
+  - CS_B, chip select line (active low, one per slave)
+
+.. figure:: images/SPI_bus.png
+    :width: 400
+    :align: center  
+
+An SPI can connect to multiple devices in parallel. To avoid conflicts on the shared MISO line, only one device at a time is allowed to send data while all others have to keep their MISO output buffer in a high impedance state. To accomplish this, each device on a SPI bus has to connect to an individual CS_B line which controls the transfer and the activation of the output buffer. Another configuration is the series connection of devices where the MOSI output of one device connects to the MISO input of the next device in the chain while all other lines are shared (including the CS_B line).
+
+An SPI bus is used for the communication with most of the modules in this lab course. 
+
 
 PWM
 ---
