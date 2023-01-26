@@ -159,7 +159,7 @@ The SDA and SCL line drivers are implemented as so-called open-drain buffers. Th
     :align: center
 Implementation of SDA/SCL driver and receiver. The open drain outputs (driven by the inverted output signal TX_B) avoid potential bus conflicts when master and one or more slaves try to drive the SDA line with different logic levels.
 
-Unlike the standard UART protocol, I2C communication is always initiated by the host. It begins by sending a **START** condition (SDA line goes low while SCL is HIGH) which initializes the I2C interfaces of the devices connected to the bus. Similar to the start condition, a **STOP** condition is send after the communication is finished (SDA line goes high while SCL is HIGH).
+Unlike the standard UART protocol, I2C communication is always initiated by the host. It begins by sending a **START** condition (falling edge on the SDA line while SCL level is HIGH) which initializes the I2C interfaces of the devices connected to the bus. Similar to the start condition, a **STOP** condition is send after the communication is finished (rising edge on the SDA line while SCL level is HIGH).
 
 For writing data from host to a device, the address of the selected device is sent first followed by one ore more data bytes. When the host wants to read data from a device, the host first sends the device address with the R/W bit (LSB of the address) set to one. Then the host releases the data line and the selected device sends the requested data. 
 
