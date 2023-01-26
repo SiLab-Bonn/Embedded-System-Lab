@@ -144,7 +144,8 @@ Data are being sent always one byte at a time. A data transmission starts by sen
 .. figure:: images/UART_timing.png
     :width: 600
     :align: center
-Timing diagram of an UART transfer of one byte (0xcd): one start bit, 8 data bits, even parity, and one stop bit (8E1).
+    
+    Timing diagram of an UART transfer of one byte (0xcd): one start bit, 8 data bits, even parity, and one stop bit (8E1).
 
 The encoding and decoding of the parity bit is done in the UART hardware. If even (odd) parity is selected the transmitter will set the parity to a logic value such the sum off all data bytes including the parity bit is even (odd). The checking of the validity of a received byte is transparent to the user. A mismatch of calculated and received parity will be notified to the user as a receive error. However, multiple (odd) bit errors can not be detected.
 
@@ -168,7 +169,8 @@ The SDA and SCL line drivers are implemented as so-called open-drain buffers. Th
 .. figure:: images/I2C_phy.png
     :width: 500
     :align: center
-Implementation of SDA/SCL driver and receiver. The open drain outputs (driven by the inverted output signal TX_B) avoid potential bus conflicts when master and one or more slaves try to drive the SDA line with different logic levels.
+    
+    Implementation of SDA/SCL driver and receiver. The open drain outputs (driven by the inverted output signal TX_B) avoid potential bus conflicts when master and one or more slaves try to drive the SDA line with different logic levels.
 
 A I2C transmission is initiated by the master sending a **START** condition (falling edge on the SDA line while SCL level is HIGH) which initializes the I2C interfaces of the devices on the bus. Similar to the start condition, a **STOP** condition is send after the communication has finished (rising edge on the SDA line while SCL level is HIGH).
 
@@ -179,7 +181,8 @@ For writing data from host to a device, the address of the selected device is se
 .. figure:: images/I2C_timing.png
     :width: 600
     :align: center
-I2C bus activity during a address transfer: **START** condition, address byte, **ACK** bit (driven by receiver), and **STOP** condition. 
+    
+    I2C bus activity during a address transfer: **START** condition, address byte, **ACK** bit (driven by receiver), and **STOP** condition. 
 
 The I2C protocol is often used for distributing non timing-critical configuration data form a central host (CPU or MCU) to a number of peripheral chips on a PCB. But also for exchanging configuration and status data across components, for example between a graphics adapter and monitor connected via DisplayPort or HDMI cable (resolution, content protection encryption keys), or a battery pack and system controller of a notebook or an e-bike. In this lab course an I2C bus is used for communicating with the SMU module where it connects to the ADC and the DAC chips.
 
@@ -202,6 +205,7 @@ A transfer on the SPI bus is initiated by the master pulling the CS_B line of th
 .. figure:: images/SPI_timing.png
     :width: 500
     :align: center
+    
     Transfer of 10 bits between master and slave. While data from the master D[9:0] is shifted intp the slave, the slave puts out data R[9:0] to the master.
 
 An SPI bus is used for the communication with most of the modules in this lab course. 
