@@ -221,28 +221,21 @@ A transfer on the SPI bus is initiated by the master pulling the CS_B line of th
     Functional block diagram of an SPI device interface. During an write access to the device the active low CS_B line enables shift register and output buffer. When the CS_B line goes high the shift register data is transferred to the data latch. Additional logic (not shown) allows data from the latch (or other selected registers) to be loaded back into the shift register for reading. 
 
 
-An SPI bus is used for the communication with most of the modules in this lab course. Using ALT mod 0 for GPIO[11:8] enables the bus.
+An SPI bus is used for the communication with most of the modules in this lab course. Using ALT mode 0 for GPIO[11:8] enables the bus.
 
 .. table:: **Summary of the GPIO ALT modes for implementing serial interface protocols**
 
     =====  ===========  ==========  ========
     GPIO    ALT mode    Bus type    Function
     =====  ===========  =========   ========  
-     2        0            I2C        SDA  
-    =====  ===========  =========   ========  
-     3        0            I2C        SCL  
-    =====  ===========  =========   ======== 
-     8        0            SPI        CS_B  
-    =====  ===========  =========   ========  
-     9        0            SPI        MISO  
-    =====  ===========  =========   ========  
+      2       0            I2C        SDA  
+      3       0            I2C        SCL  
+      8       0            SPI        CS_B  
+      9       0            SPI        MISO  
      10       0            SPI        MOSI  
-    =====  ===========  =========   ========  
      11       0            SPI        SCLK  
-    =====  ===========  =========   ========
-     14       0            UART        TX  
-    =====  ===========  =========   ========  
-     15       0            UART        RX  
+     14       0            UART       TX  
+     15       0            UART       RX  
     =====  ===========  =========   ========  
 
 
