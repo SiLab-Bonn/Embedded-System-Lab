@@ -186,6 +186,9 @@ For writing data from host to a device, the address of the selected device is se
 
 The I2C protocol is often used for distributing non timing-critical configuration data form a central host (CPU or MCU) to a number of peripheral chips on a PCB. But also for exchanging configuration and status data across components, for example between a graphics adapter and monitor connected via DisplayPort or HDMI cable (resolution, content protection encryption keys), or a battery pack and system controller of a notebook or an e-bike. In this lab course an I2C bus is used for communicating with the SMU module where it connects to the ADC and the DAC chips.
 
+In the GPIO alternate modes table, there are two I2C buses available, both in ALT mode 0: ``SDA0`` and ``SCL0`` on ``GPIO0`` and ``GPIO1``, and ``SDA1`` and ``SCL1`` on ``GPIO2`` and ``GPIO3``, respectively. While ``SDA0`` and ``SCL0`` are used for internal communication (HAT), the I2C bus 1 on ``GPIO2`` and ``GPIO3`` is made available on the carrier board.
+
+
 SPI
 -----
 
@@ -218,7 +221,17 @@ A transfer on the SPI bus is initiated by the master pulling the CS_B line of th
     Functional block diagram of an SPI device interface. During an write access to the device the active low CS_B line enables shift register and output buffer. When the CS_B line goes high the shift register data is transferred to the data latch. Additional logic (not shown) allows data from the latch (or other selected registers) to be loaded back into the shift register for reading. 
 
 
-An SPI bus is used for the communication with most of the modules in this lab course. 
+An SPI bus is used for the communication with most of the modules in this lab course. Using ALT mod 0 for GPIO[11:8] enables the bus.
+
+.. table:: **Summary of the GPIO ALT modes for implementing serial interface protocols**
+
+    =====  ===========  ==========  ========
+    GPIO    ALT mode    Bus type    Function
+    =====  ===========  =========   ========  
+     2       0            I2C        SDA  
+    =====  ===========  =========   ========  
+     3       0            I2C        SCL  
+    =====  ===========  =========   ========  
 
 
 PWM
