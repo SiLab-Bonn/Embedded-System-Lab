@@ -194,11 +194,13 @@ The Serial Peripheral Interface (SPI) is a synchronous bus which typically uses 
   - SCLK, clock line from master to slave(s)
   - CS_B, chip select line (active low, one per slave)
 
+An SPI can connect to multiple devices in parallel. To avoid conflicts on the shared MISO line, only one device at a time is allowed to send data while all others have to keep their MISO output buffer in a high impedance state. To accomplish this, each device on a SPI bus has to connect to an individual CS_B line which controls the transfer and the activation of the output buffer. Another configuration is the series connection of devices where the MOSI output of one device connects to the MISO input of the next device in the chain while all other lines are shared (including the CS_B line).
+
 .. figure:: images/SPI_bus.png
     :width: 400
     :align: center  
 
-An SPI can connect to multiple devices in parallel. To avoid conflicts on the shared MISO line, only one device at a time is allowed to send data while all others have to keep their MISO output buffer in a high impedance state. To accomplish this, each device on a SPI bus has to connect to an individual CS_B line which controls the transfer and the activation of the output buffer. Another configuration is the series connection of devices where the MOSI output of one device connects to the MISO input of the next device in the chain while all other lines are shared (including the CS_B line).
+    SPI bus with two slave devices connected in series.
 
 A transfer on the SPI bus is initiated by the master pulling the CS_B line of the selected slave low. This enables the shift register of the receiver and the output buffer of the MOSI line gets activated. The master shifts the data over the MOSI pad synchronous to the SCLK signal into the slave. On each rising edge of the SCLK new data of the MOSI line is registered in the slave while its MISO line clocks out the data as requested by the previous transfer. When the transfer is finished the CS_B line is pulled high which disables the MISO output buffer and transfers the data from the device shift register into the associated data latches. The length of the transfer and data word alignment (MSB or LSB first) depends on the device specification.
 
@@ -207,6 +209,13 @@ A transfer on the SPI bus is initiated by the master pulling the CS_B line of th
     :align: center
     
     Transfer of 10 bits between master and slave. While data from the master D[9:0] is shifted intp the slave, the slave puts out data R[9:0] to the master.
+
+.. figure:: images/SPI_slave.png
+    :width: 500
+    :align: center
+
+    Functional block diagram of a´n SPI device interface. During an write access to the device the active low CS_B line enables shift register and output buffer. When the CS_B line goes high the shift register data is transferred to the data latch. Additional logic (not shown) allows data from the latch (or other selected registers) to be loaded back into the shift register for reading. 
+
 
 An SPI bus is used for the communication with most of the modules in this lab course. 
 
