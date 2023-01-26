@@ -16,6 +16,7 @@ Embedded System Lab
    gpio
    gpio-tutorial
    sar-adc
+   smu
    fast-adc
    cvm
    afe
