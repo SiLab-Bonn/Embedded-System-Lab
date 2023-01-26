@@ -10,17 +10,27 @@ This modular lab course gives an introduction to selected aspects of analog sign
 
     Embedded System Lab base board with a Raspberry 4 module
 
-The individual experiments are featuring dedicated add-on boards (modules) which are controlled from the Raspberry Pi via an SPI bus and other GPIO signals. The fast ADC on the base board will be used to record analog waveforms and also other lab equipment like power supplies can be remotely controlled with the Raspberry Pi. Here is overview of currently available add-on modules/experiments:  
+The individual experiments are featuring dedicated add-on boards (modules) which are controlled from the Raspberry Pi via an SPI bus and other GPIO signals. The fast ADC on the base board will be used to record analog waveforms and also other lab equipment like power supplies can be remotely controlled with the Raspberry Pi. Here is an overview of currently available add-on modules/experiments:  
 
 SAR ADC
 -------------------------------------
-This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) which consists of a sample and hold input stage, a comparator, and an 8-bit DAC. The user will write the code to implement the SAR logic which controls sampling stage and DAC and develop scripts for automated measurements to characterize the ADC's various performance parameters (linearity, noise, etc.).
+This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) which consists of a sample and hold input stage, a comparator, and an 8-bit resistor ladder DAC. The user will write the code to implement the SAR logic which controls the sampling stage and DAC and develop scripts for automated measurements to characterize the ADC's various performance parameters (linearity, noise, etc.).
 
 .. figure:: images/sar_adc.png
     :width: 300
     :align: center
 
     Successive-Approximation-Register ADC Module
+
+Source Monitoring Unit
+------------------------
+An important parameter of electronic devices is their current-voltage characteristic. The most simple one is the linear I-V curve (resistance) of a resistor. For active devices like transistors more complex curves parameterizing their transimpedance and transconductance are of interest. To measure these parameters typically a programmable voltage source is used which is capable of precicely monitoring the current. The SMU (source monitoring unit) module with two channels which will be used to measure and analyze various MOSFET parameters (Id vs Ugs, transconductance, output impedance etc).
+
+.. figure:: images/smu.png
+    :width: 300
+    :align: center
+
+    Source Monitoring Module
 
 Analog Front-end 
 ----------------
