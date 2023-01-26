@@ -208,7 +208,7 @@ A transfer on the SPI bus is initiated by the master pulling the CS_B line of th
     :width: 500
     :align: center
     
-    Transfer of 10 bits between master and slave. While data from the master D[9:0] is shifted intp the slave, the slave puts out data R[9:0] to the master.
+    Transfer of 10 bits between master and slave. While data from the master D[9:0] is shifted into the slave, the slave puts out data R[9:0] to the master.
 
 .. figure:: images/SPI_slave.png
     :width: 500
