@@ -184,7 +184,7 @@ I2C bus activity during a address transfer: **START** condition, address byte, *
 The I2C protocol is often used for distributing non timing-critical configuration data form a central host (CPU or MCU) to a number of peripheral chips on a PCB. But also for exchanging configuration and status data across components, for example between a graphics adapter and monitor connected via DisplayPort or HDMI cable (resolution, content protection encryption keys), or a battery pack and system controller of a notebook or an e-bike. In this lab course an I2C bus is used for communicating with the SMU module where it connects to the ADC and the DAC chips.
 
 SPI
----
+-----
 The Serial Peripheral Interface (SPI) is a synchronous bus which typically uses four wires: 
   - MOSI, data line from master to slave (master out, slave in)
   - MISO, data line form slave to master (master in, slave out)
@@ -196,6 +196,12 @@ The Serial Peripheral Interface (SPI) is a synchronous bus which typically uses 
     :align: center  
 
 An SPI can connect to multiple devices in parallel. To avoid conflicts on the shared MISO line, only one device at a time is allowed to send data while all others have to keep their MISO output buffer in a high impedance state. To accomplish this, each device on a SPI bus has to connect to an individual CS_B line which controls the transfer and the activation of the output buffer. Another configuration is the series connection of devices where the MOSI output of one device connects to the MISO input of the next device in the chain while all other lines are shared (including the CS_B line).
+
+A transfer on the SPI bus is initiated by the master pulling the CS_B line of the selected slave low. This enables the shift register of the receiver and the output buffer of the MOSI line gets activated. The master shifts the data over the MOSI pad synchronous to the SCLK signal into the slave. On each rising edge of the SCLK new data of the MOSI line is registered in the slave while its MISO line clocks out the data as requested by the previous transfer. When the transfer is finished the CS_B line is pulled high which disables the MISO output buffer and transfers the data from the device shift register into the associated data latches. The length of the transfer and data word alignment (MSB or LSB first) depends on the device specification.
+
+.. figure:: images/SPI_timing.png
+    :width: 600
+    :align: center
 
 An SPI bus is used for the communication with most of the modules in this lab course. 
 
