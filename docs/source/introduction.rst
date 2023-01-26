@@ -27,7 +27,7 @@ Source Monitoring Unit
 An important parameter of electronic devices is their current-voltage characteristic. The most simple one is the linear I-V curve (resistance) of a resistor. For active devices like transistors more complex curves parameterizing their transimpedance and transconductance are of interest. To measure these parameters typically a programmable voltage source is used which is capable of precicely monitoring the current. The SMU (source monitoring unit) module with two channels which will be used to measure and analyze various MOSFET parameters (Id vs Ugs, transconductance, output impedance etc).
 
 .. figure:: images/smu.png
-    :width: 600
+    :width: 300
     :align: center
 
     Source Monitoring Module
