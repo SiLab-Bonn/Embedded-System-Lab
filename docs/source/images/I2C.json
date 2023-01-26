@@ -1,0 +1,11 @@
+{signal: [
+  {name: 'SDA', wave: '10=.=.=.=.=.=.=.=.=.0.1',data: "A7 A6 A5 A4 A3 A2 A1 A0 R/W ACK=0 ", phase: 0.5},
+  {name: 'SCL', wave: '10101010101010101010101'},
+],
+ foot:
+   {
+   text:'I2C slave address frame',
+   },
+}
+   
+  

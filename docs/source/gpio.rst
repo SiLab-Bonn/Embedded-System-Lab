@@ -121,23 +121,25 @@ In the next section a few of commonly used serial protocols are described.
 
 UART
 ----
-The Universal-Asynchronous-Receiver-Transmitter (UART) is a widely used communication protocol. It is a full-duplex, point-to-point protocol which uses two data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) both devides can send data any time and there are no master and slaves roles. The data transmission is asynchronous as there is no additional clock signal needed to synchronize the transfer. To set-up a communication link via an UART bus, host and device have to use the same configuration settings for the data transfer engine. The UART controller on the Raspberry Pi supports:
+The Universal-Asynchronous-Receiver-Transmitter (UART) is a widely used communication protocol. It is a full-duplex, point-to-point protocol which uses two data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) both devices can send data any time and there are no master and slaves roles. The data transmission is asynchronous as there is no additional clock signal involved to synchronize the transfer. To set-up a communication link via an UART interface, host and device have to use the same configuration settings for the data transfer engine. The UART controller on the Raspberry Pi supports:
 
   - Data rate (also called baud rate): Typically multiples of 9600 up to 115200 
   - Number of data bits: 8 (but also 5, 6 or 7 bits are supported)
-  - Number of stop bits: 1 or 2
   - Parity: odd, even or none
+  - Number of stop bits: 1 or 2
+
+The parity (if selected as odd or even) adds an additional bit to the end of the data transfer (before the stop bit) which value is chosen such that the total number of logic ones in the transfer (data bits plus parity bit) is even (or odd as specified in the protocol configuration). The receiver can use the parity bit to check the integrity of the data received. 
 
 Optional features for controlling the data transfer (handshaking), either using additional control lines or the transmission of special control characters are sometimes used but will be omitted here. 
 
-Data are being sent always one byte at a time. A data transmission starts by sending a start bit (always 0), then the data bits LSB first, the parity bit (if configured) and finally the stop bit(s) which are always 1. A typical UART configuration is 8 data bits, even parity, one stop bit (8E1) and thus one data byte is transferred using 11 bit-clock cycles. This is a timing diagram of an UART transfer of one byte with a 8E1 setting. The period of one bit cycle is 1/F_baud.
+Data are being sent always one byte at a time. A data transmission starts by sending a start bit (always 0), then the data bits LSB first, the parity bit (if configured) and finally the stop bit(s) which are always 1. The period of one bit cycle is 1/F_baud.
 
 .. figure:: images/UART.png
     :width: 600
     :align: center
+Timing diagram of an UART transfer of one byte (0xcd): one start bit, 8 data bits, even parity, and one stop bit (8E1).
 
-
-The encoding and decoding of the parity bit is done in the UART hardware. If even (odd) parity is selected the transmitter will set the parity to a logic value such the sum off all data bytes including the parity bit is even (odd). The checking of the validity of a received byte is transparent to the user. A mismatch of calculated and received parity will be notified to the user as a receive error.
+The encoding and decoding of the parity bit is done in the UART hardware. If even (odd) parity is selected the transmitter will set the parity to a logic value such the sum off all data bytes including the parity bit is even (odd). The checking of the validity of a received byte is transparent to the user. A mismatch of calculated and received parity will be notified to the user as a receive error. However, multiple (odd) bit errors can not be detected.
 
 .. note::
     The signal names RX and TX, which are commonly used for labeling the UART bus, can cause confusion when connecting one device with another. Since a device sends data via its TX port and expects to receive data via its RX port, at some point the TX labeled net from one device needs to be connected to the RX labeled net of the other device and vice versa.
@@ -150,17 +152,25 @@ I2C
 ---
 The Inter-Integrated-Circuit protocol (I2C) is a two-wire serial interface. It uses bidirectional data (**SDA**) and clock (**SCL**) lines to transfer data between a host and one or more peripheral devices. The clock line is usually driven by the host while the data line will be controlled by the host or the device depending on the transfer direction. There are extensions to this standard functionality (multiple masters, clock stretching) which are not covered here. The data rate is typically 100 kHz with options for faster modes like 400 kHz and 1 MHz. 
 
-The I2C protocol is often used for distributing configuration data form a central host (CPU or MCU) to a number of peripheral chips on a board. But also for exchanging configuration and status data across components, for example between a graphics adapter and monitor connected via DisplayPort or HDMI cable (resolution, content protection encryption keys), or a battery pack and system controller of a notebook.
+The SDA and SCL line drivers are implemented as so-called open-drain buffers. These buffers can drive the line only to a low state. The high state is generated with an external pull-up resistor which is mandatory for both SDA and SCL lines. This configuration avoids bus conflicts which would arise when a line would be actively driven high and low at the same time. This imposes a practical limit on the data rate because of the inherent RC time constant given by the value of the pull-up resistor (typically in the range of 1 kOhm to 10 kOhm) and the parasitic capacitance of the bus (max. 400 pF).
+
+.. figure:: images/I2C_phy.png
+    :width: 600
+    :align: center
+Implementation of SDA/SCL driver and receiver. The open drain outputs (driven by the inverted output signal TX_B) avoid potential bus conflicts when master and one or more slaves try to drive the SDA line with different logic levels.
 
 Unlike the standard UART protocol, I2C communication is always initiated by the host. It begins by sending a **START** condition (SDA line goes low while SCL is HIGH) which initializes the I2C interfaces of the devices connected to the bus. Similar to the start condition, a **STOP** condition is send after the communication is finished (SDA line goes high while SCL is HIGH).
 
 For writing data from host to a device, the address of the selected device is sent first followed by one ore more data bytes. When the host wants to read data from a device, the host first sends the device address with the R/W bit (LSB of the address) set to one. Then the host releases the data line and the selected device sends the requested data. 
 
+.. figure:: images/I2C_addr_frame.png
+    :width: 600
+    :align: center
+I2C bus activity during a address transfer: **START** condition, address byte, **ACK** bit (driven by receiver), and **STOP** condition. 
+
 Every transfer consists of one ore more bytes. Each byte is send MSB first and the data on the SDA line must be valid during the high phase of the SCL clock. A change of the data line state during the high phase of the clock would be interpreted as a **START** or **STOP** condition (see above). After eight clock cycles for sending the data, a ninth clock cycle is used to let the receiver respond to the reception of the transferred byte: The receiver will hold the SDA low during the ninth SCL period to indicate an acknowledgement (**ACK**). In case the receiver detected an error during the last transmission it will generate a not-acknowledge (**NACK)** by letting the SDA line go high.
 
-The SDA and SCL line drivers are implemented as so-called open-drain buffers. These buffers can drive the line only to a low state. The high state is generated with an external pull-up resistor which is mandatory for both SDA and SCL lines. This configuration avoids bus conflicts which would arise when a line would be actively driven high and low at the same time.
-
-imposes a practical limit on the data rate because of the inherent RC time constant given by the value of the pull-up resistor (typically in the range of 1 kOhm to 10 kOhm) and the parasitic capacitance of the bus.
+The I2C protocol is often used for distributing configuration data form a central host (CPU or MCU) to a number of peripheral chips on a board. But also for exchanging configuration and status data across components, for example between a graphics adapter and monitor connected via DisplayPort or HDMI cable (resolution, content protection encryption keys), or a battery pack and system controller of a notebook.
 
 SPI
 ---
