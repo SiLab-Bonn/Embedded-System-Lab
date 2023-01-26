@@ -223,20 +223,20 @@ A transfer on the SPI bus is initiated by the master pulling the CS_B line of th
 
 An SPI bus is used for the communication with most of the modules in this lab course. Using ALT mode 0 for GPIO[11:8] enables the bus.
 
-.. table:: **Summary of the GPIO ALT modes for implementing serial interface protocols**
+.. table:: **Summary of the GPIO pins and ALT modes for implementing serial interface protocols**
 
-    =====  ===========  ==========  ========
-    GPIO    ALT mode    Bus type    Function
-    =====  ===========  ==========  ========  
-      2       0            I2C        SDA  
-      3       0            I2C        SCL  
-      8       0            SPI        CS_B  
-      9       0            SPI        MISO  
-     10       0            SPI        MOSI  
-     11       0            SPI        SCLK  
-     14       0            UART       TX  
-     15       0            UART       RX  
-    =====  ===========  ==========  ========  
+    ====  ========  ========  ========
+    GPIO  ALT mode  Bus type  Function
+    ====  ========  ========  ========  
+      2      0        I2C       SDA  
+      3      0        I2C       SCL  
+      8      0        SPI       CS_B  
+      9      0        SPI       MISO  
+     10      0        SPI       MOSI  
+     11      0        SPI       SCLK  
+     14      0        UART      TX  
+     15      0        UART      RX  
+    ====  ========  ========  ========  
 
 
 PWM
