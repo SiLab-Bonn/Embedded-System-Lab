@@ -211,7 +211,7 @@ A transfer on the SPI bus is initiated by the master pulling the CS_B line of th
     Transfer of 10 bits between master and slave. While data from the master D[9:0] is shifted into the slave, the slave puts out data R[9:0] to the master.
 
 .. figure:: images/SPI_slave.png
-    :width: 500
+    :width: 400
     :align: center
 
     Functional block diagram of a´n SPI device interface. During an write access to the device the active low CS_B line enables shift register and output buffer. When the CS_B line goes high the shift register data is transferred to the data latch. Additional logic (not shown) allows data from the latch (or other selected registers) to be loaded back into the shift register for reading. 
