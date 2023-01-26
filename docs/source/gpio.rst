@@ -200,8 +200,9 @@ An SPI can connect to multiple devices in parallel. To avoid conflicts on the sh
 A transfer on the SPI bus is initiated by the master pulling the CS_B line of the selected slave low. This enables the shift register of the receiver and the output buffer of the MOSI line gets activated. The master shifts the data over the MOSI pad synchronous to the SCLK signal into the slave. On each rising edge of the SCLK new data of the MOSI line is registered in the slave while its MISO line clocks out the data as requested by the previous transfer. When the transfer is finished the CS_B line is pulled high which disables the MISO output buffer and transfers the data from the device shift register into the associated data latches. The length of the transfer and data word alignment (MSB or LSB first) depends on the device specification.
 
 .. figure:: images/SPI_timing.png
-    :width: 600
+    :width: 500
     :align: center
+    Transfer of 10 bits between master and slave. While data from the master D[9:0] is shifted intp the slave, the slave puts out data R[9:0] to the master.
 
 An SPI bus is used for the communication with most of the modules in this lab course. 
 
