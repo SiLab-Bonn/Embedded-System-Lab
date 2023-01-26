@@ -124,7 +124,7 @@ UART
 The Universal-Asynchronous-Receiver-Transmitter (UART) is a widely used communication protocol. It is a full-duplex, point-to-point protocol which uses two data lines: one for sending data from host to device and the other for sending data from device to host. Unlike other serial protocols like I2C or SPI (see below) both devices can send data any time and there are no master and slaves roles. 
 
 .. figure:: images/UART_bus.png
-    :width: 400
+    :width: 300
     :align: center
 
 
@@ -160,7 +160,7 @@ I2C
 The Inter-Integrated-Circuit (I2C) bus is a synchronous two-wire serial interface which can transfer data between a master and multiple slaves. It uses bidirectional data (**SDA**) and clock (**SCL**) lines to transfer the data. The clock line is usually driven by the host while the data line will be controlled by the host or the device depending on the transfer direction. There are extensions to this standard functionality (multiple masters, clock stretching) which are not covered here. The data rate is typically 100 kHz with options for faster modes like 400 kHz and 1 MHz. 
 
 .. figure:: images/I2C_bus.png
-    :width: 400
+    :width: 300
     :align: center
 
 The SDA and SCL line drivers are implemented as so-called open-drain buffers. These buffers can drive the line only to a low state. The high state is generated with an external pull-up resistor which is mandatory for both SDA and SCL lines. This configuration avoids bus conflicts which would arise when a line would be actively driven high and low at the same time. This imposes a practical limit on the data rate because of the inherent RC time constant given by the value of the pull-up resistor (typically in the range of 1 kOhm to 10 kOhm) and the parasitic capacitance of the bus (max. 400 pF).
