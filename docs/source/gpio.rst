@@ -60,7 +60,7 @@ As default, all GPIO are configured as input pins after a reboot unless otherwis
     =====  ===========  ======================  ====  =======
     Bit    Field Name   Description             Type  Default
     =====  ===========  ======================  ====  =======
-    31-0   LEVn         0 = pin n is low        R/W      0
+    31-0   LEVn         0 = pin n is low,        R/W      0
                         1 = pin n is high
     =====  ===========  ======================  ====  =======
 
@@ -227,7 +227,7 @@ An SPI bus is used for the communication with most of the modules in this lab co
 
     =====  ===========  ==========  ========
     GPIO    ALT mode    Bus type    Function
-    =====  ===========  =========   ========  
+    =====  ===========  ==========  ========  
       2       0            I2C        SDA  
       3       0            I2C        SCL  
       8       0            SPI        CS_B  
@@ -236,7 +236,7 @@ An SPI bus is used for the communication with most of the modules in this lab co
      11       0            SPI        SCLK  
      14       0            UART       TX  
      15       0            UART       RX  
-    =====  ===========  =========   ========  
+    =====  ===========  ==========  ========  
 
 
 PWM
