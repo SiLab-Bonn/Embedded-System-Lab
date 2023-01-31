@@ -24,6 +24,7 @@ The final block is the comparator (COMP) which compares the output signal of the
 The electrical interface to control the AFE consist of an 
 
 * **SPI** interface which controls
+
   * SHA time constant by selecting resistor values via a multiplexer
   * digital to analog converter (DAC) which sets the injection step voltage **VINJ** and the comparator threshold **VTHR**
 
