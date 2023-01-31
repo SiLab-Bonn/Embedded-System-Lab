@@ -45,23 +45,23 @@ Data acquisition and analysis methods
 
 A typical data acquisition cycle for measuring the response to injected signals as a function of an swept circuit parameter involves several phases. Here is a generic loop in pseudo code which scans over the chosen parameter:
 
-.. code-block:: c
+.. code-block:: 
 
-    # initialize parameters
-    SetThreshold(threshold)    # set threshold to ~ 50% charge equivalent
-    SetTrgInj(0)               # reset comparator latch and injection step 
+  # initialize parameters
+  SetThreshold(threshold)    # set threshold to ~ 50% charge equivalent
+  SetTrgInj(0)               # reset comparator latch and injection step 
 
-    # nested scan loops
-    for (parameter = (start_value, stop_value, step_size))           # outer loop steps the circuit parameter
-      SetParameter(parameter)  # set the circuit parameter (i.e. SHA time constant)
-      for (injection_charge = (min_charge, max_charge, charge_step)) # inner loop scans the signal charge
-        SetCharge(charge)      # set the injection voltage DAC
-        for (i = (0, 100))       # repeat the charge injection a hundred times for each charge step
-          SetTrgInj(1)           # trigger the charge injection via GPIO5
-          Delay()                # short delay (~50 us) to allow the signal propagate through the circuit
-          hit = GetHitOut()      # read status of the hit_out signal GPIO4
-          ....                   # store the hit state (i.e. count the ones) in an appropriate memory structure
-          SetTrgInj(0)           # reset the comparator latch and charge injection via GPIO5
+  # nested scan loops
+  for (parameter = (start_value, stop_value, step_size))           # outer loop steps the circuit parameter
+    SetParameter(parameter)  # set the circuit parameter (i.e. SHA time constant)
+    for (injection_charge = (min_charge, max_charge, charge_step)) # inner loop scans the signal charge
+      SetCharge(charge)      # set the injection voltage DAC
+      for (i = (0, 100))       # repeat the charge injection a hundred times for each charge step
+        SetTrgInj(1)           # trigger the charge injection via GPIO5
+        Delay()                # short delay (~50 us) to allow the signal propagate through the circuit
+        hit = GetHitOut()      # read status of the hit_out signal GPIO4
+        ....                   # store the hit state (i.e. count the ones) in an appropriate memory structure
+        SetTrgInj(0)           # reset the comparator latch and charge injection via GPIO5
           
 This scan code, for example, could be used with the shaper time constant as a parameter. For every time constant as defined in the outer loop the circuit response for charges swept between min_charge and max_charge will be taken. The dataset for each charge scan will represent an s-curve which allows the extraction of fundamental circuit performance parameters (see next paragraph).
 
