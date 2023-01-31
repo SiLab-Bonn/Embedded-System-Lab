@@ -71,7 +71,7 @@ A typical data acquisition cycle for measuring an s-curve  involves several phas
         if hit            # update the hit count in a approrpriate element for plotting and further analysis
          HitCount[charge] += 1
         SetTrgInj(0)      # reset the comparator latch and charge injection via GPIO5
-        Delay()           # short delay (~50 us) to allow the circuit sttle after the reset
+        Delay()           # short delay (~50 us) to allow the circuit settle after the inject circuit reset
           
 This scan code, for example, could be used with the shaper time constant as a circuit parameter. The dataset for the charge scan will represent an s-curve which allows the extraction of thhe threshold and the noise.
 
