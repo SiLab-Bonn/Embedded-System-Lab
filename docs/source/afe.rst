@@ -38,7 +38,7 @@ The electrical interface to control the AFE consist of an
 
     Simplified schematic of the analog front-end. **TRG_INJ** and **HIT_OUT** control the charge injection and digital hit readout, respectively. The **SPI** bus is used to program the DAC voltages **VTHR** and **VINJ** and select the SHA time constant.
 
-The full AFE schematic is found here: :download:`AFE_1.0.pdf.pdf <documents/AFE_1.0.pdf.pdf>`
+The full AFE schematic is found here: :download:`AFE_1.0.pdf <documents/AFE_1.0.pdf>`
 
 Data acquisition and analysis methods
 -------------------------------------
@@ -48,7 +48,7 @@ A central performance parameter of an signal processing circuit is its signal-to
     :width: 400
     :align: center
 
-    Response probability of the comparator as a function of the signal charge. The ideal system (noiseless) exhibits a step function while noise will smear-out the transition. That results in a Gaussian error function which fitted parameter are used to determine the threshold (50 % transition point) and the noise (slope of the curve).
+    Response probability of the comparator as a function of the signal charge. The ideal system (noiseless, blue curve) exhibits a step function while noise (red curve) will smear-out the transition. That results in a Gaussian error function which fitted parameter define threshold (50 % transition point) and noise (slope of the curve) of the system.
 
 
  - Charge injection 
