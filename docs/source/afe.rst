@@ -45,7 +45,7 @@ Data acquisition and analysis methods
 
 A typical data acquisition cycle for measuring the response to injected signals as a function of an swept circuit parameter involves several phases. Here is a generic loop in pseudo code which scans over the chosen parameter:
 
-.. code-block::
+.. code-block:: c
 
     # initialize parameters
     SetThreshold(threshold)    # set threshold to ~ 50% charge equivalent
