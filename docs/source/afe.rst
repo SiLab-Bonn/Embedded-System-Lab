@@ -50,6 +50,7 @@ A central performance parameter of an signal processing circuit is its signal-to
 
     Response probability of the comparator as a function of the signal charge. The ideal system (noiseless, blue curve) exhibits a step function while noise (red curve) will smear-out the transition. That results in a Gaussian error function which fitted parameter define threshold (50 % transition point) and noise (slope of the curve) of the system.
 
+TEST
 
  - Charge injection 
  - S-curve measurements
