@@ -24,11 +24,11 @@ Circuit Implementation
 ======================
 The simplified schematic in the figure below shows the implementation of the analog signal processing chain. The CSA is build around a low noise opamp which is feed-back with a small capacitance **Cf** and a large resistance **Rf**. The feedback capacitance **Cf** defines the charge transfer gain and the resistance **Rf** allows for a slow discharge of **Cf** and setting of the dc operation point of the opamp. To enable calibration and characterization measurements, an injection circuit is available to generate a programmable CSA input signal. On the rising edge of the digital **TRG_INJ** signal a negative charge of the size **Cinj** times the programmable voltage step amplitude **VINJ** is applied to the CSA input.
 
-The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain *g* to the circuit. Both time constants of the HPF and LPF are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the SHA response to an input step function of the amplitude *Ucsa* is 
+The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain *g* to the circuit. Both time constants of the HPF and LPF are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the SHA response to an input step function of the amplitude *Ucsa* is (for t >= 0) 
 
 .. math::
 
-  U_{SHA}(t) = U_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}
+  U_{SHA}(t) = U_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}.
 
 The final block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the SHA output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function and the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. To enable the hit detection with polling the GPIO pins, the comparator output is asynchronously latched with a flip flop. Its output signal **HIT_OUT** is then finally read by the GPIO interface. Before the latched comparator is able to detect new hits, it needs a reset by puling the **TRG_INJ** signal low. 
 
@@ -51,7 +51,7 @@ The electrical interface to control the AFE consist of an
 
 The full AFE schematic is found here: :download:`AFE_1.0.pdf <documents/AFE_1.0.pdf>`
 
-Data acquisition and analysis methods
+Data Acquisition and Analysis Methods
 =====================================
 
 A central performance parameter of an signal processing circuit is its signal-to-noise ratio (SNR) since it is directly related to the efficiency and accuracy of the detection process. A noiseless system would generate a comparator hit signal with 100 % probability if the signal is above threshold and always detect no hit if the signal is below threshold. In the presence of noise, however, the step-like response function of the comparator hit probability as a function of the difference between signal and threshold is smeared out. The following figure shows the comparator response probability of a real system and an ideal system. When the injected charge is equal to the comparator threshold (Q = QTHR) the hit probability is 50% in both cases. In a noiseless system the hit probability immediately goes to 0 % (100 %) for lower (higher) charge. The noise smooths out this transition region. Actually the knowledge of the slope at the 50 % probability mark allows the calculation of the noise. Mathematically, the response curve is given by a Gaussian error function (aka s-curve) which is the convolution of a step-function (the ideal comparator response) with a Gaussian probability distribution (representing the noise).
@@ -94,7 +94,7 @@ with *k* = 0.5 for the attenuation of the resistive divider in front of the inje
 
 .. math::
   
-  Q_{INJ}[fC]= 0.25 [pF] V_{INJ}[mV]
+  Q_{INJ}[fC]= 0.25 [pF] \cdot V_{INJ}[mV]
 
 Once the x-axis of the s-curve is converted to charge units also the threshold voltage can be calibrated and converted to charge units. This is done by measuring s-curves for different threshold voltages and plotting the resulting 50 % values (the effective threshold in charge units) as a function of the applied threshold voltage. The extracted slope is  the threshold calibration factor. This factor can also be interpreted a the charge to voltage gain of the read-out chain since it converts an input charge to an output voltage which is seen at the input of the comparator. Actually the scanning of the comparator threshold voltage allows the measurement of the shaper output peak amplitude, which is equivalent to the threshold voltage at which the comparator fires with 50 % probability.
 
@@ -103,7 +103,7 @@ This AFE signal processing chain allows the access to the analog shaping amplifi
 Exercises
 =========
 
-1. Waveform Measurements
+1. Waveform measurements
 -------------------------
 
  - Implement charge injection 
