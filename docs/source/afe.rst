@@ -28,7 +28,7 @@ The shaping amplifier consists of a high pass filter (HPF) and a low pass filter
 
 .. math::
 
-  U_{SHA}(t) = U_{CSA} \cdot k \cdot \frac{t}{\tau} \cdot \exp{\frac{-t}{\tau}}
+  U_{SHA}(t) = U_{CSA} \cdot k \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}, for t > 0.
 
 The final block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the SHA output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function and the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. To enable the hit detection with polling the GPIO pins, the comparator output is asynchronously latched with a flip flop. Its output signal **HIT_OUT** is then finally read by the GPIO interface. Before the latched comparator is able to detect new hits, it needs a reset by puling the **TRG_INJ** signal low. 
 
