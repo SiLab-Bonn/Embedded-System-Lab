@@ -24,11 +24,11 @@ Circuit Implementation
 ======================
 The simplified schematic in the figure below shows the implementation of the analog signal processing chain. The CSA is build around a low noise opamp which is feed-back with a small capacitance **Cf** and a large resistance **Rf**. The feedback capacitance **Cf** defines the charge transfer gain and the resistance **Rf** allows for a slow discharge of **Cf** and setting of the dc operation point of the opamp. To enable calibration and characterization measurements, an injection circuit is available to generate a programmable CSA input signal. On the rising edge of the digital **TRG_INJ** signal a negative charge of the size **Cinj** times the programmable voltage step amplitude **VINJ** is applied to the CSA input.
 
-The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain k to the circuit. Both time constants of the HPF and LPF are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the SHA response at **SHA_OUT** to input step function of the amplitude Ucsa and voltage gain k is 
+The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain *g* to the circuit. Both time constants of the HPF and LPF are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the SHA response to an input step function of the amplitude *Ucsa* is 
 
 .. math::
 
-  U_{SHA}(t) = U_{CSA} \cdot k \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}, for t > 0.
+  U_{SHA}(t) = U_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}
 
 The final block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the SHA output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function and the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. To enable the hit detection with polling the GPIO pins, the comparator output is asynchronously latched with a flip flop. Its output signal **HIT_OUT** is then finally read by the GPIO interface. Before the latched comparator is able to detect new hits, it needs a reset by puling the **TRG_INJ** signal low. 
 
@@ -90,7 +90,7 @@ The dataset for the injection voltage scan will represent an s-curve which allow
   
   Q_{INJ}= k \cdot  V_{INJ} \cdot C_{INJ}
 
-with k = 0.5 for the attenuation of the resistive divider in front of the injection switch and CINJ = 0.5 pF the injection capacitance which converts the voltage step into a charge.
+with *k* = 0.5 for the attenuation of the resistive divider in front of the injection switch and CINJ = 0.5 pF the injection capacitance which converts the voltage step into a charge.
 
 .. math::
   
