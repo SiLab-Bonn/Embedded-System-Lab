@@ -1,5 +1,5 @@
 ===========
-Experiment: Analog Front-end for Semiconductor Sensors
+Experiment: Analog Signal Processing for Semiconductor Sensors
 ===========
 
 .. figure:: images/afe.png
