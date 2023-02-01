@@ -97,12 +97,26 @@ This AFE signal processing chain allows the access to the analog shaping amplifi
 Exercises
 =========
 
-1. Waveform Acquisition with the fast ADC
-------------------------------------------
+1. Waveform Measurements
+-------------------------
 
+ - Implement charge injection 
+ - Measure and analyze waveforms (CSA, SHA, COMP)
+ - Measure shaping time constants
 
- - Charge injection 
+2. Characterization with the comparator output
+----------------------------------------------
+ 
+ - Time over threshold measurement
  - S-curve measurements
- - Noise vs. SHA_tau / CSA_input load
- - Multi Channel Analyzer
+ - Noise and threshold extraction
+ 
+3. Performance measurements 
+----------------------------
+ 
+ - Noise vs. shaping time
+ - Noise vs. detector capacitance
+ 
+4. Implementation of a Multi Channel Analyzer
+---------------------------------------------
  
