@@ -52,7 +52,7 @@ A central performance parameter of an signal processing circuit is its signal-to
 
     Response probability of the comparator as a function of the signal charge. The ideal system (noiseless, blue curve) exhibits a step function while noise (red curve) will smear-out the transition. That results in a Gaussian error function which fitted parameter define threshold (50 % transition point) and noise (slope of the curve) of the system.
 
-A typical data acquisition cycle for measuring an s-curve  involves several phases. Here is a generic scan routine loop in pseudo code:
+A typical data acquisition cycle for measuring an s-curve involves several steps. Here is a generic scan routine in pseudo code:
 
 .. code-block:: python
 
@@ -62,18 +62,32 @@ A typical data acquisition cycle for measuring an s-curve  involves several phas
   SetTrgInj(0)            # reset comparator latch and injection step 
 
   # nested scan loops
-    for (injection_charge = (min_charge, max_charge, charge_step)) # outer loop scans the signal charge
-      SetCharge(charge)   # set the injection voltage DAC
+    for (VINJ = (VINJmin, VINmax, VINstep)) # outer loop scans the signal charge
+      SetInjectionVoltage(charge)   # set the injection voltage DAC
       for (i = (0, 100))  # inner loop repeats the charge injection a hundred times for each charge step
         SetTrgInj(1)      # trigger the charge injection via GPIO5
         Delay()           # short delay (~50 us) to allow the signal propagate through the circuit
         hit = GetHitOut() # read status of the hit_out signal GPIO4
-        if hit            # update the hit count in a approrpriate element for plotting and further analysis
+        if hit            # update the hit count in a storage element for plotting and further analysis
          HitCount[charge] += 1
         SetTrgInj(0)      # reset the comparator latch and charge injection via GPIO5
         Delay()           # short delay (~50 us) to allow the circuit settle after the inject circuit reset
           
-This scan code, for example, could be used with the shaper time constant as a circuit parameter. The dataset for the charge scan will represent an s-curve which allows the extraction of thhe threshold and the noise.
+The dataset for the injection voltage scan will represent an s-curve which allows the extraction of the threshold and the noise. For a quantitative evaluation of the s-curve the injection voltage has to be converted to the equivalent injection charge QINJ. 
+
+.. math::
+  
+  \[Q_{INJ}= k \cdot  V_{INJ} \cdot C_{INJ}\]
+
+with k = 0.5 for the attenuation of the resistive divider in front of the injection switch and CINJ = 0.5 pF the injection capacitance which converts the voltage step into a charge.
+
+.. math::
+  
+  \[Q_{INJ}[fC]= 0.25 [pF] V_{INJ}[mV]\]
+
+Once the x-axis of the s-curve is converted to charge units also the threshold voltage can be calibrated and converted to charge units. This is done by measuring s-curves for different threshold voltages and plotting the resulting 50 % values (the effective threshold in charge units) as a function of the applied threshold voltage. The extracted slope is  the threshold calibration factor. This factor can also be interpreted a the charge to voltage gain of the read-out chain since it converts an input charge to an output voltage which is seen at the input of the comparator.
+
+
 
 Tests:
 
