@@ -110,12 +110,12 @@ Exercises
  - Measure and analyze waveforms (CSA, SHA, COMP)
  - Measure shaping time constants
 
-2. Characterization with the comparator output
-----------------------------------------------
+2. Characterization with the digital read-out
+---------------------------------------------
  
- - Time over threshold measurement
- - S-curve measurements
- - Noise and threshold extraction
+ - Time over threshold 
+ - S-curve 
+ - Noise and threshold 
  
 3. Performance measurements 
 ----------------------------
