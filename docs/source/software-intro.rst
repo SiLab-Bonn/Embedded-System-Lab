@@ -2,12 +2,13 @@
 Software Environment
 ============================
 
-The Raspberry Pi module runs a Debian-based operating system (32-bit Raspberry Pi OS) including a graphical user interface, which looks similar to many common desktops. For the experiments, manly these programs will be used:
+The Raspberry Pi module runs a Debian-based operating system (32-bit Raspberry Pi OS) with a graphical user interface. For the experiments mainly these programs will be used:
 
-- Terminal (what the name suggests)
-- Chromium, a web browser which you already use, when you read this document on the RPi
-- File Manager
-- Visual Code, an integrated development environment for C and Python to develop and run the user code
+- "Terminal" command line interface
+- "Visual Code" integrated development environment for C and Python
+- "Chromium" web browser to browse this documentation and other information
+
+There are other editors / development environments available in the Raspberry Pi OS distribution which could also be used instead of "Visual Code" (for example "Geany", "Thonny" etc.).
 
 Folder Structure
 ================
@@ -16,16 +17,19 @@ The code examples and additional documentation is maintained on  `GitHub <https:
 
  |__home
  |  |__ Embedded-System-Lab (GitHub root directory)
- |  |  |__ docs (sources for this documentation)
  |  |  |__ code (code examples in sub-folders for each experiment)
- |  |  |__ rpi-dma (C code functions for fast ADC readout)
+ |  |  |__ docs (sources for this documentation)
  |  |  |__ hardware (documentation: schematics, datasheets)
  |  |__ work (user working directory, not synchronized to GitHub)
 
  
 .. note:: 
- User programs and measurement data should be saved in the ``work`` folder. The code examples in the ``Embedded-System-Lab/code`` folder should not be modified directly but rather copied to the ``work`` folder and modified there, as needed. In case the content of the ``code`` or any other folder were accidentally changed, the files can be restored by calling ``git checkout *`` from the command line within the respective folder.
- It s highly recommended that the user has some basic knowledge of the Python language since this script does not provide an introduction in general programming concepts.
+ User programs and measurement data should be saved in the ``work`` folder. The code examples found in the ``Embedded-System-Lab/code`` folder should not be modified but rather copied to the ``work`` folder and modified there, as needed. In case the content of the ``code`` or any other git folder were accidentally changed, the files can be restored by calling ``git checkout *`` from the command line within the respective folder.
+ 
+ It is recommended that the user has some basic knowledge of Python (and a bit of C) language since this script does not provide an introduction to the programming languages. Online training with interactcive tutorials can be found for example here:
+ Python: https://www.w3schools.com/python/default.asp
+ C: https://www.w3schools.com/c/index.php
+
 
 Using VisualCode
 ================
