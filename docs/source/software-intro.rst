@@ -41,10 +41,12 @@ When you switch between Python and C sources you have to select the appropriate 
  - C (Linux): Current file" for compiling and running C code
  - "Python: Current File" for running Python scripts
 
-- Python Example
+Python Example
+--------------
 Open the VisualCode Explorer panel and browse the ``code`` sub folder. Select the file ``hello_world.py`` and copy it to your ``work`` folder and open it in the editor window. To run the script, click the menu ``Run->Run without Debugging`` or press ``CTRL+F5``. This will invoke the Python interpreter and run the script. The output will be displayed in the Terminal panel at the bottom of the window. If the Terminal panel is not visible, open it via the menu ``View->Terminal``.
 
-- C Example
+C Example
+---------
 Open the VisualCode Explorer panel and browse the ``code`` sub folder. Select the file ``hello_world.c`` and copy it to your ``work`` folder and open it in the editor window. To run the script, click the menu ``Run->Run without Debugging`` or press ``Ctrl+F5``. This will invoke the C compiler which will compile the code and start the executable. The output will be displayed in the Terminal panel at the bottom of the window. If the Terminal panel is not visible, open it via the menu ``View->Terminal``. You can also just compile the code without running it by preesing ``Ctrl+b``.
 
 A powerfull tool to test your code and to solve issues is a debugger. By running your code in debug mode (pressing ``F5`` instead of ``Ctrl+F5``) you can define breakpoints by clicking on the column on the lefthand side of the line numbers. A red dot will appear which will halt the code execution at this point to allow the inspection of variables. From a breakpoint you can resume the code execution with ``F5`` or execute step-wise by pressing ``F10`` (or ``F11`` which will step further down into the definition of called functions). See online Visual Code documentation for more details.
