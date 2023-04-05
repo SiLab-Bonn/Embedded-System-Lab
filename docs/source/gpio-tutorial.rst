@@ -10,7 +10,7 @@ This tutorial provides an introduction to basic GPIO port programming. It starts
 
 Basic GPIO Example (C code)
 ==========================
-This programming example describes how to directly access the registers which control the GPIO pins. The register handling is made on "low level" (i.e. not using higher-level library functions calls) using **C code** only. Actually, high-level libraries like the Python Rpi.GPIO library which you will be using later and kernel drivers are often written in C code to allow fast and efficient hardware access. Here are samples from the ``GPIO.c`` file from ``code/GPIO_Basics`` folder which you will be using in the first experiment. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
+This programming example describes how to directly access the registers which control the GPIO pins. The register handling is made on "low level" (i.e. not using higher-level library functions calls) using **C code** only. Actually, high-level libraries like the Python Rpi.GPIO library which you will be using later and kernel drivers are often written in C code to allow fast and efficient hardware access. Here are simplified samples from the ``GPIO.c`` file from the ``code/GPIO_Basics`` folder which you will be using in the first experiment. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
 
 .. code-block:: c
 
@@ -21,10 +21,12 @@ This programming example describes how to directly access the registers which co
   // start address of the GPIO register space on the VideoCore bus
   #define GPIO_BASE       0x7E200000
   // address offsets for the individual registers
-  #define GPIO_FSEL0      0x00  // mode selection
-  #define GPIO_SET0       0x1C  // set outputs to '1'
-  #define GPIO_CLR0       0x28  // set outputs to '0'
-  #define GPIO_LEV0       0x34  // get input states
+  #define GPIO_FSEL0      0x00  // mode selsction GPIO 0-9
+  #define GPIO_FSEL1      0x04  // mode selsction GPIO 10-19
+  #define GPIO_FSEL2      0x08  // mode selsction GPIO 20-29
+  #define GPIO_SET0       0x1C  // set outputs to '1' GPIO 0-31
+  #define GPIO_CLR0       0x28  // set outputs to '0' GPIO 0-31
+  #define GPIO_LEV0       0x34  // get input states GPIO 0-31
   
   // calculate the GPIO register physical address from the bus address
   uint32_t gpio_phys_addr = GPIO_BASE - BUS_REG_BASE + PHYS_REG_BASE;
@@ -41,43 +43,40 @@ Now ``gpio_virt_addr_ptr`` points to the start address of the GPIO register spac
 .. code-block:: c
 
   // define memory pointer to access the specific registers
-  uint32_t *gpfsel0 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL0);
-  uint32_t *gpset0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_SET0);
-  uint32_t *gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
-  uint32_t *gplev0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_LEV0);
+  gpfsel0 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL0);
+  gpfsel1 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL1);
+  gpfsel2 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL2);
+  gpset0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_SET0);
+  gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
+  gplev0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_LEV0);
 
-Finally, the GPIO mode is set for a given pin which then can be used for output (or input) operations:
+Finally, the GPIO mode is set for a given pin which then can be used for output (or input) operations. The register configuration is shown explicitly here while the main loop in `GPIO.c`` uses function calls:
 
 .. code-block:: c
 
-  // Example: defining GPIO4 as output
-  *gpfsel0 = 0x001 << (15); // output mode: FSEL[3:0] = 0x001, GPIO5 FSEL field starts a bit 15
-  // set output to '0'
-  *gpclr0 = 5;
-  // set output to '1'
-  *gpset0 = 5;
-  // set output to '0'
-  *gpclr0 = 5;
-  ...
-  // cleanup: set default mode (all input) and free allocated memory
-  *gpfsel0 = 0;
-  munmap(gpio_virt_addr_ptr, 0x1000);
+  // main() block: define GPIO27 as output and toggling it once and cleanup
+  *gpfsel2 = 0x001 << (27 - 20); // output mode: FSEL[3:0] = 0x001, GPIO27 FSEL field starts a bit 7
+  *gpclr0 = 27;  // set output to '0'
+  *gpset0 = 27;  // set output to '1'
+  *gpclr0 = 27;  // set output to '0'
+  *gpfsel0 = 0;  // set default mode (all input) 
+  munmap(gpio_virt_addr_ptr, 0x1000); // free allocated memory
 
 .. note::
   The function ``mmap("dev/mem/"...)`` returns a handle which allows unrestricted access to system wide memory and I/O resources. Since this is a security sensitive access, it can only be executed with elevated access rights. Therefore, programs using that kind of functions have to be called as super user ``sudo -E ./<program_name>``.
 
 .. admonition:: Exercise 1
 
-  Copy the file :file:`GPIO.c` from the :file:`code/GPIO_Basics` folder to your :file:`work` folder. Compile ( ``CTRL+F7`` or ``CTRL+b``) and run the program by typing :file:`sudo -E ./GPIO` into a terminal from within your :file:`work` folder.  
+  Copy the file :file:`GPIO.c` from the :file:`code/GPIO_Basics` folder to your :file:`work` folder. Compile ( ``CTRL+F7`` or ``CTRL+Shift+b``) and run the program by typing :file:`sudo -E ./GPIO` into a terminal from within your :file:`work` folder.  
 
-  1. Connect an oscilloscope probe to the GPIO4 pin on the base board and adjust the oscilloscope setting such that you trigger on the output pulse when the GPIO program runs. Make sure you select an appropriate horizontal resolution because the pulse will be very narrow (~ 30ns).
+  1. Connect an oscilloscope probe to the GPIO27 pin (red LED of the RGB LED) on the base board and adjust the oscilloscope setting such that you trigger on the output pulse when the GPIO program runs. Make sure you select an appropriate horizontal resolution because the pulse will be very narrow (~ 30ns).
   2. Add a loop statement around the code which toggles the GPIO output state to produce a stream of output pulses. 
   3. Measure the output average pulse width and its peak-to-peak jitter (i.e. the minimum and maximum width). 
   4. Modify the code to extend the pulse width by inserting additional function calls between the writes to GPSET and GPCLR registers:
     
-     * ``sleep(<some number>)``, adds delay in second units
-     * ``usleep(<some number>)``, adds delay in microseconds units
      * ``asm("nop")``, adds the smallest possible delay by inserting a ``NOP`` command (no operation) into the loop
+     * ``usleep(<some number>)``, adds delay in microseconds units
+     * ``sleep(<some number>)``, adds delay in second units (for visible blinking LED, for example)
     
   Measure the pulse width again for the different pulse width modifications. What happens when the CPU runs other tasks while the output is toggling (start another application or just move a window with the mouse). Explain what you see.
 
@@ -93,20 +92,24 @@ The **Python** example uses the `Rpi.GPIO library <https://sourceforge.net/p/ras
   # tell the library to use pin numbers according to the GPIO naming
   GPIO.setmode(GPIO.BCM) 
 
-  # define GPIO4 as an output
-  GPIO.setup(4, GPIO.OUT)
+  # define GPIO27 as an output
+  GPIO.setup(27, GPIO.OUT)
   
   # toggle th output state
-  GPIO.output(4, GPIO.LOW)
-  GPIO.output(4, GPIO.HIGH)
-  GPIO.output(4, GPIO.LOW)
+  GPIO.output(27, GPIO.LOW)
+  GPIO.output(27, GPIO.HIGH)
+  GPIO.output(27, GPIO.LOW)
   
   # set GPIO configuration back to default
   GPIO.cleanup()
 
 .. admonition:: Exercise 2
 
-  Copy the file :file:`GPIO.py` from the :file:`code/GPIO_Basics` folder to your :file:`work` folder.  Run the script by pressing ``F5``. Connect an oscilloscope probe to the GPIO4 pin on the base board and explain the trace that you see when you run the GPIO program. What is the minimum pulse width now? Increase the pulse width by inserting calls to ``sleep()`` (add ``import time`` at the top of your script). 
+  Copy the file :file:`GPIO.py` from the :file:`code/GPIO_Basics` folder to your :file:`work` folder. Proceed similar to the tasks in the C-code excersise.
 
-  1. Compare the minimum pulse width as generated by the C-code and the Python implementations. 
-  2. Change  both codes to generate a ~100 us pulse and repeatedly run the code. How stable is the pulse width? Is there a difference between the C-code and Python implementation? 
+  1. If not yet done, connect an oscilloscope probe to the GPIO27 pin (red LED of the RGB LED) on the base board and adjust the oscilloscope setting such that you trigger on the output pulse when the GPIO scripts runs. What is the pulse width now?
+  2. Add a loop statement around the code which toggles the GPIO output state to produce a stream of output pulses. 
+  3. Measure the output average pulse width and its peak-to-peak jitter (i.e. the minimum and maximum width). 
+  4. Compare the minimum pulse width as generated by the C-code and the Python implementations. 
+  5. Increase the pulse width by inserting calls to ``sleep()`` (add ``import time`` at the top of your script). 
+  6. Adjust both C- and Python codes to generate a ~100 us pulse. How stable is the pulse width? Is there a difference between the C-code and Python implementation? 
