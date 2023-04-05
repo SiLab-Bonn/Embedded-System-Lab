@@ -20,7 +20,7 @@ The code examples and additional documentation is maintained on  `GitHub <https:
  |  |  |__ code (code examples in sub-folders for each experiment)
  |  |  |__ docs (sources for this documentation)
  |  |  |__ hardware (documentation: schematics, datasheets)
- |  |__ work (user working directory, not synchronized to GitHub)
+ |  |__ *work* (user working directory, not synchronized to GitHub)
 
  
 .. note:: 
@@ -31,8 +31,8 @@ The code examples and additional documentation is maintained on  `GitHub <https:
  C: https://www.w3schools.com/c/index.php
 
 
-Using VisualCode
-================
+Using Visual Code
+=================
 Start VisualCode and open the folder ``Embedded-System-Lab/code`` via the menu ``File->Open Folder``. In the explorer view one can find sub-folders for each experiment and additional helper functions. Most examples are written in Python while a few examples and low level functions (DMA access for fast ADC operation) are implemented in C code. The VisualCode editor will allow comfortable code and integrates tool chains to compile, build and run Python a C code. Here are simple code examples to test the installation and explain the basic methods of the VisualCode IDE.
 
 - Python Example
