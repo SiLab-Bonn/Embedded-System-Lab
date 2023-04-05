@@ -2,7 +2,7 @@
 GPIO Programming Tutorial
 =========================
 
-This part gives a practical introduction to basic GPIO port programming. It starts with an example for a low-level access to the GPIO registers which are described in section :ref:`gpio-interface`. Then, the use of Python libraries for GPIO handling will be explained and compared to the C-code based low-level access.
+This tutorial provides an introduction to basic GPIO port programming. It starts with an example for a low-level access to the GPIO registers which are described in section :ref:`gpio-interface`. Then, the use of Python libraries for GPIO handling will be explained and compared to the C-code based low-level access.
 
 .. _gpio-programming-examples:
 
