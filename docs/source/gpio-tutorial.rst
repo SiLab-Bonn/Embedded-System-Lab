@@ -119,7 +119,7 @@ Exercises
   
 .. admonition:: Advanced Exercise:  Serial Terminal connection between two Raspberry boards
   
-The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards and to establish a serial link between them using the UART interface on GPIO pins 14 (TX) and 15 (RX).
+  The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards and to establish a serial link between them using the UART interface on GPIO pins 14 (TX) and 15 (RX).
 
   Prerequisites:
   - A Python script that instanciates a serial port object (for example PySerial) and allows sending and receiving data.
