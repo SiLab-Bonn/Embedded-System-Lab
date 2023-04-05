@@ -20,7 +20,7 @@ The code examples and additional documentation is maintained on  `GitHub <https:
  |  |  |__ code (code examples in sub-folders for each experiment)
  |  |  |__ docs (sources for this documentation)
  |  |  |__ hardware (documentation: schematics, datasheets)
- |  |__ *work* (user working directory, not synchronized to GitHub)
+ |  |__ **work** (user working directory, not synchronized to GitHub)
 
  
 .. note:: 
