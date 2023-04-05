@@ -20,11 +20,11 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'Embedded System Lab'
-copyright = '2022, Hans Krüger'
+copyright = '2023, SILAB'
 author = 'Hans Krüger'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.1'
 
 
 master_doc = 'index'
