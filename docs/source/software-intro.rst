@@ -53,4 +53,4 @@ A powerfull tool to test your code and to solve issues is a debugger. By running
 
 .. note::
 
-  A few examples (C-examples fro GPIO access, library for the fast ADC) access physical memory or I/O resources from within the user space. This access needs privileged access rights to execute the code. Run these respective programs by calling ``sudo ./<program name>`` from a command line. Other examples which use higher level functions by including dedicated libraries, implement this access via kernel mode drivers which can be used from user space without special privileges. 
+  A few examples (C-examples fro GPIO access, library for the fast ADC) access physical memory or I/O resources from within the user space. This access needs privileged access rights to execute the code. Run these respective programs by calling ``sudo -E ./<program name>`` from a command line. Other examples which use higher level functions by including dedicated libraries, implement this access via kernel mode drivers which can be used from user space without special privileges. 
