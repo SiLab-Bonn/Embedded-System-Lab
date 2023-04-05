@@ -1,9 +1,9 @@
 .. _gpio-interface:
 
-==============
-GPIO Interface
-==============
-The BCM2711 has 54 general purpose input/output ports of which 28 are available on the Raspberry Pi module (``GPIO[27:0]``). When a GPIO port is used as an output, its  state can be toggled between logic 0 and logic 1 and a high-impedance state (tri-state). Since the GPIO ports are powered from a 3.3 V supply, the voltage levels are 0 V and 3.3 V respectively. When used as an input, the port can read these levels. Here is a simplified function diagram of a GPIO block showing the main control registers which are explained below. There are additional registers for interrupt modes, pull-up and pull-down configuration, drive strength and others, which are not shown in this diagram.
+======================================
+General Purpose Input/Output Interface
+======================================
+The BCM2711 has 54 general purpose input/output pins of which 28 are available on the Raspberry Pi module (``GPIO[27:0]``). When a GPIO pin is used as an output, its  state can be toggled between logic 0 and logic 1 and a high-impedance state (tri-state). Since the GPIO pins are powered from a 3.3 V supply, the voltage levels are 0 V and 3.3 V respectively. When used as an input, the pin can read these levels. Here is a simplified function diagram of a GPIO block showing the main control registers which are explained below. There are additional registers for interrupt modes, pull-up and pull-down configuration, drive strength and others, which are not shown in this diagram.
 
 .. figure:: images/GPIO_block.png
     :width: 400
@@ -14,7 +14,7 @@ The BCM2711 has 54 general purpose input/output ports of which 28 are available 
 .. danger::
     The voltage applied to the GPIO pins **must not exceed 3.3 V**. When connected to circuits with higher output levels, appropriate levels shifters or resistive dividers must be used. 
 
-There are control registers which configure the GPIO ports to become an input or output port according to the required functionality. For simple control tasks this basic I/O function is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are used. To offload the CPU from implementing these protocols and to allow a precise (i.e. hardware controlled) timing, special hardware blocks are available in the I/P periphery to be used with the GPIO ports. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2835 (and not even the BCM2837, as the name suggests), which is used on the Raspberry Pi 1 modules. However, the description of the GPIO port and other peripherals is still valid for the newer chip generations - apart from a few details like bus address offsets (see below).
+There are control registers which configure the GPIO pins to become an input or output pin according to the required functionality. For simple control tasks this basic I/O function is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are used. To offload the CPU from implementing these protocols and to allow a precise (i.e. hardware controlled) timing, special hardware blocks are available in the I/P periphery to be used with the GPIO pins. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2835 (and not even the BCM2837, as the name suggests), which is used on the Raspberry Pi 1 modules. However, the description of the GPIO pin and other peripherals is still valid for the newer chip generations - apart from a few details like bus address offsets (see below).
 Here is the description of the basic **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
 
@@ -109,7 +109,7 @@ There are more GPIO configuration registers (documented and undocumented) which 
 
 Alternate GPIO Functions
 ========================
-The GPIO ports can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols are directly supported with dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings a much more complex. Typically, a user will call functions from a library to set-up and use the alternate function modes. This table shows the available alternate functions which can be selected via the appropriate GPFSEL registers for each GPIO pin. Note that all alternate functions require a number of consecutive pins to be set to the same mode.
+The GPIO pins can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols are directly supported with dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings are more complex. Typically, a user will call functions from a library to set-up and use the alternate function modes. This table shows the available alternate functions which can be selected via the appropriate GPFSEL registers for each GPIO pin. Note that all alternate functions require a number of consecutive pins to be set to the same mode.
 
 .. figure:: images/GPIO_Alt.png
     :width: 600
@@ -150,7 +150,7 @@ Data are being sent always one byte at a time. A data transmission starts by sen
 The encoding and decoding of the parity bit is done in the UART hardware. If even (odd) parity is selected the transmitter will set the parity to a logic value such the sum off all data bytes including the parity bit is even (odd). The checking of the validity of a received byte is transparent to the user. A mismatch of calculated and received parity will be notified to the user as a receive error. However, multiple (odd) bit errors can not be detected.
 
 .. note::
-    The signal names RX and TX, which are commonly used for labeling the UART bus, can cause confusion when connecting one device with another. Since a device sends data via its TX port and expects to receive data via its RX port, at some point the TX labeled net from one device needs to be connected to the RX labeled net of the other device and vice versa.
+    The signal names RX and TX, which are commonly used for labeling the UART bus, can cause confusion when connecting one device with another. Since a device sends data via its TX pin and expects to receive data via its RX pin, at some point the TX labeled net from one device needs to be connected to the RX labeled net of the other device and vice versa.
 
 In the GPIO alternate modes table, the UART signals are marked in red with the names ``TXDn`` and ``RXDn``. The UART port is available on ``GPIO14`` (TX) and ``GPIO15`` (RX) when mode 0 or 5 is selected. Additional signals for hardware handshaking (``CTS1`` and ``RTS1``) are available on ``GPIO16`` and ``GPIO17`` when mode 5 is used.
 
