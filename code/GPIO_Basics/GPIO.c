@@ -23,7 +23,7 @@
 
 #define GPIO_FSEL_BITS  3
 
-#define GPIO_PIN 4  // pin to be used as output
+#define GPIO_PIN 5  // pin to be used as output
 //#define DEBUG  // print debug information
 
 uint32_t *gpio_virt_addr_ptr;  // pointer to virtual address
