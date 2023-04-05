@@ -48,13 +48,22 @@ Circuit Implementation
 ----------------------
 
 
+Test Signal Generator 
+--------------------
 
-ADC Performance Parameters
--------------------------
+
+ADC Characterisation
+---------------------
+- Dynamic rage, calibration
 - Noise
-- Linearity
-- INL/DNL
+- Linearity (INL/DNL)
 
 
 Exercises 
 ---------
+.. admonition:: Exercise 1. SAR Logic
+
+.. admonition:: Exercise 2. Dynamic range and calibration
+
+.. admonition:: Exercise 3. Integrated- and Differential Nonlinearity
+
