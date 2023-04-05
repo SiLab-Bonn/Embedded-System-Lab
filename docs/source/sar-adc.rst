@@ -26,7 +26,7 @@ To find the digital equivalent of an analog value, the input voltage is compared
   2. // Repeat code block below n-times while j runs from n-1 to 0.
   if (VDAC < VIN)       // compare ADC input with DAC output
     DAC = DAC - (1 << j) // DAC output larger then VIN, subtract next LSB value from current DAC setting
-    else
+  else
     DAC = DAC + (1 << j) // DAC output smaller then VIN, add next LSB value to current DAC setting
  
   3. // The final DAC register value after n-iterations is the digital representation of the analog input voltage.
