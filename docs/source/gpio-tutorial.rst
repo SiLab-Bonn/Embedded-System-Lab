@@ -62,7 +62,7 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
   *gpfsel0 = 0;  // set default mode (all input) 
   munmap(gpio_virt_addr_ptr, 0x1000); // free allocated memory
 
-.. danger::
+.. warning::
   The function ``mmap("dev/mem/"...)`` returns a handle which allows unrestricted access to system wide memory and I/O resources. Since this is a security sensitive access, it can only be executed with elevated access rights. Therefore, programs using that kind of functions have to be called as super user ``sudo -E ./<program_name>``.
 
 .. admonition:: Exercise 1
