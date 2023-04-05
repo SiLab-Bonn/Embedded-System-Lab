@@ -1,3 +1,5 @@
+.. _gpio-tutorial:
+
 =========================
 GPIO Programming Tutorial
 =========================
