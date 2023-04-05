@@ -20,7 +20,7 @@ The code examples and additional documentation is maintained on  `GitHub <https:
  |  |  |__ code (code examples in sub-folders for each experiment)
  |  |  |__ docs (sources for this documentation)
  |  |  |__ hardware (documentation: schematics, datasheets)
- |  |__ **work** (user working directory, not synchronized to GitHub)
+ |  |__ work (user working directory, not synchronized to GitHub)
 
  
 .. note:: 
@@ -34,12 +34,12 @@ The code examples and additional documentation is maintained on  `GitHub <https:
 
 Using Visual Code
 =================
-Start VisualCode and open the folder ``Embedded-System-Lab/code`` via the menu ``File->Open Folder``. In the explorer view one can find sub-folders for each experiment and additional helper functions. Most examples are written in Python while a few examples and low level functions (DMA access for fast ADC operation) are implemented in C code. The VisualCode editor will allow comfortable code and integrates tool chains to compile, build and run Python a C code. Here are simple code examples to test the installation and explain the basic methods of the VisualCode IDE.
-
-When you switch between Python and C sources you have to select the appropriate start and debug configuration for the given language: Click on the bottom status bar and select
+Start Visual Code and open the folder ``Embedded-System-Lab/code`` via the menu ``File->Open Folder``. In the explorer view one can find sub-folders for each experiment and additional helper functions. Most examples are written in Python while a few examples and low level functions (DMA access for fast ADC operation) are implemented in C. The Visual Code editor will allow comfortable code editing and integrates tool chains to run Python and C code. When you switch between Python and C sources you have to **select the appropriate start and debug configuration** for the given language: Click on the bottom status bar and select
 
  - C (Linux): Current file" for compiling and running C code
  - "Python: Current File" for running Python scripts
+
+Here are simple code examples to test the installation and explain the basic methods of the Visual Code IDE.
 
 Python Example
 --------------
@@ -49,8 +49,8 @@ C Example
 ---------
 Similar to the previous example, now select the C-file ``hello_world.c`` from the ``code`` folder, copy it to your ``work`` folder and open it in the editor window. To compile and run the code click the menu ``Run->Run without Debugging`` or press ``Ctrl+F5``. This will invoke the C compiler which will build the code and start the executable. The output will be displayed in the Terminal panel at the bottom of the window. You can also just build the binary file without running it by pressing ``Ctrl+b`` and start the executable from a command line in a terminal.
 
-A powerfull tool to test your code and to solve issues is a debugger. By running your code in debug mode (pressing ``F5`` instead of ``Ctrl+F5``) you can define breakpoints by clicking on the column on the lefthand side of the line numbers. A red dot will appear which will halt the code execution at this point to allow the inspection of variables. From a breakpoint you can resume the code execution with ``F5`` or execute step-wise by pressing ``F10`` (or ``F11`` which will step further down into the definition of called functions). See Visual Code documentation on the web for more details.
+A powerful tool to test your code and to solve issues is a debugger. By running your code in debug mode (pressing ``F5`` instead of ``Ctrl+F5``) you can define breakpoints by clicking on the column on the left-hand side of the line numbers. A red dot will appear which will halt the code execution at this point to allow the inspection of variables. From a breakpoint you can resume the code execution with ``F5`` or execute step-wise by pressing ``F10`` (or ``F11`` which will step further down into the definition of called functions). See Visual Code documentation on the web for more details.
 
 .. note::
 
-  A few examples (C-examples fro GPIO access, library for the fast ADC) access physical memory or I/O resources from within the user space. This access needs privileged access rights to execute the code. Run these respective programs by calling ``sudo ./<program name>`` from a command line. Other examples which use higher level functions by including dedicated libraries, implement this access via kernel mode drivers which can be used from user space without special privileges. 
+  A few examples like the C-example for low-level GPIO access (see :ref:`gpio-tutorial`) and the library for the fast ADC need access to protected physical memory or I/O resources from within the user space. This access requires privileged permissions (i.e. ``root`` access) to execute the code. To run these programs one has to call ``sudo -E ./<program name>`` from a command line because starting from within the Visual Code IDE would not provides root access. Other examples which use higher level functions by including dedicated libraries, implement this access via kernel mode drivers which can be used from user space without special privileges. 
