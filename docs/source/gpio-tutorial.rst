@@ -119,17 +119,17 @@ Exercises
   
 .. admonition:: Advanced Exercise:  Serial Terminal connection between two Raspberry boards
   
-  The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards and to establish a serial link between them using the UART interface on GPIO pins 14 (TX) and 15 (RX).
+The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards and to establish a serial link between them using the UART interface on GPIO pins 14 (TX) and 15 (RX).
 
-  Prerequisites:
-  - A Python script that instanciates a serial port object (for example PySerial) and allows sending and receiving data.
-  - A direct connection between RX and TX pins (loop-back) on a single board for testing the script. 
-  - A cross-over connection for making the RX-TX / TX-RX connection between two boards.
-  
-  Tasks:
-  - Establish the loop-back on a single board and test the script
-  - Connect an oscilloscope to RX (TX) pins and examine the waveform. Set various serial port configuration parameters (baudrate, number of stop bits, parity) and explain their effect.
-  - Connect the serial link between two boards connecting TX of one board to RX of the other board and vice versa.
-  - Make sure ther serial configuration is the same on both boards and send and receive data.
-  - What happens if the settings are not the same on both boards?
-  - Extend your script to send and receive binary files.
+Prerequisites:
+- A Python script that instanciates a serial port object (for example PySerial) and allows sending and receiving data.
+- A direct connection between RX and TX pins (loop-back) on a single board for testing the script. 
+- A cross-over connection for making the RX-TX / TX-RX connection between two boards.
+
+Tasks:
+- Establish the loop-back on a single board and test the script
+- Connect an oscilloscope to RX (TX) pins and examine the waveform. Set various serial port configuration parameters (baudrate, number of stop bits, parity) and explain their effect.
+- Connect the serial link between two boards connecting TX of one board to RX of the other board and vice versa.
+- Make sure ther serial configuration is the same on both boards and send and receive data.
+- What happens if the settings are not the same on both boards?
+- Extend your script to send and receive binary files.
