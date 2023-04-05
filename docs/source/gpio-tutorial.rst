@@ -8,9 +8,9 @@ This tutorial provides an introduction to basic GPIO port programming. It starts
 
 .. _gpio-programming-examples:
 
-Basic GPIO Example
-========================
-This programming example describes the basic access to the GPIO registers. This register handling is made on "low level" (i.e. not using higher-level library functions calls) using **C code**. Here are samples from the ``GPIO.c`` file from ``code/GPIO_Basics`` folder. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
+Basic GPIO Example (C code)
+==========================
+This programming example describes how to directly access the registers which control the GPIO pins. The register handling is made on "low level" (i.e. not using higher-level library functions calls) using **C code** only. Actually, high-level libraries like the Python Rpi.GPIO library which you will be using later and kernel drivers are often written in C code to allow fast and efficient hardware access. Here are samples from the ``GPIO.c`` file from ``code/GPIO_Basics`` folder which you will be using in the first experiment. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
 
 .. code-block:: c
 
@@ -51,13 +51,13 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
 .. code-block:: c
 
   // Example: defining GPIO4 as output
-  *gpfsel0 = 0x001 << (12); // output mode: FSEL[3:0] = 0x001, GPIO4 FSEL filed starts a bit 12
+  *gpfsel0 = 0x001 << (15); // output mode: FSEL[3:0] = 0x001, GPIO5 FSEL field starts a bit 15
   // set output to '0'
-  *gpclr0 = 4;
+  *gpclr0 = 5;
   // set output to '1'
-  *gpset0 = 4;
+  *gpset0 = 5;
   // set output to '0'
-  *gpclr0 = 4;
+  *gpclr0 = 5;
   ...
   // cleanup: set default mode (all input) and free allocated memory
   *gpfsel0 = 0;
@@ -79,8 +79,10 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
      * ``usleep(<some number>)``, adds delay in microseconds units
      * ``asm("nop")``, adds the smallest possible delay by inserting a ``NOP`` command (no operation) into the loop
     
-   Measure the pulse width again for the different pulse width modifications. What happens when the CPU runs other tasks while the output is toggling (start another application or just move a window with the mouse). Explain what you see.
+  Measure the pulse width again for the different pulse width modifications. What happens when the CPU runs other tasks while the output is toggling (start another application or just move a window with the mouse). Explain what you see.
 
+Python GPIO Example
+--------------------
 The **Python** example uses the `Rpi.GPIO library <https://sourceforge.net/p/raspberry-gpio-python/wiki/Home/>`_ library. Setting up the access to the GPIO registers is done in a similar way as in the C-code example. However, the detailed implementation is hidden in the library. 
 
 .. code-block:: python
