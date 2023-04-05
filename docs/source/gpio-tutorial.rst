@@ -117,8 +117,9 @@ Exercises
   5. Increase the pulse width by inserting calls to ``sleep()`` (add ``import time`` at the top of your script). 
   6. Adjust both C- and Python codes to generate a ~100 us pulse. How stable is the pulse width? Is there a difference between the C-code and Python implementation? 
   
-.. admonition:: Advanced Exercise:  Serial Terminal connection between two Raspberry boards
 
+.. admonition:: Advanced Exercise:  Serial Terminal connection between two Raspberry boards
+  
   The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards and to establish a serial link between them using the UART interface on GPIO pins 14 (TX) and 15 (RX).
 
   Prerequisites:
