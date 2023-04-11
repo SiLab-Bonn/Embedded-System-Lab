@@ -120,8 +120,8 @@ There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains t
 .. admonition:: Exercise 3. Dynamic range and calibration
 
   #. Sweep the lab power supply from 0 to 4.2 Volts in 200 mV steps and measure the voltage with a single acquisition of the SAR-ADC. Plot the ADC transfer curve. Repeat the measurement and compare the results from the two sweeps. 
-  #. Make a third sweep using an average of 8 (16) for each data point and extract gain and offset of the ADC. Compare the results to the ideal ones.
-  #. Use the gain and offset values in your script to convert the ADC code into Voltage units. What is the dynamic input range of the ADC (in Volts)?
+  #. Make a third sweep using an average of 8 (16) for each data point and extract gain and offset of the ADC. Compare the results to the ideal ones (see above).
+  #. Use the gain and offset values in your script to convert the ADC code into Voltage units. What is the dynamic input range of the ADC (in Volts)? 
 
 .. admonition:: Exercise 4. Integrated- and Differential Nonlinearity
 
