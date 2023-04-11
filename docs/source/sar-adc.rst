@@ -95,7 +95,7 @@ The ADC module provides a simple signal generator which generates a saw-tooth wa
 Exercises 
 ---------
 
-There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains the necessary includes and the basic configuration for the SPI interface and the two GPIO signals. Copy it into your ``work `` folder and use it as a template for your scripts. There is also another file called ``sar_adc_solution.py`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck.
+There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains the necessary includes and the basic configuration for the SPI interface and the two GPIO signals. Copy it into your ``work`` folder and use it as a template for your scripts. There is also another file called ``sar_adc_solution.py`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck.
 
 
 .. admonition:: Exercise 0. A bit of theory
