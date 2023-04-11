@@ -49,7 +49,7 @@ The electrical interface to control the AFE consist of an
 
     Simplified schematic of the analog front-end. **TRG_INJ** and **HIT_OUT** control the charge injection and digital hit readout, respectively. The **SPI** bus is used to program the DAC voltages **VTHR** and **VINJ** and select the SHA time constant.
 
-The full AFE schematic is found here: :download:`AFE_1.0.pdf <documents/AFE_1.0.pdf>`
+The full AFE schematic is found here: :download:`AFE_1.1.pdf <documents/AFE_1.1.pdf>`
 
 Data Acquisition and Analysis Methods
 =====================================
