@@ -95,10 +95,6 @@ Test Signal Generator
 --------------------
 The ADC module provides a simple signal generator which generates a saw-tooth waveform output voltage. This linear ramp will generate a considerably flat amplitude density spectrum over most of the ADC's dynamic input range. This ramp signal will be used to characterise the ADC's linearity.
 
-- Dynamic range, calibration
-- Noise
-- Linearity (INL/DNL)
-
 
 Exercises 
 ---------
