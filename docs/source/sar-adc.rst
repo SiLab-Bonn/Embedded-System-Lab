@@ -88,7 +88,7 @@ with
   ADC_{GAIN} =  \frac{2^n}{V_{REF}} \text{ and } ADC_{OFFSET} = 0.
 
 
-That implies that all ADC codes are representing the same bin width of analog values (i.e. gain and offset are constant and do not depend on the input voltage). Testing this specification can be done by generating analog voltages over the full ADC input range and comparing the conversion result to the generated voltage. Since the accuracy of the generated voltage has to be much higher then the resolution of the ADC, this procedure can be quite challenging, in particular for high resolution ADCs. A more efficient approach is to generate an input signal which is not precisely controlled step-by-step but rather provides a know amplitude density spectrum. This statistical method (also called histogram method) will be used for the ADC characterisation.
+That implies that all ADC codes are representing the same bin width of analog values (i.e. gain and offset are constant and do not depend on the input voltage). Testing this specification can be done by generating analog voltages over the full ADC input range and comparing the conversion result to the generated voltage. Since the accuracy of the generated voltage has to be much higher then the resolution of the ADC, this procedure can be quite challenging, in particular for high resolution ADCs. A more efficient approach is to generate an input signal which is not precisely controlled step-by-step but rather provides a know amplitude (or code) density spectrum. This statistical method, also called histogram method, will be used for the ADC characterisation.
 
 
 Test Signal Generator 
@@ -103,26 +103,40 @@ The ADC module provides a simple signal generator which generates a saw-tooth wa
 Exercises 
 ---------
 
+.. admonition:: Exercise 0. A bit of theory
+  #. Show that the output voltage of an R-2R ladder is defined by the formula given above (derive the equation). Hint: Start with a 1-bit DAC and calculate its output impedance. Does it depend on the switch setting? What ar the two voltage levels the 1-b DAC can produce? Then, derive a formalism for an n-bit DAC.
+  #. Make a plot of an non-ideal ADC transfer curve and explain the terms offset, gain, dynamic range, DNL, INL, missing bits
+  #. Derive the formulas to calculate DNL and INL from a code density histogram.
+  #. What is the differential non-linearity of an ideal ADC?
+
 .. admonition:: Exercise 1. R-2R ladder DAC
 
-  #. Show that the output voltage of an R-2R ladder is defined by the formula given above (derive the equation). Hint: Start with a 1-bit DAC and calculate its output impedance. Does it depend on the switch setting? What ar the two voltage levels the 1-b DAC con produce? Then, derive a formalism for an n-bit DAC.
   #. Write a script that allows the programming of the R-2R DAC via the SPI bus and measure the DAC output voltage for each bit (binary weights) with a DVM connected to the ``OUTPUT`` connector (set the output jumper to ``VDAC``). Compare the LEDs connected to the digital buffer's output with the binary value you send via the SPI bus.
-  #. Calculate and plot the expected ADC transfer function based on the measured binary weights of the DAC. Plot the INL and DNL of the DAC.
+  #. Calculate and plot the expected DAC transfer function based on the measured binary weights of the DAC. Plot the INL and DNL of the DAC.
   
 .. admonition:: Exercise 2. SAR Logic
 
   #. Program a loop which produces a saw tooth pattern at the DAC output. Connect an oscilloscope to the ``OUTPUT`` connector. Explain what you see. What is the period of the waveform? How can you change it? 
   #. Add an control statement to the loop and adjust the code such that it will implement the SAR logic as described above. Use ``print`` statements to examine the DAC register setting during the loop. Alternatively, run the code in debug mode and inspect the variables in the debugger window.
-  #. Connect a dc-voltage source to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator need some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read).
+  #. Connect a dc-voltage source (lab power supply) to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator needs some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read). Measure the sample rate either within the script (use for example Python **tqdm** module in the acquisition loop) or with the oscilloscope (measure the ``SAMPLE`` signal frequency). What is the maximum sample rate you can achieve? What is the dominant limit?
 
 .. admonition:: Exercise 3. Dynamic range and calibration
 
+  #. Sweep the lab power supply from 0 to 4.2 Volts in 200 mV steps and measure the voltage with a single acquisition of the SAR-ADC. Plot the ADC transfer curve. Repeat the measurement and compare the results from the two sweeps. 
+  #. Make a third sweep using an average of 8 (16) for each data point and extract gain and offset of the ADC. Compare the results to the ideal ones.
+  #. Use the gain and offset values in your script to convert the ADC code into Voltage units. What is the dynamic input range of the ADC (in Volts)?
+
 .. admonition:: Exercise 4. Integrated- and Differential Nonlinearity
+
+  #. Connect the output of the ramp generator (set the output jumper to ``RAMP``) to the ADC input. Extend the script that it records a programmable number of acquisitions (start with ~10 per ADC code -> ~2500 total) and plot the values in a histogram (bin size of one, ADC code units). What is the useful range of the ramp signal? Compare this measured range to the direct observation of the ramp with an oscilloscope.
+  #. Record ADC data with higher statistic (~100 entries per ADC code) and plot the histogram within the useful dynamic range of the ramp waveform.
+  #. Generate DNL amd INL plots from this histogram and calculate the RMS values. Evaluate the effect of the statistic on the reproducibility of the measurement. How much data points do you need to get "stable" results? 
+  #. Change the above mentioned delay time between DAC register update and comparator read and repeat the INL/DNL analysis. What setting would you chose to optimize linearity? What sample rate does this yield? Plot sample rate vs. DNL for a reasonable range.
 
 
 Keywords and literature references
 ----------------------------------
 * ADC architectures
-* R-2R ladder
+* R-2R resistor ladder
 * ADC testing methods (histogram method)
-* Integrated- and Differential Non-linarity
+* Integrated- and Differential Non-linearity
