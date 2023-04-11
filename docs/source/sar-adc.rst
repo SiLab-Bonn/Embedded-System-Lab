@@ -81,11 +81,7 @@ An important performance parameter of an ADC is its linearity. An ideal n-bit AD
 
   ADC_{code} = V_{IN} \cdot ADC_{GAIN} + ADC_{offset} 
 
-with
-
-.. math::
-
-  ADC_{GAIN} =  \frac{2^n}{V_{REF}} \text{ and } ADC_{OFFSET} = 0.
+  \text{with  } ADC_{GAIN} =  \frac{2^n}{V_{REF}} \text{   and  } ADC_{OFFSET} = 0.
 
 
 That implies that all ADC codes are representing the same bin width of analog values (i.e. gain and offset are constant and do not depend on the input voltage). Testing this specification can be done by generating analog voltages over the full ADC input range and comparing the conversion result to the generated voltage. Since the accuracy of the generated voltage has to be much higher then the resolution of the ADC, this procedure can be quite challenging, in particular for high resolution ADCs. A more efficient approach is to generate an input signal which is not precisely controlled step-by-step but rather provides a know amplitude (or code) density spectrum. This statistical method, also called histogram method, will be used for the ADC characterisation.
