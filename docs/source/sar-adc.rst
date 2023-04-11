@@ -62,7 +62,7 @@ The voltage at the output of the ladder is VREF times the binary weighted sum of
  
 Circuit Implementation 
 ----------------------
-A simplified circuit diagram of the SAR-ADC is shown here. The R-2R ladder switch configuration is implemented with an 8-bit digital buffer whose power supply is connected to VREF. That allows the data outputs to switch between 0 Volts and VREF. The control bits D[7:0] are shifted into the register via an SPI bus interface.
+A simplified circuit diagram of the SAR-ADC is shown here. The R-2R ladder switch configuration is implemented with an 8-bit digital buffer whose power supply is connected to VREF = 4.096 V. That allows the data outputs to switch between 0 and 4.096 Volt. The control bits D[7:0] are shifted into the register via an SPI bus interface.
  
  .. figure:: images/SAR_ADC_circuit.png
     :width: 600
@@ -95,17 +95,25 @@ Test Signal Generator
 --------------------
 The ADC module provides a simple signal generator which generates a saw-tooth waveform output voltage. This linear ramp will generate a considerably flat amplitude density spectrum over most of the ADC's dynamic input range. This ramp signal will be used to characterise the ADC's linearity.
 
-- Dynamic rage, calibration
+- Dynamic range, calibration
 - Noise
 - Linearity (INL/DNL)
 
 
 Exercises 
 ---------
-.. admonition:: Exercise 1. R-2R ladder 
-  Show that the output voltage of a R-2R ladder is defined by 
+
+.. admonition:: Exercise 1. R-2R ladder DAC
+
+  #. Show that the output voltage of an R-2R ladder is defined by the formula given above (derive the equation). Hint: Start with a 1-bit DAC and calculate its output impedance. Does it depend on the switch setting? What ar the two voltage levels the 1-b DAC con produce? Then, derive a formalism for an n-bit DAC.
+  #. Write a script that allows the programming of the R-2R DAC via the SPI bus and measure the DAC output voltage for each bit (binary weights) with a DVM. Compare the LEDs connected to the digital buffer's output with the binary value you send via the SPI bus.
+  #. Calculate and plot the expected ADC transfer function based on the measured binary weights of the DAC. Plot the INL and DNL of the DAC.
   
 .. admonition:: Exercise 2. SAR Logic
+
+  #. Program a loop which produces a saw tooth pattern at the DAC output. Connect an oscilloscope to the Lemo connector ``OUTPUT`` and set the output jumper to ``VDAC``. Explain what you see. What is the period of the waveform? How can you change it? 
+  #. Add an control statement to the loop and adjust the code such that it will implement the SAR logic as described above. Use ``print`` statements to examine the DAC register setting during the loop. Alternatively, run the code in debug mode and inspect the variables in the debugger window.
+  #. Connect a dc voltage source to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator need some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read).
 
 .. admonition:: Exercise 3. Dynamic range and calibration
 
