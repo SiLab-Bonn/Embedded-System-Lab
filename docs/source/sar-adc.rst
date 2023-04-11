@@ -55,6 +55,7 @@ The voltage at the output of the ladder is VREF times the binary weighted sum of
 .. math::
   
   V_{DAC} = V_{REF} \cdot \frac{DAC_{reg}}{\2^n}}.
+  
 
 In the circuit implementation of thr R-2R DAC an 8-bit digital buffer which power supply is connected to VREF is used to switch the resistive ladder taps between 0 and VREF. 
 
