@@ -11,7 +11,7 @@ Experiment: Successive Approximation ADC
 In this module, function and performance of a 8-bit successive-approximation register analog-digital-converter (SAR-ADC) will be studied. A SAR-ADC main function blocks consists of a digital-to-analog converter (DAC), a sampling switch and capacitor, a comparator and some digital control logic. The diagram below shows the basic function blocks. The SAR logic which will be implemented as part of the user code on the Raspberry Pi will control the DAC via an SPI bus and interface to the two GPIO signals SAMPLE and COMP_OUT. 
 
 .. figure:: images/SAR_ADC_block.png
-    :width: 600
+    :width: 500
     :align: center
 
     Functional block diagram of the SAR-ADC
@@ -45,7 +45,7 @@ Digital to Analog Converter
 The digital-to-analog converter is implemented with a resistive voltage divider and a reference voltage VREF. Programmable switches can set the output voltage in a range from 0 to VREF(2^(n-1))/(2^n) with a step size of VREF/(2^n). A resistive voltage divider for an n-bit DAC can be constructed from 2^n equal sized resistors and 2^n switches (also called a resistor string divider or thermometer encoded ladder) or a binary weighted ladder. The latter one would require only n+1 resistors with values from R to 2^n x R. However, the required matching of resistor values over that value range is typically not easy to achieve. A clever re-arrangement of resistor and switches using 2x n resistors and n switches allows the usage of resistors with the value R and 2x R only. This so-called R-2R ladder is used for the module's DAC.
  
  .. figure:: images/R2R_ladder.png
-    :width: 600
+    :width: 500
     :align: center
 
     Resistive ladder (R-2R) digital analog converter
@@ -85,7 +85,7 @@ with
 
 .. math::
 
-  ADC_{GAIN} =  \frac{2^n}{V_{REF}} and ADC_{OFFSET} = 0.
+  ADC_{GAIN} =  \frac{2^n}{V_{REF}} \text{ and } ADC_{OFFSET} = 0.
 
 
 That implies that all ADC codes are representing the same bin width of analog values (i.e. gain and offset are constant and do not depend on the input voltage). Testing this specification can be done by generating analog voltages over the full ADC input range and comparing the conversion result to the generated voltage. Since the accuracy of the generated voltage has to be much higher then the resolution of the ADC, this procedure can be quite challenging, in particular for high resolution ADCs. A more efficient approach is to generate an input signal which is not precisely controlled step-by-step but rather provides a know amplitude density spectrum. This statistical method (also called histogram method) will be used for the ADC characterisation.
