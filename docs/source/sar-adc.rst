@@ -100,7 +100,7 @@ Exercises
 ---------
 
 .. admonition:: Exercise 0. A bit of theory
-  
+
   #. Show that the output voltage of an R-2R ladder is defined by the formula given above (derive the equation). Hint: Start with a 1-bit DAC and calculate its output impedance. Does it depend on the switch setting? What ar the two voltage levels the 1-b DAC can produce? Then, derive a formalism for an n-bit DAC.
   #. Make a plot of an non-ideal ADC transfer curve and explain the terms offset, gain, dynamic range, DNL, INL, missing bits
   #. Derive the formulas to calculate DNL and INL from a code density histogram.
@@ -137,3 +137,4 @@ Keywords and literature references
 * R-2R resistor ladder
 * ADC testing methods (histogram method)
 * Integrated- and Differential Non-linearity
+* ...
