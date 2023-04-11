@@ -95,6 +95,9 @@ The ADC module provides a simple signal generator which generates a saw-tooth wa
 Exercises 
 ---------
 
+There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains the necessary includes and the basic configuration for the SPI interface and the two GPIO signals. Copy it into your ``work `` folder and use it as a template for your scripts. There is also another file called ``sar_adc_solution.py`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck.
+
+
 .. admonition:: Exercise 0. A bit of theory
 
   #. Show that the output voltage of an R-2R ladder is defined by the formula given above (derive the equation). Hint: Start with a 1-bit DAC and calculate its output impedance. Does it depend on the switch setting? What ar the two voltage levels the 1-b DAC can produce? Then, derive a formalism for an n-bit DAC.
@@ -111,7 +114,8 @@ Exercises
 
   #. Program a loop which produces a saw tooth pattern at the DAC output. Connect an oscilloscope to the ``OUTPUT`` connector. Explain what you see. What is the period of the waveform? How can you change it? 
   #. Add an control statement to the loop and adjust the code such that it will implement the SAR logic as described above. Use ``print`` statements to examine the DAC register setting during the loop. Alternatively, run the code in debug mode and inspect the variables in the debugger window.
-  #. Connect a dc-voltage source (lab power supply) to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator needs some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read). Measure the sample rate either within the script (use for example Python **tqdm** module in the acquisition loop) or with the oscilloscope (measure the ``SAMPLE`` signal frequency). What is the maximum sample rate you can achieve? What is the dominant limit?
+  #. Connect a dc-voltage source (lab power supply) to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator needs some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read). Plot the DAC code as a function of cycle number. Repeat the plot with DAC voltage units instead of DAC code using the binary weights measured in Exercise 1.
+  #. Measure the sample rate either within the script (use for example Python **tqdm** module in the acquisition loop) or with the oscilloscope (measure the ``SAMPLE`` signal frequency). What is the maximum sample rate you can achieve? What is the dominant limit?
 
 .. admonition:: Exercise 3. Dynamic range and calibration
 
