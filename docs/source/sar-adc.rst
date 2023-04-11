@@ -50,19 +50,19 @@ The digital-to-analog converter is implemented with a resistive voltage divider 
 
     Resistive ladder (R-2R) digital analog converter
     
-The voltage at the output of the ladder is VREF times the binary weighted sum of the DAC's register bits DACreg set to '1'.
+The voltage at the output of the ladder is VREF times the binary weighted sum of the DAC's register bits DAC_REG set to '1'.
 
 .. math::
   
-  V_{DAC} = DAC_{reg} \cdot \frac{V_{ref}}{2^n}.
+  V_{DAC} = DAC_{REG} \cdot \frac{V_{REF}}{2^n}.
 
 
-In the circuit implementation of thr R-2R DAC an 8-bit digital buffer which power supply is connected to VREF is used to switch the resistive ladder taps between 0 and VREF. 
+
 
  
 Circuit Implementation 
 ----------------------
-A simplified circuit diagram of the SAR-ADC is shown here
+A simplified circuit diagram of the SAR-ADC is shown here. The R-2R ladder switch configuration is implemented with an 8-bit digital buffer whose power supply is connected to VREF. That allows the data outputs to switch between 0 Volts and VREF. The control bits D[7:0] are shifted into the register via an SPI bus interface.
  
  .. figure:: images/SAR_ADC_circuit.png
     :width: 600
@@ -79,15 +79,21 @@ An important performance parameter of an ADC is its linearity. An ideal n-bit AD
 
 .. math::
 
-  ADC_{code} = V_{IN} \cdot \frac{2^n}{V_{REF}}.
+  ADC_{code} = V_{IN} \cdot ADC_{GAIN} + ADC_{offset} 
+
+with
+
+.. math::
+
+  ADC_{GAIN} =  \frac{2^n}{V_{REF}} and ADC_{OFFSET} = 0.
 
 
-That implies that all ADC codes are representing the same bin width of analog values. Testing this specification can be done by generating analog voltages over the full ADC input range and comparing the conversion result to the generated voltage. Since the accuracy of the generated voltage has to be much higher then the resolution of the ADC, this procedure can be quite challenging, in particular for high resolution ADCs. A more efficient approach is to generate an input signal which is not precisely controlled step-by-step but rather provides a know amplitude density. This statistical method (also called histogram method) will be used for the ADC characterisation.
+That implies that all ADC codes are representing the same bin width of analog values (i.e. gain and offset are constant and do not depend on the input voltage). Testing this specification can be done by generating analog voltages over the full ADC input range and comparing the conversion result to the generated voltage. Since the accuracy of the generated voltage has to be much higher then the resolution of the ADC, this procedure can be quite challenging, in particular for high resolution ADCs. A more efficient approach is to generate an input signal which is not precisely controlled step-by-step but rather provides a know amplitude density spectrum. This statistical method (also called histogram method) will be used for the ADC characterisation.
 
 
 Test Signal Generator 
 --------------------
-The ADC module provides a simple signal generator which generates a saw-tooth waveform output voltage. This signal will be used to characterise the ADC's linearity.
+The ADC module provides a simple signal generator which generates a saw-tooth waveform output voltage. This linear ramp will generate a considerably flat amplitude density spectrum over most of the ADC's dynamic input range. This ramp signal will be used to characterise the ADC's linearity.
 
 - Dynamic rage, calibration
 - Noise
@@ -105,3 +111,10 @@ Exercises
 
 .. admonition:: Exercise 4. Integrated- and Differential Nonlinearity
 
+
+Keywords and literature references
+----------------------------------
+* ADC architectures
+* R-2R ladder
+* ADC testing methods (histogram method)
+* Integrated- and Differential Non-linarity
