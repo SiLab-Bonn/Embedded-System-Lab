@@ -100,7 +100,7 @@ There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains t
 
 .. admonition:: Exercise 0. A bit of theory
 
-  #. Show that the output voltage of an R-2R ladder is defined by the formula given above (derive the equation). Hint: Start with a 1-bit DAC and calculate its output impedance. Does it depend on the switch setting? What ar the two voltage levels the 1-b DAC can produce? Then, derive a formalism for an n-bit DAC.
+  #. Show that the output voltage of an R-2R ladder is defined by the formula given above (derive the equation). Hint: Start with a 1-bit DAC and calculate its output impedance. Does it depend on the switch setting? What are the two voltage levels the 1-b DAC can produce? Then, derive a formalism for an n-bit DAC.
   #. Make a plot of an non-ideal ADC transfer curve and explain the terms offset, gain, dynamic range, DNL, INL, missing bits
   #. Derive the formulas to calculate DNL and INL from a code density histogram.
   #. What is the differential non-linearity of an ideal ADC?
