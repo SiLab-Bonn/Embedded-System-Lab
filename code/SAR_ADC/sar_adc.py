@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
+
 # SPI bus setup
 spi = SPI.SpiDev()
 spi.open(0,0)  # (bus, device)
@@ -24,8 +25,8 @@ GPIO.output(SAMPLE, GPIO.LOW)
 # prepare plots
 adc_hist = [10,8,10,12]
 bin_edges = [1,2,3,4,5]
-lower_bound = 1
-upper_bound = 3
+lower_bound = 2
+upper_bound = 4
 figure, plot = plt.subplots(1, 1)
 plot[0].stairs(adc_hist, bin_edges, fill=True)
 plot[0].set_xticks(range(0, 260, 32))
