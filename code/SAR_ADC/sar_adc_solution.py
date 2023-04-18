@@ -207,7 +207,6 @@ while 1:
   if (x =='q'):  
     break
 
-
-
+GPIO.cleanup()
 
 

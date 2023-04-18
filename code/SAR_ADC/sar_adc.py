@@ -36,6 +36,6 @@ plot[0].axvline(x=upper_bound, color='red', linestyle='--')
 
 plt.show()
 
-
+GPIO.cleanup()
 
 
