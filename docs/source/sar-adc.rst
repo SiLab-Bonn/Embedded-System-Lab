@@ -25,14 +25,13 @@ A conversion begins with switching the input node from tracking the input voltag
   1. // open the sample switch (hold mode)
   SAMPLE = 0
 
-  2. // start with DAC mid-range voltage: set MSB to '1' by shifting a '1' n-bits to the left
-  DAC_register = 1 << n          
+  2. // initialize the DAC register
+  DAC_register = 0          
   
   3. // Repeat code block below n-times while j runs from n-1 to 0.
-  if (VDAC < VIN)            // compare ADC input with DAC output (i.e. read the result of the comparator)
-    DAC_register -= (1 << j) // DAC output larger then VIN, subtract next LSB value from current DAC setting
-  else
-    DAC_register += (1 << j) // DAC output smaller then VIN, add next LSB value to current DAC setting
+  DAC_register += (1 << j)   // set and test DAC register bits from MSB to LSB
+  if (VDAC > VIN)            // compare ADC input with DAC output (i.e. read the result of the comparator)
+    DAC_register -= (1 << j) // DAC output larger then VIN, subtract current DAC register bit
  
   4. // The final DAC register value after n-iterations is the digital representation of the analog input voltage.
   result = DAC_register
@@ -107,13 +106,13 @@ There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains t
 
 .. admonition:: Exercise 1. R-2R ladder DAC
 
-  #. Write a script that allows the programming of the R-2R DAC via the SPI bus and measure the DAC output voltage for each bit (binary weights) with a DVM connected to the ``OUTPUT`` connector (set the output jumper to ``VDAC``). Compare the LEDs connected to the digital buffer's output with the binary value you send via the SPI bus.
+  #. Write a script that allows the programming of the R-2R DAC via the SPI bus and measure the DAC output voltage for each bit (binary weights) with a DVM connected to the ``OUTPUT`` connector (set the output jumper to ``VDAC``). Compare the LEDs connected to the digital buffer's output with the binary value you send via the SPI bus.  
+  #. Program a loop which produces a saw tooth pattern at the DAC output. Connect an oscilloscope to the ``OUTPUT`` connector. Explain what you see. What is the period of the waveform? How can you change it? What happens if you move the mouse during the loop is running?
   #. Calculate and plot the expected DAC transfer function based on the measured binary weights of the DAC. Plot the INL and DNL of the DAC.
   
 .. admonition:: Exercise 2. SAR Logic
 
-  #. Program a loop which produces a saw tooth pattern at the DAC output. Connect an oscilloscope to the ``OUTPUT`` connector. Explain what you see. What is the period of the waveform? How can you change it? 
-  #. Add an control statement to the loop and adjust the code such that it will implement the SAR logic as described above. Use ``print`` statements to examine the DAC register setting during the loop. Alternatively, run the code in debug mode and inspect the variables in the debugger window.
+  #. Implement the SAR logic as described above. Use ``print`` or logging statements to examine the DAC register setting during the loop. Alternatively, run the code in debug mode and inspect the variables in the debugger window.
   #. Connect a dc-voltage source (lab power supply) to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator needs some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read). Plot the DAC code as a function of cycle number. Repeat the plot with DAC voltage units instead of DAC code using the binary weights measured in Exercise 1.
   #. Measure the sample rate either within the script (use for example Python **tqdm** module in the acquisition loop) or with the oscilloscope (measure the ``SAMPLE`` signal frequency). What is the maximum sample rate you can achieve? What is the dominant limit?
 
