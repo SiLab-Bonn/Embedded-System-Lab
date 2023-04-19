@@ -1,15 +1,3 @@
-.. |gm|    replace:: g\ :sub:`m`\ 
-.. |VREF|  replace:: V\ :sub:`REF`\ 
-.. |ID|    replace:: I\ :sub:`D`\ 
-.. |UGS|   replace:: U\ :sub:`GS`\ 
-.. |UDS|   replace:: U\ :sub:`DS`\ 
-.. |VTHR|  replace:: V\ :sub:`THR`\ 
-.. |^2|    replace:: \ :sup:`2`\ 
-.. |RSNS|  replace:: R\ :sub:`SNS`\ 
-.. |VISNS| replace:: V\ :sub:`ISNS`\ 
-
-
-
 ===================================
 Experiment: Device Characterization
 ===================================
@@ -20,7 +8,7 @@ Experiment: Device Characterization
 
     Source-Meter Module
 
-In this experiment the characteristic I-V curves of (active) electronic devices will be measured and used for the extraction of devices electrical parameters. For example, a MOSFET is typically characterized by it threshold voltage |VTHR|, its transconductance (|gm|, which describes its voltage-to-current gain) and other parameters, which can be extracted from I-V measurements. The SMU ('source monitoring unit') module used in this experiment provides two programmable voltage sources with a wide range current sensing capability (~mA down to ~nA). The Raspberry Pi connects to the SMU via an I2C bus which writes the data to the on-board DAC which sets the output voltages and reads back the measured output current.
+In this experiment the characteristic I-V curves of (active) electronic devices will be measured and used for the extraction of devices electrical parameters. For example, a MOSFET is typically characterized by it threshold voltage |VTHR|, its transconductance |gm|, which describes its voltage-to-current gain and other parameters, which can be extracted from I-V measurements. The SMU ('source monitoring unit') module used in this experiment provides two programmable voltage sources with a wide range current sensing capability (~mA down to ~nA). The Raspberry Pi connects to the SMU via an I2C bus which writes the data to the on-board DAC which sets the output voltages and reads back the measured output current.
 
 Source Monitoring Unit
 =====================
