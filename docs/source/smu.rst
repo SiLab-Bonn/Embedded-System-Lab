@@ -56,7 +56,7 @@ and therefore
 
 .. math::
 
-  I_{OUT} = \frac{ADC_{CODE}}{R_{SNS} \cdot 10} [\text{ mA}].
+  I_{OUT} = \frac{ADC_{CODE}}{R_{SNS} \cdot 10} [\text{mV}].
 
 
 This formula leads to the conversion factor given in the above table to calculate the output current in Ampere from the ADC code. To use the full dynamic current measurement range, the switching between current ranges can be automated by the measurement scripts. For example during a voltage sweep, the measured current should be compared to threshold values defined by the boundaries between the current measurement ranges (5 µA and 500 µA) and the ranges selected accordingly.
