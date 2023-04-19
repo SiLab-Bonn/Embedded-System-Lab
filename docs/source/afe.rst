@@ -1,3 +1,4 @@
+.. include:: replacements.rst
 ===========
 Experiment: Analog Signal Processing for Semiconductor Sensors
 ===========

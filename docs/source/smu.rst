@@ -66,4 +66,30 @@ Devices with more than two ports like transistors typically have more than one v
 MOSFET Parameter Extraction
 ===========================
 
-A MOSFET is characterized with a number of electrical parameters describing its dc- and ac- performance. Many of these parameters are typically found in the devices datasheet and even more parameters are needed for simulation models.
+A MOSFET is characterized with a number of electrical parameters describing its dc- and ac- performance. Many of these parameters are typically found in the devices datasheet and even more parameters are needed for simulation models. Simple I-V scans, however, can be used to extract the most important MOSFET parameters: 
+
+ * Transconductance |gm| 
+ * Threshold voltage |VTHR| 
+ * Subthreshold slope
+ * Output resistance |g0|
+
+ The MOSFET input characteristic (|ID| vs |UGS| curve) will be used to extract transconductance |gm|, threshold voltage |VTHR| and subthreshold slope, and the output characteristic (|ID| vs |UDS| curve, with |UGS| as a parameter) will be used to extract the output resistance |g0|.
+
+ ....
+
+
+.. admonition:: Exercise 0. A bit of theory
+
+  #. Plot the theoretical current measurement error as a function of the current for a fixed current measurement range (no switching of |RSNS|). Assume that the error is only defined by the ADC resolution. Repeat the plot considering automatic switching of the current measurement range. Also use a logarithmic y-scale for the plots.
+  #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region?. Plot example I-V curves to explain.
+  #. Derive the formula for definition of the transconductance |gm|. 
+  #. What different methods exist to extract |VTHR| from I-V curves?
+
+
+.. admonition:: Exercise 1. I-V scan loop implementation
+  
+  #. Write a simple script which allows to set the output voltage and read back the current of an SMU channel (you also need to set a current range, otherwise the output will be off). Control the output voltage with a DVM and compare the measured voltage with the value you have set in the script.
+  #. Add a loop statement to the script and connect a 1 kOhm resistor to the output. Measure and plot I-V curves for different resistor values. Discuss the choice of current measurement range (fixed ranging).
+  #. Connect a diode to the SMU and plot the I-V curve for the forward region of the diode. Make the scans for all three current ranges separately. 
+  #. Implement an "autoranging" functionality in the scan loop. Remember to set the calibration constant to convert ADC code to current according to the selected current sense gain. Measure the diode I-V curve again and plot linear and log current scales.
+
