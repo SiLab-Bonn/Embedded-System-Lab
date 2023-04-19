@@ -1,7 +1,7 @@
 .. text replacements
 .. |^n|    replace:: \ :sup:`n`\ 
 .. |gm|    replace:: g\ :sub:`m`\ 
-.. |g0|    replace:: g\ :sub:`o`\ 
+.. |go|    replace:: g\ :sub:`o`\ 
 .. |VREF|  replace:: V\ :sub:`REF`\ 
 .. |ID|    replace:: I\ :sub:`D`\ 
 .. |VGS|   replace:: U\ :sub:`GS`\ 
