@@ -1,2 +1,2 @@
 pillow==9.3.0
-jQuery==3.5.0
+jQuery==2.1.0
