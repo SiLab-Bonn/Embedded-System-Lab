@@ -1,3 +1,4 @@
+.. include:: replacements.rst
 ===================================
 Experiment: Device Characterization
 ===================================

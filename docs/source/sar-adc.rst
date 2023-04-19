@@ -1,3 +1,4 @@
+.. include:: replacements.rst
 ========================================
 Experiment: Successive Approximation ADC
 ========================================

@@ -3,17 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. text replacements
-.. |^n|    replace:: \ :sup:`n`\ 
-.. |gm|    replace:: g\ :sub:`m`\ 
-.. |VREF|  replace:: V\ :sub:`REF`\ 
-.. |ID|    replace:: I\ :sub:`D`\ 
-.. |VGS|   replace:: U\ :sub:`GS`\ 
-.. |VDS|   replace:: U\ :sub:`DS`\ 
-.. |VTHR|  replace:: V\ :sub:`THR`\ 
-.. |RSNS|  replace:: R\ :sub:`SNS`\ 
-.. |VISNS| replace:: V\ :sub:`ISNS`\    
-
 Embedded System Lab
 ===================
 
@@ -32,11 +21,6 @@ Embedded System Lab
    cvm
    afe
    psa
-
-
-
-
-
 
 
 Indices and tables
