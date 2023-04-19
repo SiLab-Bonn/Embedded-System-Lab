@@ -90,6 +90,14 @@ A MOSFET is characterized with a number of electrical parameters describing its 
   
   #. Write a simple script which allows to set the output voltage and read back the current of an SMU channel (you also need to set a current range, otherwise the output will be off). Control the output voltage with a DVM and compare the measured voltage with the value you have set in the script.
   #. Add a loop statement to the script and connect a 1 kOhm resistor to the output. Measure and plot I-V curves for different resistor values. Discuss the choice of current measurement range (fixed ranging).
-  #. Connect a diode to the SMU and plot the I-V curve for the forward region of the diode. Make the scans for all three current ranges separately. 
-  #. Implement an "autoranging" functionality in the scan loop. Remember to set the calibration constant to convert ADC code to current according to the selected current sense gain. Measure the diode I-V curve again and plot linear and log current scales.
+  #. Connect a diode to the SMU and plot the I-V curve for the forward region of the diode. Make the scans for all three current ranges separately and combine the traces in one plot. Remember to set the calibration constant to convert ADC code to current according to the selected current range.
 
+
+.. admonition:: Exercise 2. Automatic current range selection
+
+  #. Implement an "autoranging" functionality in the scan loop. Measure the diode I-V curve again and plot linear and log current scales. 
+  #. ....
+
+.. admonition:: Exercise 3. MOSFET Parameter Extraction
+
+  .....
