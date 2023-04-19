@@ -1,4 +1,10 @@
-.. |gm| replace:: g\ :sub:`m`\ 
+.. |gm|   replace:: g\ :sub:`m`\ 
+.. |VREF| replace:: V\ :sub:`REF`\ 
+.. |ID|   replace:: I\ :sub:`D`\ 
+.. |UGS|  replace:: U\ :sub:`GS`\ 
+.. |UDS|  replace:: U\ :sub:`DS`\ 
+.. |^2|   replace:: \ :sup:`2`\ 
+
 
 ===================================
 Experiment: Device Characterization
