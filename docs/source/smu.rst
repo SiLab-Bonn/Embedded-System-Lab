@@ -1,6 +1,6 @@
 .. include:: replacements.rst
 ===================================
-Experiment: Device Characterization
+Experiment: MOSFET Parameter Extraction
 ===================================
 
 .. figure:: images/smu.png
@@ -28,7 +28,7 @@ The DAC output voltage is buffered by an opamp configured as a unit gain buffer.
 
     Simplified circuit diagram
 
-To improve the dynamic range of the current measurement, the sense resistor Rs can be selected from three values (8 Ohm, 800 Ohm and 80 kOhm). The selection is controlled via a multiplexer which is programmed over the I2C bus. The programmable sense resistor enables these current measurement ranges: 
+To improve the dynamic range of the current measurement, the sense resistor |RSNS| can be selected from three values (8 Ohm, 800 Ohm and 80 kOhm). The selection is controlled via a multiplexer which is programmed over the I2C bus. The programmable sense resistor enables these current measurement ranges: 
 
 
     ========  ===========  ==================  ==========
@@ -65,3 +65,5 @@ Devices with more than two ports like transistors typically have more than one v
 
 MOSFET Parameter Extraction
 ===========================
+
+A MOSFET is characterized with a number of electrical parameters describing its dc- and ac- performance. Many of these parameters are typically found in the devices datasheet and even more parameters are needed for simulation models.

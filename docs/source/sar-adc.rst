@@ -42,7 +42,7 @@ A conversion begins with switching the input node from tracking the input voltag
   
 Digital to Analog Converter
 ---------------------------
-The digital-to-analog converter is implemented with a resistive voltage divider and a reference voltage VREF. Programmable switches can set the output voltage in a range from 0 to VREF(2^(n-1))/(2^n) with a step size of VREF/(2^n). A resistive voltage divider for an n-bit DAC can be constructed from 2^n equal sized resistors and 2^n switches (also called a resistor string divider or thermometer encoded ladder) or a binary weighted ladder. The latter one would require only n+1 resistors with values from R to 2^n x R. However, the required matching of resistor values over that value range is typically not easy to achieve. A clever re-arrangement of resistor and switches using 2x n resistors and n switches allows the usage of resistors with the value R and 2x R only. This so-called R-2R ladder is used for the module's DAC.
+The digital-to-analog converter is implemented with a resistive voltage divider and a reference voltage |VREF|. Programmable switches can set the output voltage in a range from 0 to |VREF|(2^(n-1))/(2^n) with a step size of |VREF|/(2^n). A resistive voltage divider for an n-bit DAC can be constructed from 2^n equal sized resistors and 2^n switches (also called a resistor string divider or thermometer encoded ladder) or a binary weighted ladder. The latter one would require only n+1 resistors with values from R to 2^n x R. However, the required matching of resistor values over that value range is typically not easy to achieve. A clever re-arrangement of resistor and switches using 2x n resistors and n switches allows the usage of resistors with the value R and 2x R only. This so-called R-2R ladder is used for the module's DAC.
  
  .. figure:: images/R2R_ladder.png
     :width: 500
@@ -50,7 +50,7 @@ The digital-to-analog converter is implemented with a resistive voltage divider 
 
     Resistive ladder (R-2R) digital analog converter
     
-The voltage at the output of the ladder is VREF times the binary weighted sum of the DAC's register bits DAC_REG set to '1'.
+The voltage at the output of the ladder is |VREF| times the binary weighted sum of the DAC's register bits DAC_REG set to '1'.
 
 .. math::
   
@@ -59,7 +59,7 @@ The voltage at the output of the ladder is VREF times the binary weighted sum of
 
 Circuit Implementation 
 ----------------------
-A simplified circuit diagram of the SAR-ADC is shown here. The R-2R ladder switch configuration is implemented with an 8-bit digital buffer whose power supply is connected to VREF = 4.096 V. That allows the data outputs to switch between 0 and 4.096 Volt. The control bits D[7:0] are shifted into the register via an SPI bus interface.
+A simplified circuit diagram of the SAR-ADC is shown here. The R-2R ladder switch configuration is implemented with an 8-bit digital buffer whose power supply is connected to |VREF| = 4.096 V. That allows the data outputs to switch between 0 and 4.096 Volt. The control bits D[7:0] are shifted into the register via an SPI bus interface.
  
  .. figure:: images/SAR_ADC_circuit.png
     :width: 600
