@@ -56,9 +56,6 @@ The voltage at the output of the ladder is VREF times the binary weighted sum of
   V_{DAC} = DAC_{REG} \cdot \frac{V_{REF}}{2^n}.
 
 
-
-
- 
 Circuit Implementation 
 ----------------------
 A simplified circuit diagram of the SAR-ADC is shown here. The R-2R ladder switch configuration is implemented with an 8-bit digital buffer whose power supply is connected to VREF = 4.096 V. That allows the data outputs to switch between 0 and 4.096 Volt. The control bits D[7:0] are shifted into the register via an SPI bus interface.
@@ -113,7 +110,15 @@ There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains t
 .. admonition:: Exercise 2. SAR Logic
 
   #. Implement the SAR logic as described above. Use ``print`` or logging statements to examine the DAC register setting during the loop. Alternatively, run the code in debug mode and inspect the variables in the debugger window.
-  #. Connect a dc-voltage source (lab power supply) to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator needs some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read). Plot the DAC code as a function of cycle number. Repeat the plot with DAC voltage units instead of DAC code using the binary weights measured in Exercise 1.
+  #. Connect a dc-voltage source (lab power supply) to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator needs some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read). Plot the DAC code as a function of cycle number (see picture below). Repeat the plot with DAC voltage units instead of DAC code using the binary weights measured in Exercise 1.
+
+  .. figure:: images/sar_cycle.png
+     :width: 400
+     :align: center
+
+     Successive approximation cycle
+
+
   #. Measure the sample rate either within the script (use for example Python **tqdm** module in the acquisition loop) or with the oscilloscope (measure the ``SAMPLE`` signal frequency). What is the maximum sample rate you can achieve? What is the dominant limit?
 
 .. admonition:: Exercise 3. Dynamic range and calibration
