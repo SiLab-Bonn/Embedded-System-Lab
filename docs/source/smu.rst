@@ -52,6 +52,13 @@ The 12-bit ADC converts this voltage according to
 
   ADC_{CODE} = V_{ISNS} \cdot \frac{4096}{V_{REF}} = I_{OUT} \cdot R_{SNS} \cdot 10 \cdot mV^{-1}.
 
+and therefore
+
+.. math::
+
+  I_{OUT} = \frac{ADC_{CODE}}{R_{SNS} \cdot 10} [\text{ mA}].
+
+
 This formula leads to the conversion factor given in the above table to calculate the output current in Ampere from the ADC code. To use the full dynamic current measurement range, the switching between current ranges can be automated by the measurement scripts. For example during a voltage sweep, the measured current should be compared to threshold values defined by the boundaries between the current measurement ranges (5 µA and 500 µA) and the ranges selected accordingly.
 
 There are a few more circuit details which are found in the full circuit schematic: :download:`SMU_1.1.pdf <documents/SMU_1.1.pdf>`. For example, the module has on-board sockets to connect a transistor to the SMU output channels without using the LEMO connectors. Other circuits elements are used to decrease the output resistance of the multiplexer in the highest current range and to limit the output current to the range maximum.
