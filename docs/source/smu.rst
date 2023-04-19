@@ -19,7 +19,13 @@ The SMU module has two independent channels which supply a programmable voltage 
   
   V_{OUT} = DAC_{REG} \cdot \frac{4096 \text{ mV}}{2^{12}} =  DAC_{REG} [\text{mV}].
 
-The DAC output voltage is buffered by an opamp configured as a unit gain buffer. A sense resistor Rsns at the opamp output is used for the current measurement. The voltage drop across Rsns is amplified by a difference amplifier with a gain of 10 and then digitized by an 12-bit ADC which is also connected to the I2C bus. 
+The DAC output voltage is buffered by an opamp configured as a unit gain buffer. A sense resistor Rsns at the opamp output is used for the current measurement. The voltage drop across Rsns is amplified by a difference amplifier with a gain of 10 and then digitized by an 12-bit ADC which is also connected to the I2C bus. The figre below shows the simplified circuit diagram of one SMU channel.
+
+ .. figure:: images/SMU_block.png
+    :width: 600
+    :align: center
+
+    Simplified circuit diagram
 
 To improve the dynamic range of the current measurement, the sense resistor Rs can be selected from three values (8 Ohm, 800 Ohm and 80 kOhm). The selection is controlled via a multiplexer which is programmed over the I2C bus. The programmable sense resistor enables these current measurement ranges: 
 
