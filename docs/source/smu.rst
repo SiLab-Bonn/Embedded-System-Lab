@@ -23,6 +23,10 @@ The DAC output voltage is buffered by an opamp configured as a unit gain buffer.
 
 To improve the dynamic range of the current measurement, the sense resistor Rs can be selected from three values (8 Ohm, 800 Ohm and 80 kOhm). The selection is controlled via a multiplexer which is programmed over the I2C bus. The programmable sense resistor enables these current measurement ranges: 
 
+
+.. table::
+   :align: right
+   
     ========  ===========  ==================  ==========
     SEL[1:0]   Rsns [Ohm]   Max. current [A]    I_LSB [A]  
     ========  ===========  ==================  ==========
@@ -42,7 +46,7 @@ The 12-bit ADC converts this voltage according to
 
 .. math::
 
-  ADC_{code} = V_{ISNS} \cdot \frac{2^{12}}{4096 \text{ mV}} = I_{OUT} \cdot R_{SNS} \cdot 10 \cdot mV^{-1}.
+  ADC_{CODE} = V_{ISNS} \cdot \frac{2^{12}}{4096 \text{ mV}} = I_{OUT} \cdot R_{SNS} \cdot 10 \cdot mV^{-1}.
 
 This formula leads to the conversion factor given in the above table to calculate the output current in Ampere from the ADC code. To use the full dynamic current measurement range, the switching between current ranges can be automated by the measurement scripts. For example during a voltage sweep, the measured current should be compared to threshold values defined by the boundaries between the current measurement ranges (5 µA and 500 µA) and the ranges selected accordingly.
 
@@ -51,7 +55,9 @@ There are a few more circuit details which are found in the full circuit schemat
 I-V Curve Measurements
 ======================
 
-The simplest I-V curve is obtained by a measuring a resistor by connecting the output of a single SMU channel to it. Of course, also other devices with two ports like (i.e. diodes) are connected that way. Devices with more than two ports like transistors typically have more than one voltage applied. For example the input characteristic of a MOSFET (drain current I_D as a function of the gate voltage V_GS) requires the drain and the gate potential to be individually controlled (i.e. V_GS is swept while V_DS is held constant).
+The simplest I-V curves are obtained by a measuring a device with two ports (a resistor or a diode, for example) which gets connected to one of the SMU outputs. The measurement script then sweeps the the output voltage of the used channel in a given range and step size. The smallest voltage step is 1 mV which corresponds to one DAC bit (see DAC output voltage calculation above). For faster voltage sweeps with less points, the voltage step size can be increased. In the scan loop, the output current is measured for each voltage step and both values are stored for later plotting and analysis. 
+
+Devices with more than two ports like transistors typically have more than one voltage applied. For example the input characteristic of a MOSFET (drain current I_D as a function of the gate voltage V_GS) requires the drain and the gate potential to be individually controlled (i.e. V_GS is swept while V_DS is held constant). For those kind of I-V measurements, both SMU channels will be used simultaneously. 
 
 MOSFET Parameter Extraction
 ===========================
