@@ -18,7 +18,7 @@ The SMU module has two independent channels which supply a programmable voltage 
 
 .. math::
   
-  V_{OUT} = DAC_{REG} \cdot \frac{V_{REF}}{4096}} =  DAC_{REG} [\text{mV}].
+  V_{OUT} = DAC_{REG} \cdot \frac{V_{REF}}{4096} =  DAC_{REG} [\text{mV}].
 
 The DAC output voltage is buffered by an opamp configured as a unit gain buffer. A sense resistor |RSNS| at the opamp output is used for the current measurement. The voltage drop across |RSNS| is amplified by a difference amplifier with a gain of 10 and then digitized by an 12-bit ADC which is also connected to the I2C bus. The figure below shows the simplified circuit diagram of one SMU channel.
 
