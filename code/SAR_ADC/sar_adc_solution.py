@@ -174,7 +174,9 @@ while 1:
     value, array = read_adc(resolution)
     x = [i for i in (range(len(array)))]
     result_line = ax.axhline(y=value, color='red', linestyle='--')
-    plot, = ax.step(x, array, where='mid')
+    plot, = ax.step(x, array, where='mid', label = "result = %.d" % value)
+    ax.set_yticks(range(0, (1 << resolution)+1,  (1 << (resolution-3))))  
+    ax.legend()
     plt.show()
     while 1:  # loop to update plot interactively
       y = input("Press enter to read ADC value and plot ('q' to exit): ")
@@ -184,6 +186,7 @@ while 1:
       value, array = read_adc(resolution)
       result_line.set_ydata(value)
       plot.set_ydata(array)
+      plot.set_label("result = %.d" % value)
 
   if (x == '5'):
     while 1:
