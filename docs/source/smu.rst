@@ -18,7 +18,7 @@ The SMU module has two independent channels which supply a programmable voltage 
 
 .. math::
   
-  V_{OUT} = DAC_{REG} \cdot \frac{4096 \text{ mV}}{2^{12}} =  DAC_{REG} [\text{mV}].
+  V_{OUT} = DAC_{REG} \cdot \frac{V_{REF}}{4096}} =  DAC_{REG} [\text{mV}].
 
 The DAC output voltage is buffered by an opamp configured as a unit gain buffer. A sense resistor |RSNS| at the opamp output is used for the current measurement. The voltage drop across |RSNS| is amplified by a difference amplifier with a gain of 10 and then digitized by an 12-bit ADC which is also connected to the I2C bus. The figure below shows the simplified circuit diagram of one SMU channel.
 
@@ -50,7 +50,7 @@ The 12-bit ADC converts this voltage according to
 
 .. math::
 
-  ADC_{CODE} = V_{ISNS} \cdot \frac{2^{12}}{4096 \text{ mV}} = I_{OUT} \cdot R_{SNS} \cdot 10 \cdot mV^{-1}.
+  ADC_{CODE} = V_{ISNS} \cdot \frac{4096}{V_{REF}} = I_{OUT} \cdot R_{SNS} \cdot 10 \cdot mV^{-1}.
 
 This formula leads to the conversion factor given in the above table to calculate the output current in Ampere from the ADC code. To use the full dynamic current measurement range, the switching between current ranges can be automated by the measurement scripts. For example during a voltage sweep, the measured current should be compared to threshold values defined by the boundaries between the current measurement ranges (5 µA and 500 µA) and the ranges selected accordingly.
 
