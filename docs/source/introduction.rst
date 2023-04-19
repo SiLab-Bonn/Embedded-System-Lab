@@ -18,8 +18,8 @@ This modular lab course gives an introduction to selected aspects of analog sign
 
 The individual experiments are featuring dedicated add-on boards (modules) which are controlled from the Raspberry Pi via an SPI bus and other GPIO signals. The fast ADC on the base board will be used to record analog waveforms and also other lab equipment like power supplies can be remotely controlled with the Raspberry Pi. Here is an overview of currently available add-on modules/experiments:  
 
-SAR ADC
--------------------------------------
+Analog-to Digital Conversion using Successive Approximation
+-------------------------------------------------------------
 This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) which consists of a sample and hold input stage, a comparator, and an 8-bit resistor ladder DAC. The user will write the code to implement the SAR logic which controls the sampling stage and DAC and develop scripts for automated measurements to characterize the ADC's various performance parameters (linearity, noise, etc.).
 
 .. figure:: images/sar_adc.png
@@ -28,8 +28,8 @@ This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) w
 
     Successive-Approximation-Register ADC Module
 
-Device Characterization
-------------------------
+Device Parameter Extraction with I-V Curves
+-------------------------------------------
 An important parameter of electronic devices is their current-voltage characteristic. The most simple one is the linear I-V curve (resistance) of a resistor. For active devices like transistors more complex curves parameterizing their transimpedance and transconductance are of interest. To measure these parameters typically a programmable voltage source is used which is capable of precisely monitoring the current. The SMU (source monitoring unit) module with two channels which will be used to measure and analyze various MOSFET parameters (Id vs Ugs, transconductance, output impedance etc).
 
 .. figure:: images/smu.png
@@ -38,8 +38,8 @@ An important parameter of electronic devices is their current-voltage characteri
 
     Source Monitoring Module
 
-Analog Front-end 
-----------------
+Analog Signal Processing Chain for Particle Detectors 
+------------------------------------------------------
 In this experiment a typical analog signal processing chain for semiconductor detectors will be introduced and analyzed. The user will measure the system response to calibration signals and measure the electronic noise as a function of various sensor and circuit parameters. Advanced users can build a Multichannel-Spectrum-Analyzer (MCA) with this module to measure the energy spectrum of radioactive sources.
 
 .. figure:: images/afe.png
@@ -58,8 +58,8 @@ The capacitance of a semiconductor detector is an important parameter for the se
 
     CV-Meter Module
 
-Fast Pulse Sampler
-------------------
+Transmission Line Characterisation with the TDR Method
+-------------------------------------------------------
 High-speed signals need controlled impedance lines (transmission lines, TML) to maintain their signal integrity. So called time-domain-reflectometry (TDR) is a known method to characterize TMLs. This module implements a TDR measurement circuit which generates a very fast pulse to be coupled to a TML-under-test. The reflected waveform is recorded with digital serial analyzer (DSA) which will be controlled by the user code. 
 
 .. figure:: images/psa.png
