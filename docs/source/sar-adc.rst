@@ -116,7 +116,7 @@ There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains t
      :width: 400
      :align: center
 
-     Successive approximation cycle
+     Example of an successive approximation cycle
 
 
   #. Measure the sample rate either within the script (use for example Python **tqdm** module in the acquisition loop) or with the oscilloscope (measure the ``SAMPLE`` signal frequency). What is the maximum sample rate you can achieve? What is the dominant limit?
@@ -132,6 +132,13 @@ There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains t
   #. Connect the output of the ramp generator (set the output jumper to ``RAMP``) to the ADC input. Extend the script that it records a programmable number of acquisitions (start with ~10 per ADC code -> ~2500 total) and plot the values in a histogram (bin size of one, ADC code units). What is the useful range of the ramp signal? Compare this measured range to the direct observation of the ramp with an oscilloscope.
   #. Record ADC data with higher statistic (~100 entries per ADC code) and plot the histogram within the useful dynamic range of the ramp waveform.
   #. Generate DNL amd INL plots from this histogram and calculate the RMS values. Evaluate the effect of the statistic on the reproducibility of the measurement. How much data points do you need to get "stable" results? 
+
+  .. figure:: images/adc_inl_dnl.png
+     :width: 400
+     :align: center
+
+     Example of an INL and DNL characterization
+
   #. Change the above mentioned delay time between DAC register update and comparator read and repeat the INL/DNL analysis. What setting would you chose to optimize linearity? What sample rate does this yield? Plot sample rate vs. DNL for a reasonable range.
 
 
