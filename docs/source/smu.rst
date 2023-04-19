@@ -1,4 +1,4 @@
-.. |gm| g\ :sub:`m`
+.. |gm| replace:: g\ :sub:`m`\ 
 
 ===================================
 Experiment: Device Characterization
