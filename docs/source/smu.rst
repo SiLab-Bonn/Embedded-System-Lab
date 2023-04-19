@@ -24,9 +24,6 @@ The DAC output voltage is buffered by an opamp configured as a unit gain buffer.
 To improve the dynamic range of the current measurement, the sense resistor Rs can be selected from three values (8 Ohm, 800 Ohm and 80 kOhm). The selection is controlled via a multiplexer which is programmed over the I2C bus. The programmable sense resistor enables these current measurement ranges: 
 
 
-.. table::
-   :align: right
-   
     ========  ===========  ==================  ==========
     SEL[1:0]   Rsns [Ohm]   Max. current [A]    I_LSB [A]  
     ========  ===========  ==================  ==========
