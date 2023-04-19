@@ -6,7 +6,7 @@ Introduction
     :width: 600
     :align: center
 
-    Embedded System Lab setup
+    Embedded System Lab base board with a Raspberry 4 module
 
 This modular lab course gives an introduction to selected aspects of analog signal processing and data acquisition techniques. An embedded system running user programs written in Python and/or C is used to directly interact with the experiment module's hardware . The embedded system hardware is based on a Raspberry Pi single board computer which is mounted to a custom base board. The base board allows access to various interfaces (UART, I2C, SPI etc.) which are implemented via the general purpose IO ports (GPIO). In addition, the base board features a fast 12-bit ADC, which allows the Raspberry Pi to be used as a simple oscilloscope to sample waveforms for further processing, documentation, and analysis.
 
@@ -28,9 +28,9 @@ This module implements a 8-bit Successive-Approximation-Register ADC (SAR ADC) w
 
     Successive-Approximation-Register ADC Module
 
-Source Monitoring Unit
+Device Characterization
 ------------------------
-An important parameter of electronic devices is their current-voltage characteristic. The most simple one is the linear I-V curve (resistance) of a resistor. For active devices like transistors more complex curves parameterizing their transimpedance and transconductance are of interest. To measure these parameters typically a programmable voltage source is used which is capable of precicely monitoring the current. The SMU (source monitoring unit) module with two channels which will be used to measure and analyze various MOSFET parameters (Id vs Ugs, transconductance, output impedance etc).
+An important parameter of electronic devices is their current-voltage characteristic. The most simple one is the linear I-V curve (resistance) of a resistor. For active devices like transistors more complex curves parameterizing their transimpedance and transconductance are of interest. To measure these parameters typically a programmable voltage source is used which is capable of precisely monitoring the current. The SMU (source monitoring unit) module with two channels which will be used to measure and analyze various MOSFET parameters (Id vs Ugs, transconductance, output impedance etc).
 
 .. figure:: images/smu.png
     :width: 300
