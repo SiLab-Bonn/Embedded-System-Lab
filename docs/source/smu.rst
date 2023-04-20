@@ -100,7 +100,7 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
   #. Plot the number of current measurement bins as a function of the connected resistance for each current range. Use the data from the table above and the output voltage range of 4.096 V and a step size of 1 mV. Hint: Only if the connected resistance is equivalent to the ratio of maximum output voltage (4.096 V) and maximum current for the given range, the number of bins reaches the theoretical maximum of 4096. If the resistance is higher, the number of bins is limited by the resolution of the current measurement (the maximum output voltage is reached before the maximum current value). If the resistance is lower, it is the other way around and the resolution of the voltage generation (DAC) sets the limit. The three plots below illustrate the situation. Shown are the I-V curves for the same three scaled resistors using the three current ranges. The resistance R ist best captured in the middle range while resolution for the the x50 (/50) resistance curves are limited by the ADC (DAC), respectively. Switching to lower (higher) current ranges for the higher (lower) resistance improves the resolution significantly .
 
   
- .. figure:: images/smu_ranges.png
+  .. figure:: images/smu_ranges.png
     :width: 600
     :align: center
 
