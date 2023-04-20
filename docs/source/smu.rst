@@ -34,12 +34,12 @@ To improve the dynamic range of the current measurement, the sense resistor |RSN
 
 
 ===========  ========  ===========  ==================  ==========
- Range       SEL[1:0]  |RSNS|[Ohm]   Max. current [A]    I LSB [A]  
+ Range       SEL[1:0]  RSNS [Ohm]   Max. current [A]    ADC resolution [A]  
 ===========  ========  ===========  ==================  ==========
-  Off          00        ---         Output is off         ---      
-  LOW          01        80 k         5.12 µ             1.25 n      
-  MID          10       800            512 µ               125 n      
-  HIGH         11         8           51.2 m              12.5 µ      
+  Off          b00        ---         Output is off         ---      
+  LOW          b01        80 k         5.12 µ             1.25 n      
+  MID          b10       800            512 µ               125 n      
+  HIGH         b11         8           51.2 m              12.5 µ      
 ===========  ========  ===========  ==================  ==========
 
 The ADC input voltage |VISNS| which corresponds to the SMU output current is given by
