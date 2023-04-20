@@ -32,7 +32,7 @@ To improve the dynamic range of the current measurement, the sense resistor |RSN
 
 
     ========  ===========  ==================  ==========
-    SEL[1:0]  |RSNS|[Ohm]   Max. current [A]    I_LSB [A]  
+    SEL[1:0]  |RSNS|[Ohm]   Max. current [A]    I LSB [A]  
     ========  ===========  ==================  ==========
       00        ---         Output is off         ---      
       01        80 k          5 µ                1.25 n      
@@ -50,13 +50,13 @@ The 12-bit ADC converts this voltage according to
 
 .. math::
 
-  ADC_{CODE} = V_{ISNS} \cdot \frac{4096}{V_{REF}} = I_{OUT} \cdot R_{SNS} \cdot 10 \cdot mV^{-1}.
+  ADC_{CODE} = V_{ISNS} \cdot \frac{4096}{V_{REF}} = I_{OUT} \cdot R_{SNS} \cdot 10 \cdot \text{mV^{-1}}.
 
 and therefore
 
 .. math::
 
-  I_{OUT} = \frac{ADC_{CODE}}{R_{SNS} \cdot 10} [\text{mV}].
+  I_{OUT} = \frac{ADC_{CODE}}{R_{SNS} \cdot 10} \cdot \text{mV}.
 
 
 This formula is the conversion factor (conversion gain) to calculate the output current in mA units from the ADC code. To use the full dynamic current measurement range, the switching between current ranges can be automated by the measurement scripts. For example during a voltage sweep, the measured current should be compared to threshold values defined by the boundaries between the current measurement ranges (5 µA and 500 µA) and the ranges selected accordingly.
