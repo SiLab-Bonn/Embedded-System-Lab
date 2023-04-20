@@ -24,7 +24,7 @@ The code examples and additional documentation is maintained on  `GitHub <https:
 
  
 .. note:: 
- User programs and measurement data should be saved in the ``work`` folder. The code examples found in the ``Embedded-System-Lab/code`` folder should not be modified but rather copied to the ``work`` folder and modified there, as needed. In case the content of the ``code`` or any other git folder were accidentally changed, the files can be restored by calling ``git checkout *`` from the command line within the respective folder.
+ User programs and measurement data should be saved in the ``work`` folder. The code examples found in the ``Embedded-System-Lab/code`` folder should not be modified but rather copied to the ``work`` folder and modified there, as needed. In case the content of the ``code`` or any other git folder were accidentally changed, the files can be restored by calling ``git checkout --force origin/master`` from the command line within the respective folder.
  
  It is recommended that the user has some basic knowledge of Python (and a bit of C) language since this script does not provide an introduction to the programming languages. Online training with interactcive tutorials can be found for example here:
 
