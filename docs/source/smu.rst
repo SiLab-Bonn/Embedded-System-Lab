@@ -84,7 +84,7 @@ A MOSFET is characterized with a number of electrical parameters describing its 
  * Subthreshold slope
  * Output resistance |go|
 
- The MOSFET input characteristic (|ID| vs |VGS| curve) is used to extract transconductance |gm|, threshold voltage |VTHR| and subthreshold slope, and the output characteristic (|ID| vs |VDS| curve, with |VGS| as a parameter) allows the extraction of the output resistance |go|.
+The MOSFET input characteristic (|ID| vs |VGS| curve) is used to extract transconductance |gm|, threshold voltage |VTHR| and subthreshold slope, and the output characteristic (|ID| vs |VDS| curve, with |VGS| as a parameter) allows the extraction of the output resistance |go|.
 
  ....
 
