@@ -1,11 +1,11 @@
 ========================
 Embedded System Hardware
 ========================
-This chapter introduces the computing hardware which is used in all experiments. Although the specific details of the following description relate to the Raspberry Pi platform, the fundamental aspects of interaction between software, system hardware and external devices are platform independent. The first section describes the Raspberry Pi hardware with a focus on the access to the GPIO ports. The second section gives an overview of commonly used serial protocols for communication between systems and electronic components. Finally, programming examples are presented and simple tasks which introduce the first experiment (GPIO Programming) are shown.
+This chapter introduces the computing hardware which is used in all experiments. Although the specific details of the following description relate to the Raspberry Pi platform, the fundamental aspects of interaction between software, system hardware and external devices are platform independent. The first section describes the Raspberry Pi hardware with a focus on the access to the General Purpose Input/Output (GPIO) ports. The second section gives an overview of commonly used serial protocols for communication between systems and electronic components. Finally, programming examples are presented and simple tasks which introduce the first experiment (GPIO Programming) are shown.
 
 Computing Platform
 ==================
-The central part of the Raspberry Pi module is a system-on-chip (SOC). A SOC integrates the CPU with peripheral components like display controller, various communication interfaces (USB, Ethernet, PCIe, etc.), memory controller, power regulators and others on a single chip. Therefore, only very few external components are needed to build a complete computing system. The picture belows shows the Raspberry Pi 4B module with the central SOC, the SDRAM memory, an on-board Wifi & BT transceiver, support chips for Ethernet and USB, connectors for video, audio, LAN , USB and a header for the GPIO port.
+The central part of a Raspberry Pi module is a system-on-chip (SOC). A SOC integrates the CPU with peripheral components like display controller, various communication interfaces (USB, Ethernet, PCIe, etc.), memory controller, power regulators and others on a single chip. Therefore, only a few external components are needed to build a complete computing system. The picture belows shows the Raspberry Pi 4B module with the central SOC, the SDRAM (Synchronous dynamic random-access memory) memory, an on-board Wi-Fi & Bluetooth transceiver, support chips for Ethernet and USB, connectors for video, audio, USB and a header for the GPIO ports.
 
 
 .. figure:: images/RPI4.png
@@ -14,7 +14,7 @@ The central part of the Raspberry Pi module is a system-on-chip (SOC). A SOC int
 
     Raspberry Pi 4B module
 
-The Raspberry Pi SOC is based on a highly integrated, low power video processor called VideoCore (sometimes also referred to as graphics- or video-processing-unit, GPU or VPU) with a multi-core ARM CPU attached to it. The following block diagram of the BCM2711 chip, which is used on the Raspberry Pi 4 modules, shows the SOC main function blocks which communicate and exchange data via an internal system bus (AMBA/AXI bus). The GPIO interface shown in the lower right corner will be described in more detail in the following sections.
+The following is a block diagram of the BCM2711 chip, the specific SOC used in Raspberry Pi 4 modules. The main function blocks include a multi-core ARM CPU, a low power video processor called VideoCore (sometimes also referred to as graphics- or video-processing-unit, GPU or VPU), and a collection of peripherals including the GPIO interface (in the lower right corner) to be described in more detail in the following sections. All the block communicate and exchange data via an internal system bus (AMBA/AXI bus). 
 
 .. figure:: images/BCM2711.png
     :width: 600
