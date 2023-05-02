@@ -36,7 +36,7 @@ Using Visual Code
 =================
 Start Visual Code and open the folder ``Embedded-System-Lab/code`` via the menu ``File->Open Folder``. In the explorer view one can find sub-folders for each experiment and additional helper functions. Most examples are written in Python while a few examples and low level functions (DMA access for fast ADC operation) are implemented in C. The Visual Code editor will allow comfortable code editing and integrates tool chains to run Python and C code. When you switch between Python and C sources you have to **select the appropriate start and debug configuration** for the given language: Click on the bottom status bar and select
 
- - C (Linux): Current file" for compiling and running C code
+ - "C (Linux): Current file" for compiling and running C code
  - "Python: Current File" for running Python scripts
 
 Here are simple code examples to test the installation and explain the basic methods of the Visual Code IDE.
