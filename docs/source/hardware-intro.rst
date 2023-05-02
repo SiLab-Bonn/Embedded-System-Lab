@@ -5,7 +5,7 @@ This chapter introduces the computing hardware which is used in all experiments.
 
 Computing Platform
 ==================
-The central part of a Raspberry Pi module is a system-on-chip (SOC). A SOC integrates the CPU with peripheral components like display controller, various communication interfaces (USB, Ethernet, PCIe, etc.), memory controller, power regulators and others on a single chip. Therefore, only a few external components are needed to build a complete computing system. The picture belows shows the Raspberry Pi 4B module with the central SOC, the SDRAM (Synchronous dynamic random-access memory) memory, an on-board Wi-Fi & Bluetooth transceiver, support chips for Ethernet and USB, connectors for video, audio, USB and a header for the GPIO ports.
+The central part of a Raspberry Pi module is a system-on-chip (SOC). A SOC integrates the CPU with peripheral components like display controller, various communication interfaces (USB, Ethernet, PCIe, etc.), memory controller, power regulators and others on a single chip. Therefore, only a few external components are needed to build a complete computing system. The picture belows shows the Raspberry Pi 4B module with the central SOC, the SDRAM (Synchronous dynamic random-access memory) memory chip, on-board transciver chips for Wi-Fi/Bluetooth , Ethernet and USB, and connectors for video, audio, LAN, USB and a header for the GPIO ports.
 
 
 .. figure:: images/RPI4.png
@@ -32,7 +32,7 @@ The operating system and the user programs run on a quad-core CPU (ARM Cortex A-
 
     Address maps for system bus (left), CPU (center) and virtual memory spaces (right)
 
-The center column shows the address space as seen by the CPU, also called **physical address** space. The system memory (implemented as synchronous random access memory, SDRAM) starts at address ``0x00000000`` and occupies a range according to the amount of memory available on the module (1 GB, 2 GB, 4 GB, or 8 GB). The I/O peripherals registers start at the address offset ``PHYS_REG_BASE`` which depends on the SOC version and memory size (see table below). 
+The center column shows the address space as seen by the CPU, also called the **physical address** space. The system memory (implemented as synchronous random access memory, SDRAM) starts at address ``0x00000000`` and occupies a range according to the amount of memory available on the module (1 GB, 2 GB, 4 GB, or 8 GB). The I/O peripherals registers start at the address offset ``PHYS_REG_BASE`` which depends on the SOC version and memory size (see table below). 
 
 The actual access to memory or I/O resources is managed via the VPU MMU which controls the system bus. In the left column the system **bus address** space of the VPU is shown. The VPU address space is larger than the physical address space which enables so-called aliasing. That means that depending on the two additional address bits, different access modes for the same physical address can be used. Depending on the chosen alias offset, the access is cached (L1 + L2, or L2 coherent or L2 only) or direct. Access to I/O peripherals always is done via coherent, non-allocating L2 Cache (address offset = 0x40000000 -> ``BUS_REG_BASE = 0x7E000000``). 
 
@@ -40,7 +40,7 @@ A multi-tasking operating system, which is typically run on a computing system, 
 
 .. note:: It is not possible to directly access I/O registers or memory locations. To use I/O or memory resources, a user accessible **virtual address** has to be mapped to the **physical addresses**. Since the register addresses values referenced in the BCM2837-ARM-Peripherals document are referring to the system **bus address** space handled by the VideoCore, the resulting address offsets as seen by the CPU have to be calculated. 
 
-A generic procedure to access peripheral resources looks like this: At first the address at which the CPU can access the IO periphery register is calculated. This step converts the address at which the peripheral register is located on the VideoCore bus to the physical address the CPU can access. Than a user accessible virtual memory location has to be allocated and mapped to the physical address of the I/O resource. This is the pseudo code of such operation:
+A generic procedure to access peripheral resources looks like this: At first the address at which the CPU can access the IO periphery register is calculated. This step converts the address at which the peripheral register is located on the VideoCore bus to the physical address the CPU can access. Than a user accessible virtual memory location has to be allocated and mapped to the physical address of the I/O resource. The pseudo code for such an operation is:
 
 .. code::
     
@@ -48,7 +48,7 @@ A generic procedure to access peripheral resources looks like this: At first the
     virt_reg_address = mmap(reg_physical_address)
 
     
-The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms, which have specific address offset values:
+The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for all RPi models, while the ``PHYS_REG_BASE`` offset depends on the specific chip implementation. This is important for the code portability between different Raspberry Pi platforms, which have specific address offset values:
 
 .. table::
     
@@ -61,7 +61,7 @@ The ``BUS_REG_BASE`` address offset of the VideoCore bus is ``0x7E000000`` for a
       RPi 4       BCM2711     0xFE000000     1, 2, 4, or 8 GB      
     ===========  ==========  ==============  ====
 
-An implementation of an access to the GPIO registers will be shown in the section :ref:`gpio-programming-examples`.
+A demonstration of accessing the GPIO registers is shown next in section :ref:`gpio-programming-examples`.
 
 Further reading
 ---------------
