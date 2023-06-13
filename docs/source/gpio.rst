@@ -14,7 +14,15 @@ The BCM2711 has 54 general purpose input/output pins of which 28 are available o
 .. danger::
     The voltage applied to the GPIO pins **must not exceed 3.3 V**. When connected to circuits with higher output levels, appropriate levels shifters or resistive dividers must be used. 
 
-There are control registers which configure the GPIO pins to become an input or output pin according to the required functionality. For simple control tasks this basic I/O function is sufficient. For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are used. To offload the CPU from implementing these protocols and to allow a precise (i.e. hardware controlled) timing, special hardware blocks are available in the I/P periphery to be used with the GPIO pins. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that this documents actually describes the predecessor of the BCM2711 the BCM2835 (and not even the BCM2837, as the name suggests), which is used on the Raspberry Pi 1 modules. However, the description of the GPIO pin and other peripherals is still valid for the newer chip generations - apart from a few details like bus address offsets (see below).
+
+
+There are control registers which configure the GPIO pins to become an input or output pin according to the required functionality. For simple control tasks where timing certainy and speed aren't importantly, this basic appoach of the CPU is manually reading and writing each bit is sufficient. This is often colloquially called `'bit banging' <https://en.wikipedia.org/wiki/Bit_banging>`_.
+
+For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are used. To optionally offload some work for the CPU, special hardware blocks are available in the I/O periphery that implement these protocols with precise (i.e. hardware controlled) timing. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that while this document actually describes a predecessor of the RPi 4's BCM2711 (RPi 1's BCM2835) the description of the GPIO pins and other peripherals is still accurate aside from a few details like bus address offsets (see below).
+
+Basic GPIO Operation
+=====================
+
 Here is the description of the basic **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
 
 
@@ -53,7 +61,7 @@ The address space of the IO peripheral registers starts at 0x7E000000 of the Vid
     010   Alternate function 5
     ===== ===================
 
-As default, all GPIO are configured as input pins after a reboot unless otherwise defined in any start-up configuration script. The level of any of the GPIO pins can be detected reading the **Pin Input Level Register**
+By default, all GPIO are configured as inputs (``FSELn = 000``) after a reboot unless otherwise defined in a start-up configuration script. The level of any of the GPIO pins can be detected reading the **Pin Input Level Register**
 
 .. table:: **GPIO Pin Input Level Registers (GPLEV0 @ 0x7E200034)**
 
@@ -64,7 +72,7 @@ As default, all GPIO are configured as input pins after a reboot unless otherwis
                         1 = pin n is high
     =====  ===========  ======================  ====  =======
 
-To use a GPIO pin as an output, the value 0x001 has to be written to its corresponding GPFSEL register. The output state is set by using the  **Pin Output Set/Clear Registers**:
+To use a GPIO pin as an output, the value ``0x001`` has to be written to the corresponding GPFSEL register. The output state is set by using the  **Pin Output Set/Clear Registers**:
 
 .. table:: **GPIO Pin Output Set Registers (GPSET0 @ 0x7E20001C)**
 
