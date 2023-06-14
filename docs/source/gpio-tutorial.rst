@@ -4,13 +4,13 @@
 GPIO Programming Tutorial
 =========================
 
-This tutorial provides an introduction to basic GPIO port programming. It starts with an example for a low-level access to the GPIO registers which are described in section :ref:`gpio-interface`. Then, the use of Python libraries for GPIO handling will be explained and compared to the C-code based low-level access.
+This tutorial provides an introduction to basic GPIO (general purpose input/output) programming. It starts with an example for a low-level access to the GPIO registers which are described in section :ref:`gpio-interface`. Then, the use of Python libraries for GPIO handling will be explained and compared to the C-code based low-level access.
 
 .. _gpio-programming-examples:
 
 Basic GPIO Example (C code)
 ---------------------------
-This programming example describes how to directly access the registers which control the GPIO pins. The register handling is made on "low level" (i.e. not using higher-level library functions calls) using **C code** only. Actually, high-level libraries like the Python Rpi.GPIO library which you will be using later and kernel drivers are often written in C code to allow fast and efficient hardware access. Here are simplified samples from the ``GPIO.c`` file from the ``code/GPIO_Basics`` folder which you will be using in the first experiment. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
+This programming example describes how to directly access the registers which control the GPIO pins. The register handling is made on "low level" (i.e. not using higher-level library functions calls) using **C code** only. Actually, high-level libraries like the Python Rpi.GPIO library which you will be using later and kernel drivers are often written in C code to allow fast and efficient hardware access. Here are simplified samples from the ``gpio.c`` file from the ``code/GPIO`` folder which you will be using in the first experiment. This first code block takes care of the mapping the user accessible virtual memory to the physical memory of the register.
 
 .. code-block:: c
 
@@ -50,7 +50,7 @@ Now ``gpio_virt_addr_ptr`` points to the start address of the GPIO register spac
   gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
   gplev0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_LEV0);
 
-Finally, the GPIO mode is set for a given pin which then can be used for output (or input) operations. The register configuration is shown explicitly here while the main loop in `GPIO.c`` uses function calls:
+Finally, the GPIO mode is set for a given pin which then can be used for output (or input) operations. The register configuration is shown explicitly here while the main loop in `gpio.c`` uses function calls:
 
 .. code-block:: c
 
@@ -93,7 +93,9 @@ Exercises
 
 .. admonition:: Exercise 1. GPIO programming with C-code
 
-  Copy the file :file:`GPIO.c` from the :file:`code/GPIO_Basics` folder to your :file:`work` folder. Compile ( ``CTRL+F7`` or ``CTRL+Shift+b``) and run the program by typing :file:`sudo -E ./GPIO` into a terminal from within your :file:`work` folder.  
+  Copy the file :file:`gpio.c` from the :file:`code/GPIO` folder to your :file:`work` folder. Compile ( ``CTRL+F7`` or ``CTRL+Shift+b``) and run the program by typing :file:`sudo -E ./gpio` into a terminal from within your :file:`work` folder.
+  
+If you recieve an error about 'gpio' not found, double check that you've compiled the source code into a binary with the correct file name.
 
   1. Connect an oscilloscope probe to the GPIO27 pin (red LED of the RGB LED) on the base board and adjust the oscilloscope setting such that it triggers on the output pulse when the GPIO program runs. Make sure you select an appropriate horizontal resolution because the pulse will be very narrow (~ 30ns).
   2. Add a loop statement around the code which toggles the GPIO output state to produce a stream of output pulses. 
@@ -108,7 +110,7 @@ Exercises
 
 .. admonition:: Exercise 2.  GPIO programming with Python 
 
-  Copy the file :file:`GPIO.py` from the :file:`code/GPIO_Basics` folder to your :file:`work` folder. Proceed similar to the tasks in the C-code excersise.
+  Copy the file :file:`gpio.py` from the :file:`code/GPIO` folder to your :file:`work` folder. Proceed similar to the tasks in the C-code excersise.
 
   1. If not yet done, connect an oscilloscope probe to the GPIO27 pin (red LED of the RGB LED) on the base board and adjust the oscilloscope setting such that it  triggers on the output pulse when the GPIO scripts runs. What is the pulse width now?
   2. Add a loop statement around the code which toggles the GPIO output state to produce a stream of output pulses. 
