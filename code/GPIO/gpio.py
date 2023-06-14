@@ -3,17 +3,25 @@ import sys
 
 # import the library and define the prefix for using its members
 import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM) # use pin numbers according to the GPIO naming
 
-# tell the library to use pin numbers according to the GPIO naming
-GPIO.setmode(GPIO.BCM) 
+# define GPIO pins for RGB LED control
+RGB_LED_RED  = 26
+RGB_LED_BLUE = 27
 
-# define GPIO4 as an output
-GPIO.setup(4, GPIO.OUT)
+# define output pins for LED
+GPIO.setup(RGB_LED_BLUE, GPIO.OUT)
+GPIO.setup(RGB_LED_RED, GPIO.OUT)
+GPIO.output(RGB_LED_BLUE, GPIO.LOW)
+GPIO.output(RGB_LED_RED, GPIO.LOW)
 
-# toggle th output state
-GPIO.output(4, GPIO.LOW)
-GPIO.output(4, GPIO.HIGH)
-GPIO.output(4, GPIO.LOW)
+# toggle the output states
+GPIO.output(RGB_LED_BLUE, GPIO.HIGH)
+time.sleep(1)
+GPIO.output(RGB_LED_BLUE, GPIO.LOW)
+GPIO.output(RGB_LED_RED, GPIO.HIGH)
+time.sleep(1)
+GPIO.output(RGB_LED_BLUE, GPIO.HIGH)
+time.sleep(1)
 
-# set GPIO configuration back to default
-GPIO.cleanup()
+GPIO.cleanup()#   set GPIO configuration back to default
