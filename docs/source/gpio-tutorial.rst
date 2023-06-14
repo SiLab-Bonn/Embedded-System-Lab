@@ -124,6 +124,7 @@ If you recieve an error about 'gpio' not found, double check that you've compile
   The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards and to establish a serial link between them using the UART interface on GPIO pins 14 (TX) and 15 (RX).
 
   Prerequisites:
+    - Enabled 'Serial port', and disabled 'Serial Console' in the Raspberry Pi setting.
     - A Python script that instanciates a serial port object (for example PySerial) and allows sending and receiving data.
     - A direct connection between RX and TX pins (loop-back) on a single board for testing the script. 
     - A cross-over connection for making the RX-TX / TX-RX connection between two boards.
