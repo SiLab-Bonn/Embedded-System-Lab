@@ -31,7 +31,24 @@ The shaping amplifier consists of a high pass filter (HPF) and a low pass filter
 
   U_{SHA}(t) = U_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}.
 
-The final block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the SHA output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function and the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. To enable the hit detection with polling the GPIO pins, the comparator output is asynchronously latched with a flip flop. Its output signal **HIT_OUT** is then finally read by the GPIO interface. Before the latched comparator is able to detect new hits, it needs a reset by puling the **TRG_INJ** signal low. 
+The final block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the shaper output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function of the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. The logic which latches the comparator output is implemented in a CPLD (Complex Programmable Logic Device). This IC is programmed as depicted in the schematic diagram below.
+
+.. figure:: images/AFE_digital.png
+    :width: 600
+    :align: center
+
+There is a set-reset flip-flop which is asychronously set by the output of the comparator **COMP**. The SR flip-flop output signal **HIT** stays high until it is reset by the **INJ** line going low. Parallel to the SR flip-flop the **COMP** signal enables an 8-bit counter which output is incremented by a 40 MHz clock signal **CLK** thereby measuring the comparator output pulse width (TOT, time-over-threshold). The **TOT** value can be read out via the SPI interface which is also implemented in the CPLD (**CS_B**, **SCLK** and **MISO**). The high to low transistion from **INJ** also resets the TOT counter.
+
+A charge injection cycle would look like this:
+
+0. Ensure **INJ** is low to reset **HIT** output and TOT counter.
+1. Set threshold, injection level (and shaping constant) as required.
+2. To trigger the injection of a negative charge signal switch **INJ** to high.
+3. Poll for the **HIT** going high. Use a proper time-out period in case the injected signal is below threshold and no comparator output signal is generated.
+4. If **HIT** is high store the information and read the TOT count via the SPI bus (optional).
+5. Set **INJ** back to low to reset the **HIT** signal and the TOT counter.
+6. Since the CSA also resonds to positive charge injection (**INJ** going low), wait for ~ 200 µs to allow the circuit to settle before triggering the next injection. 
+
 
 The electrical interface to control the AFE consist of an 
 
@@ -40,8 +57,8 @@ The electrical interface to control the AFE consist of an
   * SHA time constant by selecting resistor values via a multiplexer
   * digital to analog converter (DAC) which sets the injection step voltage **VINJ** and the comparator threshold **VTHR**
 
-* **TRG_INJ** signal (**GPIO5**, from Rpi to AFE module) which triggers the injection signal and resets the comparator latch
-* **HIT_OUT** signal (**GPIO4**, from AFE module to Rpi) for reading the digital hit output
+* **INJ** signal (**GPIO5**, from Rpi to AFE module) which triggers the injection signal and resets the comparator latch
+* **HIT** signal (**GPIO4**, from AFE module to Rpi) for reading the digital hit output
   
 
 .. figure:: images/AFE_simple_schematic.png

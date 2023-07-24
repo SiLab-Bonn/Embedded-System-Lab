@@ -1,8 +1,0 @@
-{signal: [
-  {name: 'INJ', wave: '01......|.0'},
-  {name: 'COMP', wave:'0..1...0|..', phase: 0.5},
-  {name: 'HIT', wave: '0..1....|.0'},
-  {name: 'TOT', wave: '0..====.|.0', data: ['1', '2', '3', '4']},
-  {name: 'CLK', wave: 'p.......|..'},
-
-]}
