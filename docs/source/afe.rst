@@ -23,7 +23,14 @@ A typical analog read-out chain, also called analog front-end, for a semiconduct
 
 Circuit Implementation
 ======================
-The simplified schematic in the figure below shows the implementation of the analog signal processing chain. The CSA is build around a low noise opamp which is feed-back with a small capacitance **Cf** and a large resistance **Rf**. The feedback capacitance **Cf** defines the charge transfer gain and the resistance **Rf** allows for a slow discharge of **Cf** and setting of the dc operation point of the opamp. To enable calibration and characterization measurements, an injection circuit is available to generate a programmable CSA input signal. On the rising edge of the digital **TRG_INJ** signal a negative charge of the size **Cinj** times the programmable voltage step amplitude **VINJ** is applied to the CSA input.
+The simplified schematic in the figure below shows the implementation of the signal processing chain. The CSA is build around a low noise opamp which is feed-back with a small capacitance **Cf** and a large resistance **Rf**. The feedback capacitance **Cf** defines the charge transfer gain and the resistance **Rf** allows for a slow discharge of **Cf** and setting of the dc operation point of the opamp. To enable calibration and characterization measurements, an injection circuit is available to generate a programmable CSA input signal. On the rising edge of the digital **TRG_INJ** signal a negative charge of the size **Cinj** times the programmable voltage step amplitude **VINJ** is applied to the CSA input.
+
+
+.. figure:: images/AFE_simple_schematic.png
+    :width: 600
+    :align: center
+
+    Simplified schematic of the analog front-end. **TRG_INJ** and **HIT_OUT** control the charge injection and digital hit readout, respectively. The **SPI** bus is used to program the DAC voltages **VTHR** and **VINJ** and select the SHA time constant. The full AFE schematic is found here: :download:`AFE_1.1.pdf <documents/AFE_1.1.pdf>`
 
 The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain *g* to the circuit. Both time constants of the HPF and LPF are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the SHA response to an input step function of the amplitude *Ucsa* is (for t >= 0) 
 
@@ -31,11 +38,15 @@ The shaping amplifier consists of a high pass filter (HPF) and a low pass filter
 
   U_{SHA}(t) = U_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}.
 
-The final block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the shaper output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function of the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. The logic which latches the comparator output is implemented in a CPLD (Complex Programmable Logic Device). This IC is programmed as depicted in the schematic diagram below.
+The final analog block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the shaper output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function of the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. The logic which latches the comparator output is implemented in a CPLD (Complex Programmable Logic Device). This IC is programmed as depicted in the schematic diagram below.
 
 .. figure:: images/AFE_digital.png
-    :width: 600
+    :width: 500
     :align: center
+
+    Digital logic implemented in the CPLD. The SR flip-flop is set by the comparator output going high while the 8-bit counter measures the comparator pulse width (time-over-threshold) which value can be rad out the SPI interface.
+
+
 
 There is a set-reset flip-flop which is asychronously set by the output of the comparator **COMP**. The SR flip-flop output signal **HIT** stays high until it is reset by the **INJ** line going low. Parallel to the SR flip-flop the **COMP** signal enables an 8-bit counter which output is incremented by a 40 MHz clock signal **CLK** thereby measuring the comparator output pulse width (TOT, time-over-threshold). The **TOT** value can be read out via the SPI interface which is also implemented in the CPLD (**CS_B**, **SCLK** and **MISO**). The high to low transistion from **INJ** also resets the TOT counter.
 
@@ -61,13 +72,7 @@ The electrical interface to control the AFE consist of an
 * **HIT** signal (**GPIO4**, from AFE module to Rpi) for reading the digital hit output
   
 
-.. figure:: images/AFE_simple_schematic.png
-    :width: 600
-    :align: center
 
-    Simplified schematic of the analog front-end. **TRG_INJ** and **HIT_OUT** control the charge injection and digital hit readout, respectively. The **SPI** bus is used to program the DAC voltages **VTHR** and **VINJ** and select the SHA time constant.
-
-The full AFE schematic is found here: :download:`AFE_1.1.pdf <documents/AFE_1.1.pdf>`
 
 Data Acquisition and Analysis Methods
 =====================================
