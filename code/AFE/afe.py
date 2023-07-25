@@ -45,27 +45,30 @@ threshold = 2800
 
 GPIO.output(INJECT, GPIO.LOW)
 
+fig, ax = plt.subplots()
 hit_data = []
 threshold_data = []
 
-for threshold in tqdm(reversed(range(2900, 3200, 2))):
-  threshold_data.append(threshold)
-#for charge in range(40, 80, 1):
-  update_spi_regs(threshold, charge, 4)
-  hit_count = 0
-  for i in range (100): 
-    GPIO.output(INJECT, GPIO.HIGH)
-    time.sleep(0.0005) 
-    if (GPIO.input(COMP)):
-      hit_count = hit_count + 1
-    GPIO.output(INJECT, GPIO.LOW)
-    time.sleep(0.0005)
-  hit_data.append(hit_count)
-
-fig, ax = plt.subplots()
-ax.plot(threshold_data, hit_data)
+for time_constant in range(0, 8, 1):
+  for threshold in tqdm(reversed(range(2700, 3400, 10))):
+    threshold_data.append(threshold)
+  #for charge in range(40, 80, 1):
+    update_spi_regs(threshold, charge, time_constant)
+    hit_count = 0
+    for i in range (100): 
+      GPIO.output(INJECT, GPIO.HIGH)
+      time.sleep(0.0001) 
+      if (GPIO.input(COMP)):
+        hit_count = hit_count + 1
+      GPIO.output(INJECT, GPIO.LOW)
+      time.sleep(0.0002)
+    hit_data.append(hit_count)
+  ax.plot(threshold_data, hit_data, label=time_constant)
+  threshold_data = []
+  hit_data = []
 
 ax.set(xlabel='threshold (DAC)', ylabel='hit count', title='S-Curve')
+ax.legend(title="time constant")
 ax.grid()
 
 #fig.savefig("test.png")
