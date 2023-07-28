@@ -20,6 +20,8 @@ INJECT = 4
 GPIO.setup(INJECT, GPIO.OUT)
 GPIO.output(INJECT, GPIO.LOW)
 
+time_constants_list = ['100ns', '200ns','500ns', '1us', '2us', '5us', '10us', '20us']
+
 def update_spi_regs(threshold, injected_signal, time_constant):
   # MCP4822/11 DAC samples *first* 16 bits after CS falling edge (MSB first)
   # CPLD SPI shift register *samples* last 8 bits before CS rising edge (MSB first)
@@ -46,30 +48,30 @@ threshold = 2800
 GPIO.output(INJECT, GPIO.LOW)
 
 
-def threshold_scan(charge, threshold_range, time_constant_range):
+def threshold_scan(charge, threshold_range, time_constant_range, n_injetions = 100):
   fig, ax = plt.subplots()
   hit_data = []
   threshold_data = []
   for time_constant in time_constant_range:
-    for threshold in tqdm(reversed(threshold_range)):
+    print("time constant index =", time_constant )
+    for threshold in tqdm((threshold_range)):
       threshold_data.append(threshold)
-    #for charge in range(40, 80, 1):
       update_spi_regs(threshold, charge, time_constant)
       hit_count = 0
-      for i in range (100): 
+      for i in range (n_injetions): 
         GPIO.output(INJECT, GPIO.HIGH)
-        time.sleep(0.0004) 
+        time.sleep(0.0001) 
         if (GPIO.input(COMP)):
           hit_count = hit_count + 1
         GPIO.output(INJECT, GPIO.LOW)
-        time.sleep(0.0008)
+        time.sleep(0.0002)
       hit_data.append(hit_count)
-    ax.plot(threshold_data, hit_data, label=time_constant)
+    ax.plot(threshold_data, hit_data, label=time_constants_list[time_constant])
     threshold_data = []
     hit_data = []
 
-  ax.set(xlabel='threshold (DAC)', ylabel='hit count', title='S-Curve')
-  ax.legend(title="time constant")
+  ax.set(xlabel='threshold (DAC)', ylabel='hit count', title='Threshold scan')
+  ax.legend(title="shaper time constant")
   ax.grid()
   #fig.savefig("test.png")
   plt.show()
@@ -83,7 +85,7 @@ def infinite_inject_loop():
     time.sleep(0.0002)
 
 
-threshold_scan(100, range(2200, 2700, 10), range(0,7))
+threshold_scan(100, range(2200, 2700, 10), range(0,7), n_injetions=1000)
 
 
 
