@@ -23,11 +23,6 @@ Embedded System Lab
    psa
 
 
-
-
-
-
-
 Indices and tables
 ==================
 

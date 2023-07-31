@@ -13,7 +13,7 @@ There are other editors / development environments available in the Raspberry Pi
 Folder Structure
 ================
 
-The code examples and additional documentation is maintained on  `GitHub <https://github.com/hansk68/Embedded-System-Lab>`_. The project structure on the Raspberry Pi file system is organized like this::
+The code examples and additional documentation is maintained on  `GitHub <https://github.com/silab-bonn/Embedded-System-Lab>`_. The project structure on the Raspberry Pi file system is organized like this::
 
  |__home
  |  |__ Embedded-System-Lab (GitHub root directory)
@@ -24,9 +24,9 @@ The code examples and additional documentation is maintained on  `GitHub <https:
 
  
 .. note:: 
- User programs and measurement data should be saved in the ``work`` folder. The code examples found in the ``Embedded-System-Lab/code`` folder should not be modified but rather copied to the ``work`` folder and modified there, as needed. In case the content of the ``code`` or any other git folder were accidentally changed, the files can be restored by calling ``git checkout *`` from the command line within the respective folder.
+ User programs and measurement data should be saved in the ``work`` folder. The code examples found in the ``Embedded-System-Lab/code`` folder should not be modified but rather copied to the ``work`` folder and modified there, as needed. In case the content of the ``code`` or any other git folder were accidentally changed, the files can be restored by calling ``git checkout --force origin/master`` from the command line within the respective folder.
  
- It is recommended that the user has some basic knowledge of Python (and a bit of C) language since this script does not provide an introduction to the programming languages. Online training with interactcive tutorials can be found for example here:
+ It is recommended that the user has some basic knowledge of Python (and a bit of C) language since this script does not provide an introduction to the programming languages. Online training with interactive tutorials can be found for example here:
 
  - Python: https://www.w3schools.com/python/default.asp
  - C: https://www.w3schools.com/c/index.php
@@ -36,7 +36,7 @@ Using Visual Code
 =================
 Start Visual Code and open the folder ``Embedded-System-Lab/code`` via the menu ``File->Open Folder``. In the explorer view one can find sub-folders for each experiment and additional helper functions. Most examples are written in Python while a few examples and low level functions (DMA access for fast ADC operation) are implemented in C. The Visual Code editor will allow comfortable code editing and integrates tool chains to run Python and C code. When you switch between Python and C sources you have to **select the appropriate start and debug configuration** for the given language: Click on the bottom status bar and select
 
- - C (Linux): Current file" for compiling and running C code
+ - "C (Linux): Current file" for compiling and running C code
  - "Python: Current File" for running Python scripts
 
 Here are simple code examples to test the installation and explain the basic methods of the Visual Code IDE.

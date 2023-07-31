@@ -1,6 +1,6 @@
-===========
-Experiment: Pulse Sampler
-===========
+=====================================
+Experiment: Time Domain Reflectometry
+=====================================
 
 .. figure:: images/psa.png
     :width: 300

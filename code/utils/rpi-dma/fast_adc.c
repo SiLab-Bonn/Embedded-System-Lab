@@ -33,16 +33,16 @@
 #define SMI_TIMING      SMI_TIMING_5M
 
 // SMI transfer timing: unit [ns], setup, strobe, hold
-#if PHYS_REG_BASE == PI_4_REG_BASE        // Timings for RPi v4 (1.5 GHz)
-#define SMI_TIMING_200k 30, 62, 126, 62 // 200 kS/s
-#define SMI_TIMING_500k 20, 38, 74, 38  // 500 kS/s
-#define SMI_TIMING_1M   10, 38, 74, 38  // 1 MS/s
-#define SMI_TIMING_2M   10, 19, 37, 19  // 2 MS/s
-#define SMI_TIMING_5M    6, 12, 26, 12  // 5 MS/s
-#define SMI_TIMING_10M   6,  6, 13,  6  // 10 MS/s
-#define SMI_TIMING_20M   4,  5,  9,  5  // 19.74 MS/s
-#define SMI_TIMING_25M   4,  3,  8,  4  // 25 MS/s
-#define SMI_TIMING_31M   4,  3,  6,  3  // 31.25 MS/s
+#if PHYS_REG_BASE == PI_4_REG_BASE        // Timings for RPi v4 (1.5 GHz): divider, setup, strobe, hold
+#define SMI_TIMING_200k 30, 62, 126, 62 // 200 kS/s   (div = 15, 250 cycles)
+#define SMI_TIMING_500k 20, 38, 74, 38  // 500 kS/s   (div = 10, 150 cycles)
+#define SMI_TIMING_1M   10, 38, 74, 38  // 1 MS/s     (div = 5, 150 cycles)
+#define SMI_TIMING_2M   10, 19, 37, 19  // 2 MS/s     (div = 5, 75 cycles)
+#define SMI_TIMING_5M    6, 12, 26, 12  // 5 MS/s     (div = 3, 50 cycles)
+#define SMI_TIMING_10M   6,  6, 13,  6  // 10 MS/s    (div = 3, 25 cycles)
+#define SMI_TIMING_20M   4,  5,  9,  5  // 19.74 MS/s (div = 2, 19 cycles)
+#define SMI_TIMING_25M   4,  3,  8,  4  // 25 MS/s    (div = 2, 15 cycles)
+#define SMI_TIMING_31M   4,  3,  6,  3  // 31.25 MS/s (div = 2, 12 cycles)
 #else                                   // Timings for RPi v0-3 (1 GHz)
 #define SMI_TIMING_200k 20, 62, 126, 62 // 200 kS/s
 #define SMI_TIMING_500k 20, 25, 50, 25  // 500 kS/s
