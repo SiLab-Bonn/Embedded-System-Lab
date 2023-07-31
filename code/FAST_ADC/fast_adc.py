@@ -16,7 +16,6 @@ TRG_THR= I2C(0x30, 1)
 ADC = ctypes.CDLL("../lib/fast_adc.so")  
 # set return type for time base getter
 ADC.get_time_base.restype = ctypes.c_float 
-
 # some constants
 SAMPLE_RATE_200k = 1
 SAMPLE_RATE_500k = 2
@@ -26,12 +25,12 @@ SAMPLE_RATE_5M   = 5
 # trigger modes
 FREE_RUN_ADC = 0 # take data immediately
 TRIGGER_ADC  = 1 # wait for GPIO 24 (DREQ) rising edge, controlled by 
-# signal comparator with programmable threshold (jumper INT) or GPIO 4 (jumper EXT)
+# signal comparator with programmable threshold (jumper INPUT) or GPIO trigger/echo (jumper GPIO4 / GPIO5)
 
 # ADC.Hello.restype = ctypes.c_char_p
 # print(ADC.Hello().decode())
 
-n_samples = 3000 # number of samples 
+n_samples = 10000 # number of samples 
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 
 # set trigger threshold [0..255]
@@ -39,7 +38,7 @@ adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 TRG_THR.write(b'\200') 
 
 # init ADC: data array, number of samples, sample rate, trigger mode
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, TRIGGER_ADC)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_2M, FREE_RUN_ADC)
 
 # prepare data series
 time_base = ADC.get_time_base()
