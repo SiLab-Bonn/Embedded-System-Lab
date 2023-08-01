@@ -48,7 +48,7 @@ threshold = 2800
 GPIO.output(INJECT, GPIO.LOW)
 
 
-def threshold_scan(charge, threshold_range, time_constant_range, n_injetions = 100):
+def threshold_scan(threshold_range, charge, time_constant_range, n_injetions = 100):
   fig, ax = plt.subplots()
   hit_data = []
   threshold_data = []
@@ -76,16 +76,20 @@ def threshold_scan(charge, threshold_range, time_constant_range, n_injetions = 1
   #fig.savefig("test.png")
   plt.show()
 
-def infinite_inject_loop():
-  update_spi_regs(2700, 300, 3)
-  while True: 
+
+def inject(threshold, charge, time_constant, n_injections):
+  update_spi_regs(threshold, charge, time_constant)
+  for i in range(n_injections): 
     GPIO.output(INJECT, GPIO.HIGH)
     time.sleep(0.0002) 
     GPIO.output(INJECT, GPIO.LOW)
     time.sleep(0.0002)
+  
 
 
-threshold_scan(100, range(2200, 2700, 10), range(0,7), n_injetions=1000)
+#threshold_scan(100, range(2200, 2700, 10), range(0,7), n_injetions=1000)
+
+inject(3000, 200, 5, 1)
 
 
 
