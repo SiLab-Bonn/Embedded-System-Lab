@@ -19,8 +19,9 @@ curr_range_dict = {
 
 # current sense gain setting resistor
 rsns_list  = [float("inf"), 800000, 8000, 80]  # effective transimpedance = Rsns x 10
-adc_offset = 16
-upper_limit = 4000  # upper limit for current measurement (ADC counts)
+adc_offset = 0 #6
+adc_cm_gain = 0 #0.0045
+upper_limit = 4050  # upper limit for current measurement (ADC counts)
 lower_limit = 50    # lower limit for current measurement (ADC counts)
 
 class SMU:
@@ -40,6 +41,8 @@ class SMU:
     self.rsns.write(b'\x01\x00') # set bits 3:0 low
 
     self.ch = [SMU_channel(self, 1), SMU_channel(self, 2)]
+    self.ch[0].set_current_range(2)    
+    self.ch[1].set_current_range(2)
   
   def close(self):
     self.ch[0].close()
@@ -68,6 +71,7 @@ class SMU_channel:
       reg = (reg[0] & 0x03) + (value << 2)
     self.smu.rsns.write(bytes([0x01, reg]))
     self.current_range = value
+    time.sleep(0.01)
 
   def get_current_raw(self, average):
     if average:
@@ -75,7 +79,6 @@ class SMU_channel:
     else:
       setup_data = bytes([0x61 | (self.channel << 1)])
     self.smu.adc.write(setup_data)
-
     if average:
       i2c_data = self.smu.adc.read(16)
       current = 0
@@ -85,7 +88,6 @@ class SMU_channel:
     else:
       i2c_data = self.smu.adc.read(2)
       current = 0x0fff & int.from_bytes(i2c_data,"big")
-
     return current
 
   def get_current(self, current_range='auto', average = True):
@@ -97,43 +99,74 @@ class SMU_channel:
       raw_value = self.get_current_raw(average)
       while (raw_value < lower_limit and self.current_range > 1):
         self.set_current_range(self.current_range-1)
-        time.sleep(0.001)
         raw_value = self.get_current_raw(average)
       while (raw_value > upper_limit and self.current_range < 3):
         self.set_current_range(self.current_range+1)
-        time.sleep(0.001)
         raw_value = self.get_current_raw(average)
-    return (raw_value  - adc_offset) / rsns_list[self.current_range]
+#    return (raw_value - adc_offset) / rsns_list[self.current_range]
+    return (raw_value - adc_offset - adc_cm_gain * self.dac_value) / rsns_list[self.current_range]
   
   def close(self):
     self.set_voltage(0)
     self.set_current_range(0)
   
 
-fig, ax = plt.subplots(1,1)
+fig, ax = plt.subplots(2,2, sharex='col')
 
-voltage_sweep  = np.arange(0, 4.1, 0.01)
-current_data_array = np.empty([2, voltage_sweep.size])
+voltage_sweep  = np.arange(0, 2, 0.01)
+current_data_array = np.empty([8, voltage_sweep.size])
 
 smu = SMU()
 
-smu.ch[0].set_current_range(1)
-smu.ch[1].set_current_range(2)
-
+smu.ch[1].set_voltage(0.1) 
 
 for voltage_step, voltage in enumerate(voltage_sweep):
-  smu.ch[0].set_voltage(voltage) 
+  smu.ch[0].set_voltage(voltage)   
   smu.ch[1].set_voltage(voltage) 
   current_data_array[0][voltage_step] = smu.ch[0].get_current() 
   current_data_array[1][voltage_step] = smu.ch[1].get_current() 
 
+for voltage_step, voltage in enumerate(voltage_sweep):
+  smu.ch[0].set_voltage(voltage)   
+  smu.ch[1].set_voltage(voltage) 
+  current_data_array[2][voltage_step] = smu.ch[0].get_current(current_range = 1) 
+  current_data_array[3][voltage_step] = smu.ch[1].get_current(current_range = 1) 
+
+for voltage_step, voltage in enumerate(voltage_sweep):
+  smu.ch[0].set_voltage(voltage)   
+  smu.ch[1].set_voltage(voltage) 
+  current_data_array[4][voltage_step] = smu.ch[0].get_current(current_range = 2) 
+  current_data_array[5][voltage_step] = smu.ch[1].get_current(current_range = 2) 
+
+for voltage_step, voltage in enumerate(voltage_sweep):
+  smu.ch[0].set_voltage(voltage)   
+  smu.ch[1].set_voltage(voltage) 
+  current_data_array[6][voltage_step] = smu.ch[0].get_current(current_range = 3) 
+  current_data_array[7][voltage_step] = smu.ch[1].get_current(current_range = 3) 
+  
 smu.close()
 
-ax.semilogy(voltage_sweep, current_data_array[0])
-ax.semilogy(voltage_sweep, current_data_array[1])
+ax[0,0].plot(voltage_sweep, current_data_array[0], label='auto')
+ax[0,1].plot(voltage_sweep, current_data_array[1], label='auto')
+ax[0,0].plot(voltage_sweep, current_data_array[2], label='low')
+ax[0,1].plot(voltage_sweep, current_data_array[3], label='low')
+ax[0,0].plot(voltage_sweep, current_data_array[4], label='mid')
+ax[0,1].plot(voltage_sweep, current_data_array[5], label='mid')
+ax[0,0].plot(voltage_sweep, current_data_array[6], label='high')
+ax[0,1].plot(voltage_sweep, current_data_array[7], label='high')
+ax[1,0].semilogy(voltage_sweep, current_data_array[0], label='auto')
+ax[1,1].semilogy(voltage_sweep, current_data_array[1], label='auto')
+ax[1,0].semilogy(voltage_sweep, current_data_array[2], label='low')
+ax[1,1].semilogy(voltage_sweep, current_data_array[3], label='low')
+ax[1,0].semilogy(voltage_sweep, current_data_array[4], label='mid')
+ax[1,1].semilogy(voltage_sweep, current_data_array[5], label='mid')
+ax[1,0].semilogy(voltage_sweep, current_data_array[6], label='high')
+ax[1,1].semilogy(voltage_sweep, current_data_array[7], label='high')
 
-ax.set(xlabel='U (V)', ylabel='I (mA)')
-ax.grid()
+for a in ax.flat:
+  a.set(ylabel='I (mA)')
+  a.grid()
+  a.legend(title='current range')
 
 plt.show()
 
