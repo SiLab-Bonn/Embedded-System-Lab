@@ -90,7 +90,7 @@ class SMU_channel:
       current = 0x0fff & int.from_bytes(i2c_data,"big")
     return current
 
-  def get_current(self, current_range='auto', average = True):
+  def get_current(self, current_range='auto', average = False):
     if (current_range != 'auto'):
       if (self.current_range != current_range):
         self.set_current_range(current_range)
