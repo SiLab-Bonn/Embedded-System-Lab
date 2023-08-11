@@ -19,8 +19,8 @@ curr_range_dict = {
 
 # current sense gain setting resistor
 rsns_list  = [float("inf"), 800000, 8000, 80]  # effective transimpedance = Rsns x 10
-adc_offset = 0 #6
-adc_cm_gain = 0 #0.0045
+adc_offset  = 6
+adc_cm_gain = 0.0045
 upper_limit = 4050  # upper limit for current measurement (ADC counts)
 lower_limit = 50    # lower limit for current measurement (ADC counts)
 
@@ -47,6 +47,9 @@ class SMU:
   def close(self):
     self.ch[0].close()
     self.ch[1].close()
+    self.dac.close()
+    self.adc.close()
+    self.rsns.close()
     
     
 class SMU_channel:
@@ -109,65 +112,72 @@ class SMU_channel:
   def close(self):
     self.set_voltage(0)
     self.set_current_range(0)
+
   
+if __name__ == '__main__':
 
-fig, ax = plt.subplots(2,2, sharex='col')
+  fig, ax = plt.subplots(2,2, sharex='col')
 
-voltage_sweep  = np.arange(0, 2, 0.01)
-current_data_array = np.empty([8, voltage_sweep.size])
+  voltage_sweep  = np.arange(0, 2, 0.01)
+  current_data_array = np.empty([8, voltage_sweep.size])
 
-smu = SMU()
+  smu = SMU()
 
-smu.ch[1].set_voltage(0.1) 
+  smu.ch[1].set_voltage(0.1) 
 
-for voltage_step, voltage in enumerate(voltage_sweep):
-  smu.ch[0].set_voltage(voltage)   
-  smu.ch[1].set_voltage(voltage) 
-  current_data_array[0][voltage_step] = smu.ch[0].get_current() 
-  current_data_array[1][voltage_step] = smu.ch[1].get_current() 
+  # sweep in auto current ranging mode
+  for voltage_step, voltage in enumerate(voltage_sweep):
+    smu.ch[0].set_voltage(voltage)   
+    smu.ch[1].set_voltage(voltage) 
+    current_data_array[0][voltage_step] = smu.ch[0].get_current() 
+    current_data_array[1][voltage_step] = smu.ch[1].get_current() 
 
-for voltage_step, voltage in enumerate(voltage_sweep):
-  smu.ch[0].set_voltage(voltage)   
-  smu.ch[1].set_voltage(voltage) 
-  current_data_array[2][voltage_step] = smu.ch[0].get_current(current_range = 1) 
-  current_data_array[3][voltage_step] = smu.ch[1].get_current(current_range = 1) 
+  # sweeps with fixed current range
+  for voltage_step, voltage in enumerate(voltage_sweep):
+    smu.ch[0].set_voltage(voltage)   
+    smu.ch[1].set_voltage(voltage) 
+    current_data_array[2][voltage_step] = smu.ch[0].get_current(current_range = 1) 
+    current_data_array[3][voltage_step] = smu.ch[1].get_current(current_range = 1) 
 
-for voltage_step, voltage in enumerate(voltage_sweep):
-  smu.ch[0].set_voltage(voltage)   
-  smu.ch[1].set_voltage(voltage) 
-  current_data_array[4][voltage_step] = smu.ch[0].get_current(current_range = 2) 
-  current_data_array[5][voltage_step] = smu.ch[1].get_current(current_range = 2) 
+  for voltage_step, voltage in enumerate(voltage_sweep):
+    smu.ch[0].set_voltage(voltage)   
+    smu.ch[1].set_voltage(voltage) 
+    current_data_array[4][voltage_step] = smu.ch[0].get_current(current_range = 2) 
+    current_data_array[5][voltage_step] = smu.ch[1].get_current(current_range = 2) 
 
-for voltage_step, voltage in enumerate(voltage_sweep):
-  smu.ch[0].set_voltage(voltage)   
-  smu.ch[1].set_voltage(voltage) 
-  current_data_array[6][voltage_step] = smu.ch[0].get_current(current_range = 3) 
-  current_data_array[7][voltage_step] = smu.ch[1].get_current(current_range = 3) 
-  
-smu.close()
+  for voltage_step, voltage in enumerate(voltage_sweep):
+    smu.ch[0].set_voltage(voltage)   
+    smu.ch[1].set_voltage(voltage) 
+    current_data_array[6][voltage_step] = smu.ch[0].get_current(current_range = 3) 
+    current_data_array[7][voltage_step] = smu.ch[1].get_current(current_range = 3) 
+    
+  smu.close()
 
-ax[0,0].plot(voltage_sweep, current_data_array[0], label='auto')
-ax[0,1].plot(voltage_sweep, current_data_array[1], label='auto')
-ax[0,0].plot(voltage_sweep, current_data_array[2], label='low')
-ax[0,1].plot(voltage_sweep, current_data_array[3], label='low')
-ax[0,0].plot(voltage_sweep, current_data_array[4], label='mid')
-ax[0,1].plot(voltage_sweep, current_data_array[5], label='mid')
-ax[0,0].plot(voltage_sweep, current_data_array[6], label='high')
-ax[0,1].plot(voltage_sweep, current_data_array[7], label='high')
-ax[1,0].semilogy(voltage_sweep, current_data_array[0], label='auto')
-ax[1,1].semilogy(voltage_sweep, current_data_array[1], label='auto')
-ax[1,0].semilogy(voltage_sweep, current_data_array[2], label='low')
-ax[1,1].semilogy(voltage_sweep, current_data_array[3], label='low')
-ax[1,0].semilogy(voltage_sweep, current_data_array[4], label='mid')
-ax[1,1].semilogy(voltage_sweep, current_data_array[5], label='mid')
-ax[1,0].semilogy(voltage_sweep, current_data_array[6], label='high')
-ax[1,1].semilogy(voltage_sweep, current_data_array[7], label='high')
+  ax[0,0].plot(voltage_sweep, current_data_array[0], label='auto')
+  ax[0,1].plot(voltage_sweep, current_data_array[1], label='auto')
+  ax[0,0].plot(voltage_sweep, current_data_array[2], label='low')
+  ax[0,1].plot(voltage_sweep, current_data_array[3], label='low')
+  ax[0,0].plot(voltage_sweep, current_data_array[4], label='mid')
+  ax[0,1].plot(voltage_sweep, current_data_array[5], label='mid')
+  ax[0,0].plot(voltage_sweep, current_data_array[6], label='high')
+  ax[0,1].plot(voltage_sweep, current_data_array[7], label='high')
+  ax[1,0].semilogy(voltage_sweep, current_data_array[0], label='auto')
+  ax[1,1].semilogy(voltage_sweep, current_data_array[1], label='auto')
+  ax[1,0].semilogy(voltage_sweep, current_data_array[2], label='low')
+  ax[1,1].semilogy(voltage_sweep, current_data_array[3], label='low')
+  ax[1,0].semilogy(voltage_sweep, current_data_array[4], label='mid')
+  ax[1,1].semilogy(voltage_sweep, current_data_array[5], label='mid')
+  ax[1,0].semilogy(voltage_sweep, current_data_array[6], label='high')
+  ax[1,1].semilogy(voltage_sweep, current_data_array[7], label='high')
 
-for a in ax.flat:
-  a.set(ylabel='I (mA)')
-  a.grid()
-  a.legend(title='current range')
+  ax[0,0].set_title('Ch 1')  
+  ax[0,1].set_title('Ch 2')
 
-plt.show()
+  for a in ax.flat:
+    a.set(ylabel='I (mA)')
+    a.grid()
+    a.legend(title='current range')
+
+  plt.show()
 
 

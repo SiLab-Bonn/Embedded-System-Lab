@@ -52,7 +52,7 @@ def sar_loop(resolution = dac_resolution):
 def read_adc(resolution = dac_resolution):
   resolution = min(dac_resolution, resolution)
   GPIO.output(SAMPLE, GPIO.HIGH) # close sample switch (sample mode)
-  time.sleep(0.0001)
+  time.sleep(0.001)
   GPIO.output(SAMPLE, GPIO.LOW)  # open sample switch (hold mode)
   return sar_loop(resolution)
 
@@ -69,8 +69,8 @@ def adc_analysis(resolution = dac_resolution):
   adc_hist, bin_edges = np.histogram(adc_samples, bins = range(bin_count))
 
   # set limits (cut the over- and underflow bins)
-  lower_bound = int(bin_count / 30)
-  upper_bound = bin_count - 2
+  lower_bound = 10 # int(bin_count / 20)
+  upper_bound = 250 # bin_count - 2
 
   # average bin height 
   adc_hist_avg = np.average(adc_hist[lower_bound:upper_bound])
@@ -98,7 +98,7 @@ def adc_analysis(resolution = dac_resolution):
   plot[1].set_ylabel("DNL")
   plot[1].legend()
   plot[2].stairs(adc_inl, bin_edges)
-  plot[2].set_ylim(-2, 2)
+  plot[2].set_ylim(-5, 5)
   plot[2].set_xticks(range(0, bin_count,  bin_count>>3))
   plot[2].set_ylabel("INL")
   plt.show()
