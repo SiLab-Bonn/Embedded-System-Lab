@@ -32,9 +32,9 @@ TRG_THR.write(b'\200') # set trigger threshold [0..255]
 TRG_THR.close() # close device
 
 # init ADC: data array, number of samples, sample rate, trigger mode
-n_samples = 3000 # number of samples 
+n_samples = 1000 # number of samples 
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_200k, TRIGGER_ADC)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, TRIGGER_ADC)
 
 # prepare time data series
 time_base = ADC.get_time_base()

@@ -3,140 +3,130 @@ from i2cdev import I2C
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+from smu_class import SMU
 
-#DAC channel connected to internal MOSFET
-DRAIN = 2
-GATE  = 1
+# fig, ax = plt.subplots(2,2, sharex='col')
 
-# source voltage DAC
-DAC = I2C(0x60, 1)  # init DAC as I2C device on bus 1
-DAC.write(b'\x40\x00\x05') # external VREF, unbuffered
-DAC.write(b'\x50\x00\x00') # gain = 1
+# voltage_sweep  = np.arange(0, 2, 0.01)
+# current_data_array = np.empty([8, voltage_sweep.size])
 
-# sense ADC
-ADC = I2C(0x36, 1) # init ADC as I2C device on bus 1
-ADC.write(b'\xa2\x03') # configuration byte, setup byte (scan ch0-ch1)
+# smu = SMU()
 
-def SetVoltage(channel, volt, raw = False):
-  if raw:
-    dac_value = volt
-  else:
-    dac_value = int((volt / 16) * 1000) # 8 bit DAC!!! VOUT = #DAC/256 * 4096 mV
-  channel = (channel-1) * 8
-  i2c_data = bytes([channel, 0, dac_value])
-  #print(i2c_data)
-  DAC.write(i2c_data)
+# smu.ch[1].set_voltage(0.1) 
 
-current_range = 0
+# # sweep in auto current ranging mode
+# for voltage_step, voltage in enumerate(voltage_sweep):
+#   smu.ch[0].set_voltage(voltage)   
+#   smu.ch[1].set_voltage(voltage) 
+#   current_data_array[0][voltage_step] = smu.ch[0].get_current() 
+#   current_data_array[1][voltage_step] = smu.ch[1].get_current() 
 
-def GetCurrent(channel, average=False):
-  global current_range
-  channel = channel -1 # 1,2 -> 0,1
-  if average:
-    setup_data = bytes([0x21 | (channel << 1)])
-  else:
-    setup_data = bytes([0x61 | (channel << 1)])
-  ADC.write(setup_data)
+# # sweeps with fixed current range
+# for voltage_step, voltage in enumerate(voltage_sweep):
+#   smu.ch[0].set_voltage(voltage)   
+#   smu.ch[1].set_voltage(voltage) 
+#   current_data_array[2][voltage_step] = smu.ch[0].get_current(current_range = 1) 
+#   current_data_array[3][voltage_step] = smu.ch[1].get_current(current_range = 1) 
 
-  if average:
-    i2c_data = ADC.read(16)
-    current = 0
-    for i in range(8):
-      current += 0x0fff & int.from_bytes(i2c_data[(2*i):(2*i+2)],"big")
-    current = current / 8.0
-  else:
-    i2c_data = ADC.read(2)
-    current = 0x0fff & int.from_bytes(i2c_data,"big")
+# for voltage_step, voltage in enumerate(voltage_sweep):
+#   smu.ch[0].set_voltage(voltage)   
+#   smu.ch[1].set_voltage(voltage) 
+#   current_data_array[4][voltage_step] = smu.ch[0].get_current(current_range = 2) 
+#   current_data_array[5][voltage_step] = smu.ch[1].get_current(current_range = 2) 
 
-  if current > 4000 and current_range == 0: # manually change to higher range
-    input("Set high current range and press enter to continue.")
-    current_range = 1
-    if average:
-      i2c_data = ADC.read(16)
-      current = 0
-      for i in range(8):
-        current += 0x0fff & int.from_bytes(i2c_data[(2*i):(2*i+2)],"big")
-      current = current / 8.0
-    else:
-      i2c_data = ADC.read(2)
-      current = 0x0fff & int.from_bytes(i2c_data,"big")
-
-  if current < 30 and current_range == 1: # manually change to lower range
-    input("Set low current range and press enter continue.")
-    current_range = 0
-    if average:
-      i2c_data = ADC.read(16)
-      current = 0
-      for i in range(8):
-        current += 0x0fff & int.from_bytes(i2c_data[(2*i):(2*i+2)],"big")
-      current = current / 8.0
-    else:
-      i2c_data = ADC.read(2)
-      current = 0x0fff & int.from_bytes(i2c_data,"big")
+# for voltage_step, voltage in enumerate(voltage_sweep):
+#   smu.ch[0].set_voltage(voltage)   
+#   smu.ch[1].set_voltage(voltage) 
+#   current_data_array[6][voltage_step] = smu.ch[0].get_current(current_range = 3) 
+#   current_data_array[7][voltage_step] = smu.ch[1].get_current(current_range = 3) 
   
-  current -= 7 # subtract offset
+# smu.close()
 
-  if current_range == 1:
-    current *= 10
+# ax[0,0].plot(voltage_sweep, current_data_array[0], label='auto')
+# ax[0,1].plot(voltage_sweep, current_data_array[1], label='auto')
+# ax[0,0].plot(voltage_sweep, current_data_array[2], label='low')
+# ax[0,1].plot(voltage_sweep, current_data_array[3], label='low')
+# ax[0,0].plot(voltage_sweep, current_data_array[4], label='mid')
+# ax[0,1].plot(voltage_sweep, current_data_array[5], label='mid')
+# ax[0,0].plot(voltage_sweep, current_data_array[6], label='high')
+# ax[0,1].plot(voltage_sweep, current_data_array[7], label='high')
+# ax[1,0].semilogy(voltage_sweep, current_data_array[0], label='auto')
+# ax[1,1].semilogy(voltage_sweep, current_data_array[1], label='auto')
+# ax[1,0].semilogy(voltage_sweep, current_data_array[2], label='low')
+# ax[1,1].semilogy(voltage_sweep, current_data_array[3], label='low')
+# ax[1,0].semilogy(voltage_sweep, current_data_array[4], label='mid')
+# ax[1,1].semilogy(voltage_sweep, current_data_array[5], label='mid')
+# ax[1,0].semilogy(voltage_sweep, current_data_array[6], label='high')
+# ax[1,1].semilogy(voltage_sweep, current_data_array[7], label='high')
 
-  else:
-    current /= 10
+# ax[0,0].set_title('Ch 1')  
+# ax[0,1].set_title('Ch 2')
 
-  return current
+# for a in ax.flat:
+#   a.set(ylabel='I (mA)')
+#   a.grid()
+#   a.legend(title='current range')
 
+# plt.show()
+
+
+smu   = SMU()
+gate  = smu.ch[0]
+drain = smu.ch[1]
+
+# input characteristics: Id(Ugs)
 fig1, ax = plt.subplots(3,2, sharex='col')
-# fig2, bx = plt.subplots()
-
-# voltage_sweep  = np.arange(0, 4.1, 0.05)
-# voltage_parameter  = np.arange(1.1, 1.6, 0.1)
-# current_data_array = np.empty([voltage_parameter.size, voltage_sweep.size])
-
-# # Id vs Uds
-# for ugs_index, ugs in enumerate(voltage_parameter):
-#   SetVoltage(GATE, ugs)  # gate
-#   for uds_index, uds in enumerate(voltage_sweep):
-#     SetVoltage(DRAIN, uds) # drain
-#     current_data_array[ugs_index][uds_index] = GetCurrent(DRAIN, average=True) 
-#   bx.plot(voltage_sweep, current_data_array[ugs_index], label="{:.2f}".format(ugs))
-
-# bx.set(xlabel='Uds [V]', ylabel='Id [uA]')
-# bx.grid()
-# bx.legend(title="Ugs")
-
-voltage_sweep      = np.arange(0.0, 2.0, 16/1000)
-voltage_parameter  = np.arange(0.8, 0.9, 0.2)
-current_data_array = np.empty([voltage_parameter.size, voltage_sweep.size])
+gate_voltage_sweep       = np.arange(0.0, 2.0, 0.01)
+drain_voltage_parameter  = np.arange(0.1, 0.6, 0.2)
+current_data_array = np.empty([drain_voltage_parameter.size, gate_voltage_sweep.size])
 
 # Id vs Ugs
-for uds_index, uds in enumerate(voltage_parameter):
-  SetVoltage(DRAIN, uds)  # gate
-  for ugs_index, ugs in enumerate(voltage_sweep):
-    SetVoltage(GATE, ugs) # drain
-    current_data_array[uds_index][ugs_index] = GetCurrent(DRAIN, average=True) 
-  ax[0,0].plot(voltage_sweep, current_data_array[uds_index], label="{:.2f}".format(uds))
-  ax[1,0].semilogy(voltage_sweep, current_data_array[uds_index], label="{:.2f}".format(uds))
-  ax[2,0].plot(voltage_sweep, np.sqrt(current_data_array[uds_index]), label="{:.2f}".format(uds))
+for uds_index, uds in enumerate(drain_voltage_parameter):
+  drain.set_voltage(uds)  
+  for ugs_index, ugs in tqdm(enumerate(gate_voltage_sweep)):
+    gate.set_voltage(ugs) 
+    current_data_array[uds_index][ugs_index] = drain.get_current(average=True) 
+  ax[0,0].plot(gate_voltage_sweep, current_data_array[uds_index], label="{:.2f}".format(uds))
+  ax[1,0].semilogy(gate_voltage_sweep, current_data_array[uds_index], label="{:.2f}".format(uds))
+  ax[2,0].plot(gate_voltage_sweep, np.sqrt(current_data_array[uds_index]), label="{:.2f}".format(uds))
 
   # gm vs Id
-  gm = np.diff(current_data_array[uds_index], prepend = 0)/np.diff(voltage_sweep, prepend = 0.5)
+  gm = np.diff(current_data_array[uds_index], prepend = 0)/np.diff(gate_voltage_sweep, prepend = 0.5)
 
-  ax[0,1].plot(voltage_sweep, gm/1000)
-  ax[1,1].plot(voltage_sweep, gm/np.sqrt(current_data_array[uds_index]))
-  ax[2,1].plot(voltage_sweep, gm/current_data_array[uds_index])  
+  ax[0,1].plot(gate_voltage_sweep, gm)
+  ax[1,1].plot(gate_voltage_sweep, gm/np.sqrt(current_data_array[uds_index]))
+  ax[2,1].plot(gate_voltage_sweep, gm/current_data_array[uds_index])  
 
-ax[0,0].set(ylabel='Id [uA]')
+# output chracteristics: Id(Uds)
+fig2, bx = plt.subplots()
+drain_voltage_sweep    = np.arange(0.0, 0.6, 0.001)
+gate_voltage_parameter = np.arange(0.6, 1, 0.1)
+current_data_array = np.empty([gate_voltage_parameter.size, drain_voltage_sweep.size])
+
+for ugs_index, ugs in enumerate(gate_voltage_parameter):
+  gate.set_voltage(ugs)  
+  time.sleep(0.05)
+  for uds_index, uds in tqdm(enumerate(drain_voltage_sweep)):
+    drain.set_voltage(uds) 
+    time.sleep(0.005)
+    current_data_array[ugs_index][uds_index] = drain.get_current(average=True) 
+  bx.plot(drain_voltage_sweep, current_data_array[ugs_index], label="{:.2f}".format(ugs))
+
+smu.close()
+
+ax[0,0].set(ylabel='Id [mA]')
 ax[0,0].legend(title="Uds")
 ax[0,0].grid()
 
-ax[1,0].set(ylabel='Id [uA]')
+ax[1,0].set(ylabel='Id [mA]')
 ax[1,0].grid()
 
-ax[2,0].set(xlabel='Ugs [V]', ylabel='SQRT(Id [uA])')
+ax[2,0].set(xlabel='Ugs [V]', ylabel='SQRT(Id [mA])')
 ax[2,0].grid()
 
 ax[0,1].set(ylabel='gm [A/V]')
 ax[0,1].grid()
-ax[0,1].set_ylim(-5, )
+ax[0,1].set_ylim(-0.1, )
 
 ax[1,1].set(ylabel='gm/SQRT(Id) [1/SQRT(V)]')
 ax[1,1].grid()
@@ -146,7 +136,8 @@ ax[2,1].set(xlabel='Ugs [V]', ylabel='gm/Id [1/V]')
 ax[2,1].grid()
 ax[2,1].set_ylim(-5, )
 
-plt.show()
+bx.set(xlabel='Uds [V]', ylabel='Id [mA]')
+bx.legend(title="Ugs")
+bx.grid()
 
-DAC.close() # close device
-ADC.close()
+plt.show()
