@@ -41,9 +41,7 @@ class SMU:
     self.rsns.write(b'\x01\x00') # set bits 3:0 low
 
     self.ch = [SMU_channel(self, 1), SMU_channel(self, 2)]
-    self.ch[0].set_current_range(2)    
-    self.ch[1].set_current_range(2)
-  
+
   def close(self):
     self.ch[0].close()
     self.ch[1].close()
@@ -56,6 +54,8 @@ class SMU_channel:
   def __init__(self, smu, channel):
     self.channel = channel-1
     self.smu = smu
+    self.set_current_range(0)    
+    self.set_voltage(0)    
 
   def set_voltage(self, volt):
     self.dac_value = int(volt * 1000) # 12 bit DAC, VREF = 4096mV, VOUT = #DAC[mV]
