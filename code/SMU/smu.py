@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
+CH1 = 1
+CH2 = 2
+
 # There are three devices connected to the I2C bus:
 #  - MCP47CVB22, dual channel 12-bit DAC
 #  - MAX11644, dual channel 12-bit ADC
@@ -72,21 +75,31 @@ def set_current_range(channel, value):
 
 # switch on
 current_range = 1
-set_voltage(2, 1) # ch2 connected to drain
-set_current_range(1, current_range)
-set_current_range(2, current_range)
+set_voltage(CH1, 1)
+set_current_range(CH1, current_range)
 
-for v in range(0,2000, 20):
-  current_raw = get_current_raw(2)
-  set_voltage(1, v/1000)
-  print("voltage [mV]:", v ," current [mA]:", current_raw/rsns_list[current_range])
+voltage_values = range(0,2000, 20)
+current_values = []
+
+for voltage in voltage_values:
+  set_voltage(CH1, voltage/1000)
+  current = get_current_raw(CH1)/rsns_list[current_range]
+  current_values.append(current)
+  print("H1 voltage [mV]:", voltage ," current [mA]:", current)
  # print("ADC counts:", current_raw)
 
+fig, ax = plt.subplots()
+ax.plot(voltage_values, current_values)
+
+ax.set(xlabel='Voltage (mV)', ylabel='Current (mA)', title='I-V Curve')
+
+plt.show()
+
 # switch off
-set_voltage(1, 0)
-set_voltage(2, 0)
-set_current_range(1, 0)
-set_current_range(2, 0)
+set_voltage(CH1, 0)
+set_voltage(CH2, 0)
+set_current_range(CH1, 0)
+set_current_range(CH2, 0)
 
 adc.close()
 dac.close()
