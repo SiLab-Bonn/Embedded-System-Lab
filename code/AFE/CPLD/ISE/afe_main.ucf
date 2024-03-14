@@ -1,0 +1,26 @@
+
+#Created by Constraints Editor (xc2c32a-qfg32-4) - 2023/02/06
+NET "CLK" TNM_NET = CLK;
+TIMESPEC TS_CLK = PERIOD "CLK" 25 ns HIGH 50%;
+NET "SCLK" TNM_NET = SCLK;
+TIMESPEC TS_SCLK = PERIOD "SCLK" 50 ns HIGH 50%;
+
+NET "GPIO[0]" LOC = "23" | SLOW;
+NET "GPIO[1]" LOC = "24" | SLOW;
+NET "GPIO[2]" LOC = "28" | SLOW;
+NET "GPIO[3]" LOC = "29" | SLOW;
+NET "GPIO[4]" LOC = "30" | SLOW;
+NET "GPIO[5]" LOC = "31" | SLOW;
+NET "GPIO[6]" LOC = "32" | SLOW;
+NET "GPIO[7]" LOC = "1"  | SLOW;
+
+NET "MISO"  LOC = "5" | SLOW;
+NET "MOSI"  LOC = "17";
+NET "SCLK"  LOC = "6";  # GCK0
+NET "CLK"   LOC = "7";  # GCK1
+#NET "COMP"  LOC = "8";  # GCK2
+NET "COMP"   LOC = "3";  #
+NET "CS_B"   LOC = "9";
+NET "INJ_IN" LOC = "10";
+NET "INJ_OUT" LOC = "2";
+NET "HIT"   LOC = "13" | SLOW;

@@ -1,0 +1,18 @@
+// Just an example SVF
+// Note:  All text including and after the "//" is a comment in this file.
+
+// Execute the xapp058_example.exe as follows using the *XSVF* file to test
+// these JTAG commands:
+//   xapp058_example.exe -v 4 example.xsvf
+
+STATE RESET;    // Move JTAG TAP to Test-Logic-Reset STATE
+SIR 8 TDI(35);  // Example JTAG shift-instruction command. Sends 0x35 to TDI
+
+RUNTEST 10 TCK; // Wait in JTAG TAP Run-Test/Idle state for 10 microseconds
+                // and apply 10 TCK pulses within the Run-Test/Idle state
+
+// Example JTAG shift-data command.  Sends 0x00 to TDI; Expects 0x79 from TDO
+// NOTE: THIS RESULTS IN A FAILURE WITH THE XAPP058_EXAMPLE.EXE 
+//       BECAUSE THERE IS *NO* REAL JTAG TDO SIGNAL RETURNING A 0x79 VALUE
+SDR 8 TDI(0) TDO (79) MASK (FF) ;
+
