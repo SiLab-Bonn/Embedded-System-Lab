@@ -11,13 +11,15 @@ from smu_class import SMU
 
 CLK = 4
 
-#GPIO.setup(CLK, GPIO.)
+GPIO.setup(CLK, GPIO.OUT)
+pwm = GPIO.PWM(CLK, 100000000)
+pwm.start(1)
 
 smu   = SMU()
 cvm  = smu.ch[0]
 cvm.set_current_range(1)
 
-voltage_values = range(0,2000, 20)
+voltage_values = range(0, 2000, 20)
 current_values = []
 
 for voltage in voltage_values:
@@ -33,6 +35,8 @@ ax.plot(voltage_values, current_values)
 ax.set(xlabel='Voltage (mV)', ylabel='Current (mA)', title='I-V Curve')
 
 plt.show()
+
+pwm.stop()
 
 # switch off
 smu.close

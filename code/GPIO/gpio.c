@@ -14,19 +14,29 @@
 #define GPIO_SET0       0x1C  // set outputs to '1' GPIO 0-31
 #define GPIO_CLR0       0x28  // set outputs to '0' GPIO 0-31
 #define GPIO_LEV0       0x34  // get input states GPIO 0-31
-#define GPIO_MODE_IN    0x000
-#define GPIO_MODE_OUT   0x001
-#define GPIO_MODE_ALT0  0x100
-#define GPIO_MODE_ALT1  0x101  
-#define GPIO_MODE_ALT2  0x110
-#define GPIO_MODE_ALT3  0x111
-#define GPIO_MODE_ALT4  0x011
-#define GPIO_MODE_ALT5  0x010
-
+#define GPIO_MODE_IN    0 
+#define GPIO_MODE_OUT   1 
+#define GPIO_MODE_ALT0  4 
+#define GPIO_MODE_ALT1  5 
+#define GPIO_MODE_ALT2  6 
+#define GPIO_MODE_ALT3  7 
+#define GPIO_MODE_ALT4  3 
+#define GPIO_MODE_ALT5  2 
 #define GPIO_FSEL_BITS  3
 
-#define GPIO_PIN 5  // pin to be used as output
-//#define DEBUG  // print debug information
+#define GPCLK_BASE      0x7E101000
+#define GPCLK0_CTL      0x70
+#define GPCLK0_DIV      0x74
+#define GPCLK_PWD       0x5A000000
+#define GPCLK_SRC_OFF   0
+#define GPCLK_SRC_OSC   1
+#define GPCLK_SRC_PLLA  4
+#define GPCLK_SRC_PLLC  5
+#define GPCLK_SRC_PLLD  6
+#define GPCLK_ENABLE    (1 << 4)
+#define GPCLK_BUSY      (1 << 7)
+
+//#define DEBUG 1
 
 uint32_t *gpio_virt_addr_ptr;  // pointer to virtual address
 uint32_t *gpfsel0;
@@ -35,6 +45,11 @@ uint32_t *gpfsel2;
 uint32_t *gpset0;
 uint32_t *gpclr0;
 uint32_t *gplev0;
+
+uint32_t *gpclk_virt_addr_ptr;  // pointer to virtual address
+uint32_t *gpclk0_ctl;
+uint32_t *gpclk0_div;
+
 
 int setup_gpio_regs()
 {
@@ -45,7 +60,8 @@ int setup_gpio_regs()
   gpio_phys_addr = GPIO_BASE - BUS_REG_BASE + PHYS_REG_BASE;
 
   // get a handle to the physical memory space
-  if ((file_descriptor = open("/dev/mem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)
+  if ((file_descriptor = open("/dev/mem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)  // requires root permissions ("sudo ...")
+ // if ((file_descriptor = open("/dev/gpiomem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)  // only requires *gpio' group
   {
       printf("Error: can't open /dev/mem, run using sudo\n");
       return(1);
@@ -53,6 +69,7 @@ int setup_gpio_regs()
 
   // allocate virtual memory and map the physical address to it
   gpio_virt_addr_ptr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, gpio_phys_addr);
+//  gpio_virt_addr_ptr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, 0); // gpiomem automatically points to g'pio_phys_addr'
   close(file_descriptor);
 
   // check the results
@@ -85,25 +102,101 @@ int setup_gpio_regs()
   return(0);
 }
 
+int setup_gpclk_regs()
+{
+  uint32_t  gpclk_phys_addr;  // GPIO register CPU bus address 
+  int file_descriptor;  // handle for memory mapping
+
+  // calculate the physical address from the bus address
+  gpclk_phys_addr = GPCLK_BASE - BUS_REG_BASE + PHYS_REG_BASE;
+
+  // get a handle to the physical memory space
+  if ((file_descriptor = open("/dev/mem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)  // requires root permissions ("sudo ...")
+ // if ((file_descriptor = open("/dev/gpiomem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)  // only requires *gpio' group
+  {
+      printf("Error: can't open /dev/mem, run using sudo\n");
+      return(1);
+  }
+
+  // allocate virtual memory and map the physical address to it
+  gpclk_virt_addr_ptr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, gpclk_phys_addr);
+//  gpio_virt_addr_ptr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, 0); // gpiomem automatically points to g'pio_phys_addr'
+  close(file_descriptor);
+
+  // check the results
+  if (gpclk_virt_addr_ptr == MAP_FAILED)
+  {
+      printf("Error: can't map memory\n");
+      return(1);
+  }
+  #ifdef DEBUG 
+    printf("Success: Map %p -> %p\n", (void *)gpclk_phys_addr, gpclk_virt_addr_ptr);
+  #endif
+
+  // define variables to access the specific registers
+  gpclk0_ctl = (uint32_t*)((void *)gpclk_virt_addr_ptr + GPCLK0_CTL);
+  gpclk0_div = (uint32_t*)((void *)gpclk_virt_addr_ptr + GPCLK0_DIV);
+
+
+  #ifdef DEBUG
+    // print virtual addresses and register content
+    printf("GPCLK0_CTL (%p): 0x%08x \n", (void *)gpclk0_ctl, *gpclk0_ctl);
+
+  #endif  
+  return(0);
+}
+
 void cleanup_gpio()
 {
   // set default mode (input)
   *gpfsel0 = 0;
   *gpfsel1 = 0;
   *gpfsel2 = 0;
+  *gpclk0_ctl = GPCLK_PWD;
   // free allocated memory
   munmap(gpio_virt_addr_ptr, 0x1000);
+  munmap(gpclk_virt_addr_ptr, 0x1000);
+}
+
+void set_gpclk0_source(int source)
+{
+  *gpclk0_ctl = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
+  //while ((*gpclk0_ctl & GPCLK_BUSY) != 0) ; // wait for not busy
+  *gpclk0_ctl = GPCLK_PWD | (0xf & source);
+  *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE ;
+}
+
+void set_gpclk0_div(int div)
+{
+  *gpclk0_ctl = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
+  while ((*gpclk0_ctl & GPCLK_BUSY) != 0) ; // wait for not busy
+  *gpclk0_div = GPCLK_PWD | ((0x3ff & div) << 12);  // set divider
+  *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on
 }
 
 void set_gpio_mode(int pin, int mode)
 {
+  int offset;
+  int mask;
   // configure GPIO mode
   if (pin < 10)
-   *gpfsel0 = mode << (GPIO_FSEL_BITS * pin);
+  {
+    offset = GPIO_FSEL_BITS * pin;
+    *gpfsel0 &= ~0x7 << offset;
+    *gpfsel0 |= mode << offset;
+  }
   else if (pin < 20)
-   *gpfsel1 = mode << (GPIO_FSEL_BITS * (pin - 10));
+  {   
+    offset = GPIO_FSEL_BITS * (pin - 10);
+    *gpfsel1 &= ~0x7 << offset;
+    *gpfsel1 |= mode << offset;
+  }
   else if (pin < 30)
-   *gpfsel2 = mode << (GPIO_FSEL_BITS * (pin - 20));
+  {
+    offset = GPIO_FSEL_BITS * (pin - 20);
+    *gpfsel2 &= ~0x7 << offset;
+    *gpfsel2 |= mode << offset;
+  }
 }
 
 void set_gpio_out(int pin, int level)
@@ -116,11 +209,23 @@ void set_gpio_out(int pin, int level)
 
 int main()
 {
-  int GPIOpin = 27;
+  static int BLUE_LED = 27;
+  static int CLK = 4;
   setup_gpio_regs();
-  set_gpio_mode(GPIOpin, GPIO_MODE_OUT);
-  set_gpio_out(GPIOpin, 1); 
-  set_gpio_out(GPIOpin, 0);
+  setup_gpclk_regs();
+  set_gpio_mode(CLK, GPIO_MODE_ALT0);
+  set_gpio_mode(BLUE_LED, GPIO_MODE_OUT);
+  set_gpio_out(CLK, 1);
+  set_gpclk0_source(GPCLK_SRC_OSC);
+  set_gpclk0_div(100);
+
+  printf("GPCLK0_CTL: 0x%08x \n", *gpclk0_ctl);
+  printf("GPCLK0_DIV: 0x%08x \n", *gpclk0_div);
+
+  set_gpio_out(BLUE_LED, 1); 
+  printf("Hit key to exit.");
+  getchar();
+  set_gpio_out(BLUE_LED, 0);
   cleanup_gpio();
   return(0);
 }
