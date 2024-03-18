@@ -58,4 +58,5 @@ plt.show()
 
 ADC.close_device()
 TRG_THR.close()
+GPIO.colse()
 print("exiting...")

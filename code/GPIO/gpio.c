@@ -35,6 +35,9 @@
 #define GPCLK_SRC_PLLD  6
 #define GPCLK_ENABLE    (1 << 4)
 #define GPCLK_BUSY      (1 << 7)
+#define GPCLK_MASH_1    (1 << 9)
+
+#define GPCLK_OSC_FREQ  54.0  // Rpi 4: 54 Mhz 
 
 //#define DEBUG 1
 
@@ -50,6 +53,11 @@ uint32_t *gpclk_virt_addr_ptr;  // pointer to virtual address
 uint32_t *gpclk0_ctl;
 uint32_t *gpclk0_div;
 
+uint32_t gpfsel0_prev;
+uint32_t gpfsel1_prev;
+uint32_t gpfsel2_prev;
+uint32_t gpclk0_ctl_prev;
+uint32_t gpclk0_div_prev;
 
 int setup_gpio_regs()
 {
@@ -64,7 +72,7 @@ int setup_gpio_regs()
  // if ((file_descriptor = open("/dev/gpiomem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)  // only requires *gpio' group
   {
       printf("Error: can't open /dev/mem, run using sudo\n");
-      return(1);
+      exit(1);
   }
 
   // allocate virtual memory and map the physical address to it
@@ -76,7 +84,7 @@ int setup_gpio_regs()
   if (gpio_virt_addr_ptr == MAP_FAILED)
   {
       printf("Error: can't map memory\n");
-      return(1);
+      exit(1);
   }
   #ifdef DEBUG 
     printf("Success: Map %p -> %p\n", (void *)gpio_phys_addr, gpio_virt_addr_ptr);
@@ -90,6 +98,11 @@ int setup_gpio_regs()
   gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
   gplev0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_LEV0);
 
+  // store values for clean-up
+  gpfsel0_prev = *gpfsel0;
+  gpfsel1_prev = *gpfsel1;
+  gpfsel2_prev = *gpfsel2;
+
   #ifdef DEBUG
     // print virtual addresses and register content
     printf("GPFSEL0 (%p): 0x%08x \n", (void *)gpfsel0, *gpfsel0);
@@ -99,6 +112,7 @@ int setup_gpio_regs()
     printf("GPCLR0  (%p): 0x%08x \n", (void *)gpclr0, *gpclr0);
     printf("GPLEV0  (%p): 0x%08x \n", (void *)gplev0, *gplev0);
   #endif  
+
   return(0);
 }
 
@@ -115,7 +129,7 @@ int setup_gpclk_regs()
  // if ((file_descriptor = open("/dev/gpiomem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)  // only requires *gpio' group
   {
       printf("Error: can't open /dev/mem, run using sudo\n");
-      return(1);
+      exit(1);
   }
 
   // allocate virtual memory and map the physical address to it
@@ -127,7 +141,7 @@ int setup_gpclk_regs()
   if (gpclk_virt_addr_ptr == MAP_FAILED)
   {
       printf("Error: can't map memory\n");
-      return(1);
+      exit(1);
   }
   #ifdef DEBUG 
     printf("Success: Map %p -> %p\n", (void *)gpclk_phys_addr, gpclk_virt_addr_ptr);
@@ -137,6 +151,8 @@ int setup_gpclk_regs()
   gpclk0_ctl = (uint32_t*)((void *)gpclk_virt_addr_ptr + GPCLK0_CTL);
   gpclk0_div = (uint32_t*)((void *)gpclk_virt_addr_ptr + GPCLK0_DIV);
 
+  gpclk0_ctl_prev = *gpclk0_ctl;
+  gpclk0_div_prev = *gpclk0_div;
 
   #ifdef DEBUG
     // print virtual addresses and register content
@@ -146,25 +162,21 @@ int setup_gpclk_regs()
   return(0);
 }
 
-void cleanup_gpio()
+void cleanup()
 {
-  // set default mode (input)
-  *gpfsel0 = 0;
-  *gpfsel1 = 0;
-  *gpfsel2 = 0;
-  *gpclk0_ctl = GPCLK_PWD;
+  // restore previous mode 
+  *gpfsel0 = gpfsel0_prev;
+  *gpfsel1 = gpfsel1_prev;
+  *gpfsel2 = gpfsel2_prev;
   // free allocated memory
   munmap(gpio_virt_addr_ptr, 0x1000);
+
+  // restore previous mode 
+  *gpclk0_ctl = gpclk0_ctl_prev | GPCLK_PWD;
+  // free allocated memory
   munmap(gpclk_virt_addr_ptr, 0x1000);
 }
 
-void set_gpclk0_source(int source)
-{
-  *gpclk0_ctl = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
-  //while ((*gpclk0_ctl & GPCLK_BUSY) != 0) ; // wait for not busy
-  *gpclk0_ctl = GPCLK_PWD | (0xf & source);
-  *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE ;
-}
 
 void set_gpclk0_div(int div)
 {
@@ -207,25 +219,52 @@ void set_gpio_out(int pin, int level)
     *gpclr0 = 1 << pin;
 }
 
+void setup()
+{
+  setup_gpio_regs();
+  setup_gpclk_regs();
+}
+
+void set_gpclk_freq(float frequency, int gpclk)
+{
+  float divider;
+  int div_i; 
+  int div_f;
+
+  if (gpclk != 0)
+  {
+    printf("Error: Only GPCLK0 allowed.\n");
+    exit(1);  
+  }  
+
+  divider = GPCLK_OSC_FREQ / frequency;
+
+  div_i = (int)(divider);
+  div_f = (int)((divider - div_i) * 4096);
+
+  *gpclk0_ctl  = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
+  //while ((*gpclk0_ctl & GPCLK_BUSY) != 0) ; // wait for not busy
+  *gpclk0_div  = GPCLK_PWD | ((0x3ff & div_i) << 12) | (0x3ff & div_f);  // set divider
+  *gpclk0_ctl |= GPCLK_PWD | GPCLK_MASH_1 | (0xf & GPCLK_SRC_OSC); // enable fractional divide, OSC as source
+  *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on
+}
+
+
 int main()
 {
   static int BLUE_LED = 27;
   static int CLK = 4;
-  setup_gpio_regs();
-  setup_gpclk_regs();
+
+  setup();
   set_gpio_mode(CLK, GPIO_MODE_ALT0);
+  set_gpclk_freq(1.9, 0);
+
   set_gpio_mode(BLUE_LED, GPIO_MODE_OUT);
-  set_gpio_out(CLK, 1);
-  set_gpclk0_source(GPCLK_SRC_OSC);
-  set_gpclk0_div(100);
-
-  printf("GPCLK0_CTL: 0x%08x \n", *gpclk0_ctl);
-  printf("GPCLK0_DIV: 0x%08x \n", *gpclk0_div);
-
   set_gpio_out(BLUE_LED, 1); 
+
   printf("Hit key to exit.");
   getchar();
   set_gpio_out(BLUE_LED, 0);
-  cleanup_gpio();
+  cleanup();
   return(0);
 }
