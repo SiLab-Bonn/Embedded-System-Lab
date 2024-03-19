@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "cppbuild",
-			"label": "C/C++: gcc build ADC lib - Linux",
+			"label": "C/C++: gcc build shared lib - Linux",
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-fdiagnostics-color=always",
@@ -12,9 +12,9 @@
 				"-Wall",
 				"-shared",
 				"-o",
-				"../../lib/fast_adc.so",
-				"fast_adc.c",
-				"rpi_dma_utils.c"
+				"${fileDirname}/../lib/${fileBasenameNoExtension}.so",
+				"${fileDirname}/${fileBasenameNoExtension}.c",
+				"${fileDirname}/../utils/rpi-dma/rpi_dma_utils.c"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -22,7 +22,10 @@
 			"problemMatcher": [
 				"$gcc"
 			],
-			"group": "build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
 			"detail": "compiler: /usr/bin/gcc"
 		},
 		{
@@ -42,10 +45,7 @@
 			"problemMatcher": [
 				"$gcc"
 			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
+			"group": "build",
 			"detail": "compiler: /usr/bin/gcc"
 		},
 		{

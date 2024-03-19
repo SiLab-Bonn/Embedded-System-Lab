@@ -87,7 +87,7 @@ int setup_gpio_regs()
       exit(1);
   }
   #ifdef DEBUG 
-    printf("Success: Map %p -> %p\n", (void *)gpio_phys_addr, gpio_virt_addr_ptr);
+    printf("Success: Map %p -> %p\n", (void *)gpio_phys_addr, (void *)gpio_virt_addr_ptr);
   #endif
 
   // define variables to access the specific registers
@@ -144,7 +144,7 @@ int setup_gpclk_regs()
       exit(1);
   }
   #ifdef DEBUG 
-    printf("Success: Map %p -> %p\n", (void *)gpclk_phys_addr, gpclk_virt_addr_ptr);
+    printf("Success: Map %p -> %p\n", (void *)gpclk_phys_addr, (void *)gpclk_virt_addr_ptr);
   #endif
 
   // define variables to access the specific registers
@@ -157,56 +157,58 @@ int setup_gpclk_regs()
   #ifdef DEBUG
     // print virtual addresses and register content
     printf("GPCLK0_CTL (%p): 0x%08x \n", (void *)gpclk0_ctl, *gpclk0_ctl);
+    printf("GPCLK0_DIV (%p): 0x%08x \n", (void *)gpclk0_div, *gpclk0_div);
 
   #endif  
   return(0);
 }
 
-void cleanup()
+void cleanup(int force_default)
 {
-  // restore previous mode 
-  *gpfsel0 = gpfsel0_prev;
-  *gpfsel1 = gpfsel1_prev;
-  *gpfsel2 = gpfsel2_prev;
-  // free allocated memory
-  munmap(gpio_virt_addr_ptr, 0x1000);
+  if (force_default == 1)
+  {
+    // restore default mode 
+    *gpfsel0 = 0x21200900;
+    *gpfsel1 = 0x00000024;
+    *gpfsel2 = 0x12000000;
+  }
+  else
+  {
+      // restore previous mode 
+    *gpfsel0 = gpfsel0_prev; // 0x21200900
+    *gpfsel1 = gpfsel1_prev; // 0x00000024
+    *gpfsel2 = gpfsel2_prev; // 0x12000000
+  }
 
   // restore previous mode 
   *gpclk0_ctl = gpclk0_ctl_prev | GPCLK_PWD;
+  *gpclk0_div = GPCLK_PWD;
   // free allocated memory
+  munmap(gpio_virt_addr_ptr, 0x1000);
   munmap(gpclk_virt_addr_ptr, 0x1000);
-}
-
-
-void set_gpclk0_div(int div)
-{
-  *gpclk0_ctl = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
-  while ((*gpclk0_ctl & GPCLK_BUSY) != 0) ; // wait for not busy
-  *gpclk0_div = GPCLK_PWD | ((0x3ff & div) << 12);  // set divider
-  *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on
 }
 
 void set_gpio_mode(int pin, int mode)
 {
   int offset;
-  int mask;
+  int mask = 0x7;
   // configure GPIO mode
   if (pin < 10)
   {
-    offset = GPIO_FSEL_BITS * pin;
-    *gpfsel0 &= ~0x7 << offset;
+     offset = GPIO_FSEL_BITS * pin;
+    *gpfsel0 &= ~(mask << offset);
     *gpfsel0 |= mode << offset;
   }
   else if (pin < 20)
   {   
     offset = GPIO_FSEL_BITS * (pin - 10);
-    *gpfsel1 &= ~0x7 << offset;
+    *gpfsel1 &= ~(mask << offset);
     *gpfsel1 |= mode << offset;
   }
   else if (pin < 30)
   {
     offset = GPIO_FSEL_BITS * (pin - 20);
-    *gpfsel2 &= ~0x7 << offset;
+    *gpfsel2 &= ~(mask << offset);
     *gpfsel2 |= mode << offset;
   }
 }
@@ -225,7 +227,7 @@ void setup()
   setup_gpclk_regs();
 }
 
-void set_gpclk_freq(float frequency, int gpclk)
+void set_gpclk_freq(int frequency, int gpclk)
 {
   float divider;
   int div_i; 
@@ -237,34 +239,49 @@ void set_gpclk_freq(float frequency, int gpclk)
     exit(1);  
   }  
 
-  divider = GPCLK_OSC_FREQ / frequency;
+  if (frequency == 0)
+  {
+    *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on ???
+    *gpclk0_ctl  = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
+    while ((*gpclk0_ctl & GPCLK_BUSY) != 0) 
+         
+    return;
+  }
+
+  divider = GPCLK_OSC_FREQ / (frequency/1000.0); // frequency [kHz]
 
   div_i = (int)(divider);
   div_f = (int)((divider - div_i) * 4096);
 
+  *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on ???
   *gpclk0_ctl  = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
-  //while ((*gpclk0_ctl & GPCLK_BUSY) != 0) ; // wait for not busy
+  while ((*gpclk0_ctl & GPCLK_BUSY) != 0) 
+    ; // wait for not busy
   *gpclk0_div  = GPCLK_PWD | ((0x3ff & div_i) << 12) | (0x3ff & div_f);  // set divider
   *gpclk0_ctl |= GPCLK_PWD | GPCLK_MASH_1 | (0xf & GPCLK_SRC_OSC); // enable fractional divide, OSC as source
   *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on
+
+  #ifdef DEBUG
+      printf("GPCLK0_DIV: 0x%08x \n", *gpclk0_div);
+  #endif
 }
 
 
-int main()
-{
-  static int BLUE_LED = 27;
-  static int CLK = 4;
+// int main()
+// {
+//   static int BLUE_LED = 27;
+//   static int CLK = 4;
 
-  setup();
-  set_gpio_mode(CLK, GPIO_MODE_ALT0);
-  set_gpclk_freq(1.9, 0);
+//   setup();
+//   set_gpio_mode(CLK, GPIO_MODE_ALT0);
+//   set_gpclk_freq(1.9, 0);
 
-  set_gpio_mode(BLUE_LED, GPIO_MODE_OUT);
-  set_gpio_out(BLUE_LED, 1); 
+//   set_gpio_mode(BLUE_LED, GPIO_MODE_OUT);
+//   set_gpio_out(BLUE_LED, 1); 
 
-  printf("Hit key to exit.");
-  getchar();
-  set_gpio_out(BLUE_LED, 0);
-  cleanup();
-  return(0);
-}
+//   printf("Hit key to exit.");
+//   getchar();
+//   set_gpio_out(BLUE_LED, 0);
+//   cleanup();
+//   return(0);
+// }
