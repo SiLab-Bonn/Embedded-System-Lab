@@ -20,8 +20,8 @@ dac = I2C(0x60, 1)  # init DAC as I2C device on bus 1
 dac.write(b'\x40\x00\x05') # external VREF, unbuffered
 dac.write(b'\x50\x00\x00') # gain = 1
 
-def set_voltage(channel, volt):
-  dac_value = int(volt * 1000) # 12 bit DAC, VREF = 4096mV, VOUT = #DAC[mV]
+def set_voltage(channel, milli_volt):
+  dac_value = int(milli_volt) # 12 bit DAC, VREF = 4096mV, VOUT = #DAC[mV]
   channel_reg = (channel-1) << 3
   i2c_data = bytes([channel_reg, (dac_value >> 8), (dac_value & 0xff)])
   dac.write(i2c_data)
@@ -78,11 +78,11 @@ current_range = 1
 set_voltage(CH1, 1)
 set_current_range(CH1, current_range)
 
-voltage_values = range(0,2000, 20)
+voltage_values = range(0, 2000, 20)
 current_values = []
 
 for voltage in voltage_values:
-  set_voltage(CH1, voltage/1000)
+  set_voltage(CH1, voltage)
   current = get_current_raw(CH1)/rsns_list[current_range]
   current_values.append(current)
   print("H1 voltage [mV]:", voltage ," current [mA]:", current)
