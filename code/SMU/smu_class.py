@@ -59,8 +59,8 @@ class SMU_channel:
     self.channel = channel-1
     self.smu = smu
     self.auto_ranging = False
-    self.current_range = 0
-    self.set_current_range(0)    
+    self.current_range = 'off'
+    self.set_current_range('off')    
     self.set_voltage(0)    
 
   def set_voltage(self, milli_volt):
@@ -70,7 +70,7 @@ class SMU_channel:
     i2c_data = bytes([channel_reg, (self.dac_value >> 8), (self.dac_value & 0xff)])
     self.smu.dac.write(i2c_data)
 
-  def set_current_range(self, value):
+  def set_current_range(self, value_string):
     """The output current range is defined by the size of the selctable sense resistor:
       state        Rsns       Imax      Ilsb  
       "off"   0     --
@@ -80,11 +80,14 @@ class SMU_channel:
       "auto" -1  auto range
     
     """
-    if (value == (current_range['auto'])):
+    if (value_string == 'auto'):
       self.auto_ranging = True
-      value = current_range['low'] # start with lowest range in auto ranging mode
+      self.current_range = 'low' # start with lowest range in auto ranging mode
     else:
       self.auto_ranging = False
+      self.current_range = value_string
+    
+    value = current_range[self.current_range]
       
     if ((value < 0) | (value > 3)):
       print("Current range outside of [0, 3]")
@@ -99,7 +102,6 @@ class SMU_channel:
     else:
       reg = (reg[0] & 0x03) + (value << 2)
     self.smu.rsns.write(bytes([0x01, reg]))
-    self.current_range = value
     time.sleep(0.01)
 
   def get_current_raw(self, average):
@@ -129,23 +131,28 @@ class SMU_channel:
     if (self.current_range == current_range['off']):
       print("SMU channel is off. Set current range > 0 to switch on.")
 
+    raw_value = self.get_current_raw(average)
+    
     if (self.auto_ranging): 
-      raw_value = self.get_current_raw(average)
-      while (raw_value < lower_limit and self.current_range > 1):
-        self.set_current_range(self.current_range-1)
+      while (raw_value < lower_limit and self.current_range != 'low'):
+        if (self.current_range == 'mid'):
+          self.set_current_range('low')
+        if (self.current_range == 'high'):
+          self.set_current_range('mid')
         raw_value = self.get_current_raw(average)
-      while (raw_value > upper_limit and self.current_range < 3):
-        self.set_current_range(self.current_range+1)
+      while (raw_value > upper_limit and self.current_range != 'high'):
+        if (self.current_range == 'mid'):
+          self.set_current_range('high')
+        if (self.current_range == 'low'):
+          self.set_current_range('mid')
         raw_value = self.get_current_raw(average)
-    else:  
-      raw_value =  self.get_current_raw(average) 
         
 #    return (raw_value - adc_offset) / rsns_list[self.current_range]
-    return (raw_value - adc_offset - adc_cm_gain * self.dac_value) / rsns_list[self.current_range]
+    return (raw_value - adc_offset - adc_cm_gain * self.dac_value) / rsns_list[current_range[self.current_range]]
   
   def close(self):
     self.set_voltage(0)
-    self.set_current_range(0)
+    self.set_current_range('off')
 
   
 if __name__ == '__main__':
@@ -158,8 +165,8 @@ if __name__ == '__main__':
   smu = SMU()
 
   # sweep in auto current ranging mode
-  smu.ch[0].set_current_range(current_range['auto'])
-  smu.ch[1].set_current_range(current_range['auto'])
+  smu.ch[0].set_current_range('auto')
+  smu.ch[1].set_current_range('auto')
   for voltage_step, voltage in enumerate(voltage_sweep):
     smu.ch[0].set_voltage(voltage)   
     smu.ch[1].set_voltage(voltage) 
@@ -167,24 +174,24 @@ if __name__ == '__main__':
     current_data_array[1][voltage_step] = smu.ch[1].get_current() 
 
   # sweeps with fixed current range
-  smu.ch[0].set_current_range(current_range['low'])
-  smu.ch[1].set_current_range(current_range['low'])
+  smu.ch[0].set_current_range('low')
+  smu.ch[1].set_current_range('low')
   for voltage_step, voltage in enumerate(voltage_sweep):
     smu.ch[0].set_voltage(voltage)   
     smu.ch[1].set_voltage(voltage) 
     current_data_array[2][voltage_step] = smu.ch[0].get_current() 
     current_data_array[3][voltage_step] = smu.ch[1].get_current() 
 
-  smu.ch[0].set_current_range(current_range['mid'])
-  smu.ch[1].set_current_range(current_range['mid'])
+  smu.ch[0].set_current_range('mid')
+  smu.ch[1].set_current_range('mid')
   for voltage_step, voltage in enumerate(voltage_sweep):
     smu.ch[0].set_voltage(voltage)   
     smu.ch[1].set_voltage(voltage) 
     current_data_array[4][voltage_step] = smu.ch[0].get_current() 
     current_data_array[5][voltage_step] = smu.ch[1].get_current()
 
-  smu.ch[0].set_current_range(current_range['high'])
-  smu.ch[1].set_current_range(current_range['high']) 
+  smu.ch[0].set_current_range('high')
+  smu.ch[1].set_current_range('high') 
   for voltage_step, voltage in enumerate(voltage_sweep):
     smu.ch[0].set_voltage(voltage)   
     smu.ch[1].set_voltage(voltage) 

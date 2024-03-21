@@ -85,7 +85,7 @@ for voltage in voltage_values:
   set_voltage(CH1, voltage)
   current = get_current_raw(CH1)/rsns_list[current_range]
   current_values.append(current)
-  print("H1 voltage [mV]:", voltage ," current [mA]:", current)
+  print("CH1 voltage [mV]:", voltage ," current [mA]:", current)
  # print("ADC counts:", current_raw)
 
 fig, ax = plt.subplots()

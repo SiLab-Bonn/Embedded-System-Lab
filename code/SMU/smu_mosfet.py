@@ -9,10 +9,13 @@ smu   = SMU()
 gate  = smu.ch[0]
 drain = smu.ch[1]
 
+gate.set_current_range('auto')
+drain.set_current_range('auto')
+
 # input characteristics: Id(Ugs)
 fig1, ax = plt.subplots(3,2, sharex='col')
-gate_voltage_sweep       = np.arange(0.0, 2.0, 0.01)
-drain_voltage_parameter  = np.arange(0.05, 0.6, 0.2)
+gate_voltage_sweep       = np.arange( 0,2000,  20)
+drain_voltage_parameter  = np.arange(50, 600, 100)
 current_data_array = np.empty([drain_voltage_parameter.size, gate_voltage_sweep.size])
 
 # Id vs Ugs
@@ -20,7 +23,7 @@ for uds_index, uds in enumerate(drain_voltage_parameter):
   drain.set_voltage(uds)  
   for ugs_index, ugs in tqdm(enumerate(gate_voltage_sweep)):
     gate.set_voltage(ugs) 
-    current_data_array[uds_index][ugs_index] = drain.get_current(average=True) 
+    current_data_array[uds_index][ugs_index] = drain.get_current() 
   ax[0,0].plot(gate_voltage_sweep, current_data_array[uds_index], label="{:.2f}".format(uds))
   ax[1,0].semilogy(gate_voltage_sweep, current_data_array[uds_index], label="{:.2f}".format(uds))
   ax[2,0].plot(gate_voltage_sweep, np.sqrt(current_data_array[uds_index]), label="{:.2f}".format(uds))
@@ -34,8 +37,8 @@ for uds_index, uds in enumerate(drain_voltage_parameter):
 
 # output chracteristics: Id(Uds)
 fig2, bx = plt.subplots()
-drain_voltage_sweep    = np.arange(0.0, 4.0, 0.01)
-gate_voltage_parameter = np.arange(0.6, 1, 0.1)
+drain_voltage_sweep    = np.arange(  0, 4000,  20)
+gate_voltage_parameter = np.arange(600, 1000, 100)
 current_data_array = np.empty([gate_voltage_parameter.size, drain_voltage_sweep.size])
 
 for ugs_index, ugs in enumerate(gate_voltage_parameter):
@@ -44,7 +47,7 @@ for ugs_index, ugs in enumerate(gate_voltage_parameter):
   for uds_index, uds in tqdm(enumerate(drain_voltage_sweep)):
     drain.set_voltage(uds) 
     time.sleep(0.005)
-    current_data_array[ugs_index][uds_index] = drain.get_current(average=True) 
+    current_data_array[ugs_index][uds_index] = drain.get_current() 
   bx.plot(drain_voltage_sweep, current_data_array[ugs_index], label="{:.2f}".format(ugs))
 
 smu.close()
