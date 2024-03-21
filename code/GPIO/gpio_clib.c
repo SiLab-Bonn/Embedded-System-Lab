@@ -227,17 +227,11 @@ void setup()
   setup_gpclk_regs();
 }
 
-void set_gpclk_freq(int frequency, int gpclk)
+void set_gpclk_freq(int frequency)
 {
   float divider;
   int div_i; 
   int div_f;
-
-  if (gpclk != 0)
-  {
-    printf("Error: Only GPCLK0 allowed.\n");
-    exit(1);  
-  }  
 
   if (frequency == 0)
   {
@@ -251,7 +245,7 @@ void set_gpclk_freq(int frequency, int gpclk)
   divider = GPCLK_OSC_FREQ / (frequency/1000.0); // frequency [kHz]
 
   div_i = (int)(divider);
-  div_f = (int)((divider - div_i) * 4096);
+  div_f = (int)((divider - div_i) * 1024);
 
   *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on ???
   *gpclk0_ctl  = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
@@ -274,7 +268,7 @@ void set_gpclk_freq(int frequency, int gpclk)
 
 //   setup();
 //   set_gpio_mode(CLK, GPIO_MODE_ALT0);
-//   set_gpclk_freq(1.9, 0);
+//   set_gpclk_freq(1.9);
 
 //   set_gpio_mode(BLUE_LED, GPIO_MODE_OUT);
 //   set_gpio_out(BLUE_LED, 1); 

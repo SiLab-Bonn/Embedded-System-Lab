@@ -122,7 +122,7 @@ class SMU_channel:
       current = 0x0fff & int.from_bytes(i2c_data,"big")
     return current
 
-  def get_current(self, average = False):
+  def get_current(self, average = True):
     """Returns the measured current in mA units. If "current_range" is set to "auto", the current range is automatically 
     selected to operate the ADC and the output buffer within their operational range.
     """
