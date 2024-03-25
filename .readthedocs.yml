@@ -17,6 +17,9 @@ sphinx:
 formats:
   - pdf
 
+build:
+  os: ubuntu-22.04
+
 # Optionally set the version of Python and requirements required to build your docs
 python:
   install:
