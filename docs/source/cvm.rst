@@ -12,9 +12,9 @@ This experiment uses the C-V meter module to characterise the voltage dependent 
 
 .. math::
   
-  I_{CBCM} = C_{DET} \cdot V_{0} \cdot f_{CLK}. 
+  I_{CBCM} = C_{DET} \cdot V_{0} \cdot f_{CLK} +   I_{Leak}. 
 
-The capacitance can be extracted from the slope factor which is derived from the measured current as a function of the clock frequency. The slope factor is given by:
+The term I_leak represents any leakage current of the capacitance which in particular for the measurement the pn-junction of a sensor diode cannot be neglected. To suppress this term, the capacitance can be extracted from the slope factor which is derived from the measured current as a function of the clock frequency. The slope factor is given by:
 
 .. math::
 
