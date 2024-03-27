@@ -21,8 +21,8 @@ current_range = {
 rsns_list   = [float("inf"), 800000, 8000, 80]  # effective transimpedance = Rsns x 10
 adc_offset  = 6
 adc_cm_gain = 0.0045
-upper_limit = 4050  # upper limit for current measurement (ADC counts)
-lower_limit = 50    # lower limit for current measurement (ADC counts)
+upper_limit = 3000  # upper limit for current measurement (ADC counts)
+lower_limit = 100    # lower limit for current measurement (ADC counts)
 
 class SMU:
   """SMU object instanciates and initializes ADC, DAC, the selectable sense 
@@ -58,7 +58,7 @@ class SMU_channel:
   def __init__(self, smu, channel):
     self.channel = channel-1
     self.smu = smu
-    self.auto_ranging = False
+    self.auto_ranging = True
     self.current_range = 'off'
     self.set_current_range('off')    
     self.set_voltage(0)    
@@ -134,13 +134,15 @@ class SMU_channel:
     raw_value = self.get_current_raw(average)
     
     if (self.auto_ranging): 
-      while (raw_value < lower_limit and self.current_range != 'low'):
+      print('autoranging... current range %s, raw data %d' % (self.current_range, raw_value))
+      while ((raw_value < lower_limit) and (self.current_range != 'low')):
         if (self.current_range == 'mid'):
           self.set_current_range('low')
         if (self.current_range == 'high'):
           self.set_current_range('mid')
         raw_value = self.get_current_raw(average)
-      while (raw_value > upper_limit and self.current_range != 'high'):
+      while ((raw_value > upper_limit) and (self.current_range != 'high')):
+        print('out of range, current range %s' % self.current_range )
         if (self.current_range == 'mid'):
           self.set_current_range('high')
         if (self.current_range == 'low'):
@@ -173,30 +175,30 @@ if __name__ == '__main__':
     current_data_array[0][voltage_step] = smu.ch[0].get_current() 
     current_data_array[1][voltage_step] = smu.ch[1].get_current() 
 
-  # sweeps with fixed current range
-  smu.ch[0].set_current_range('low')
-  smu.ch[1].set_current_range('low')
-  for voltage_step, voltage in enumerate(voltage_sweep):
-    smu.ch[0].set_voltage(voltage)   
-    smu.ch[1].set_voltage(voltage) 
-    current_data_array[2][voltage_step] = smu.ch[0].get_current() 
-    current_data_array[3][voltage_step] = smu.ch[1].get_current() 
+  # # sweeps with fixed current range
+  # smu.ch[0].set_current_range('low')
+  # smu.ch[1].set_current_range('low')
+  # for voltage_step, voltage in enumerate(voltage_sweep):
+  #   smu.ch[0].set_voltage(voltage)   
+  #   smu.ch[1].set_voltage(voltage) 
+  #   current_data_array[2][voltage_step] = smu.ch[0].get_current() 
+  #   current_data_array[3][voltage_step] = smu.ch[1].get_current() 
 
-  smu.ch[0].set_current_range('mid')
-  smu.ch[1].set_current_range('mid')
-  for voltage_step, voltage in enumerate(voltage_sweep):
-    smu.ch[0].set_voltage(voltage)   
-    smu.ch[1].set_voltage(voltage) 
-    current_data_array[4][voltage_step] = smu.ch[0].get_current() 
-    current_data_array[5][voltage_step] = smu.ch[1].get_current()
+  # smu.ch[0].set_current_range('mid')
+  # smu.ch[1].set_current_range('mid')
+  # for voltage_step, voltage in enumerate(voltage_sweep):
+  #   smu.ch[0].set_voltage(voltage)   
+  #   smu.ch[1].set_voltage(voltage) 
+  #   current_data_array[4][voltage_step] = smu.ch[0].get_current() 
+  #   current_data_array[5][voltage_step] = smu.ch[1].get_current()
 
-  smu.ch[0].set_current_range('high')
-  smu.ch[1].set_current_range('high') 
-  for voltage_step, voltage in enumerate(voltage_sweep):
-    smu.ch[0].set_voltage(voltage)   
-    smu.ch[1].set_voltage(voltage) 
-    current_data_array[6][voltage_step] = smu.ch[0].get_current() 
-    current_data_array[7][voltage_step] = smu.ch[1].get_current() 
+  # smu.ch[0].set_current_range('high')
+  # smu.ch[1].set_current_range('high') 
+  # for voltage_step, voltage in enumerate(voltage_sweep):
+  #   smu.ch[0].set_voltage(voltage)   
+  #   smu.ch[1].set_voltage(voltage) 
+  #   current_data_array[6][voltage_step] = smu.ch[0].get_current() 
+  #   current_data_array[7][voltage_step] = smu.ch[1].get_current() 
     
   smu.close()
 

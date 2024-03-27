@@ -16,7 +16,7 @@ GPIO = ctypes.CDLL("/home/pi/Embedded-System-Lab/code/lib/gpio_clib.so")
 # voltage source with current measurement
 smu = SMU()
 cvm = smu.ch[0]
-cvm.set_current_range(2)
+cvm.set_current_range('auto')
 
 # clock output
 GPIO.setup()
@@ -24,7 +24,7 @@ GPIO.set_gpio_mode(CLK, GPIO_MODE_ALT0)
 
 # scan parameters
 smu_voltage = 1500  # voltage amplitude for charge measurement
-frequency_values = np.arange(100, 1100, 50)   # switch frequency in kHz units
+frequency_values = np.arange(100, 1000, 100)   # switch frequency in kHz units
 current_values   = np.empty(frequency_values.size)
 
 fig, ax = plt.subplots()
@@ -39,9 +39,10 @@ for frequency_index, frequency in enumerate(frequency_values):
 ax.plot(frequency_values, current_values)
 
 corrected_current_values = [current * smu_voltage/(smu_voltage - current * R_SERIES) for current in current_values]
-slope = np.polyfit(frequency_values, corrected_current_values, 1)[0]
+slope, offset = np.polyfit(frequency_values, corrected_current_values, 1)
 capacitance = slope/smu_voltage * 1e9 # pF units: (mA/kHz)/mV * 1e9 
 
+print('offset: %.4f nA' % (offset * 1e6))
 print('slope: %.4f nA/kHz' % (slope * 1e6))
 print('capacitance: %.2f pF' % capacitance)
 
