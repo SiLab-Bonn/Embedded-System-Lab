@@ -10,7 +10,7 @@ from tqdm import tqdm
 spi = SPI.SpiDev()
 spi.open(0,0)  # (bus, device)
 spi.mode = 0
-spi.max_speed_hz = 1000000
+spi.max_speed_hz = 100000
 
 # GPIO ports setup
 GPIO.setmode(GPIO.BCM)

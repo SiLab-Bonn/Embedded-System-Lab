@@ -18,8 +18,8 @@ current_range = {
 
 # current sense gain setting resistor
 rsns_list   = [float("inf"), 800000, 8000, 80]  # effective transimpedance = Rsns x 10
-adc_offset  = 6
-adc_cm_gain = 0.0045
+adc_offset  = 0 # 6
+adc_cm_gain = 0#.0045
 upper_limit = 4050  # upper limit for current measurement (ADC counts)
 lower_limit =   50  # lower limit for current measurement (ADC counts)
 
@@ -119,6 +119,7 @@ class SMU_channel:
     else:
       i2c_data = self.smu.adc.read(2)
       current = 0x0fff & int.from_bytes(i2c_data,"big")
+    # print('raw current %d' %(current))
     return current
 
   def get_current(self, average = True):

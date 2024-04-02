@@ -14,7 +14,7 @@ drain.enable_autorange()
 
 # input characteristics: Id(Ugs)
 fig1, ax = plt.subplots(3,2, sharex='col')
-gate_voltage_sweep       = np.arange( 0, 2000,  20)
+gate_voltage_sweep       = np.arange( 0, 2000,  10)
 drain_voltage_parameter  = np.arange(50,  600, 100)
 current_data_array = np.empty([drain_voltage_parameter.size, gate_voltage_sweep.size])
 
@@ -37,7 +37,7 @@ for uds_index, uds in enumerate(drain_voltage_parameter):
 
 # output chracteristics: Id(Uds)
 fig2, bx = plt.subplots()
-drain_voltage_sweep    = np.arange(  0, 4000, 50)
+drain_voltage_sweep    = np.arange(  0, 4000, 100)
 gate_voltage_parameter = np.arange(1100, 1400, 100)
 current_data_array = np.empty([gate_voltage_parameter.size, drain_voltage_sweep.size])
 

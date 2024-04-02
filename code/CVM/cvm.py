@@ -16,7 +16,7 @@ GPIO = ctypes.CDLL("/home/pi/Embedded-System-Lab/code/lib/gpio_clib.so")
 # voltage source with current measurement
 smu = SMU()
 cvm = smu.ch[0]
-cvm.set_current_range('auto')
+cvm.enable_autorange()
 
 # clock output
 GPIO.setup()
@@ -47,7 +47,7 @@ print('slope: %.4f nA/kHz' % (slope * 1e6))
 print('capacitance: %.2f pF' % capacitance)
 
 ax.set(xlabel='Frequency [kHz]', ylabel='Current (mA)', title='I-F Curve')
-plt.show()
+#plt.show()
 
 # switch off
 GPIO.set_gpclk_freq(0) # switch off

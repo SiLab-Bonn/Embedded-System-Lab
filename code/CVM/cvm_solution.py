@@ -31,7 +31,7 @@ vbias = KA3005P()
 smu_voltage = 1500  # voltage amplitude for charge measurement
 frequency_values = np.arange(100, 500, 100)   # switch frequency in kHz units
 current_values   = np.empty(frequency_values.size)
-vbias_values     = np.arange(0, 31, 1)
+vbias_values     = np.arange(0, 8.1, 0.2)
 capacitance_values = np.empty(vbias_values.size)
 
 fig, ax = plt.subplots(2,1)
