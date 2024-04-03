@@ -1,0 +1,9 @@
+pilab01 d8:3a:dd:3e:13:F4
+pilab02 e4:5f:01:71:52:44
+pilab03 e4:5f:01:9c:4a:1b
+pilab04 d8:3a:dd:3e:12:21
+pilab05 e4:5f:01:fe:50:5d
+pilab06 e4:5f:01:fe:52:d6
+pilab07 d8:3a:dd:3e:14:35
+pilab08 d8:3a:dd:3e:14:93
+pilab09 d8:3a:dd:3e:11:50
