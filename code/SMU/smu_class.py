@@ -20,8 +20,8 @@ current_range = {
 rsns_list   = [float("inf"), 800000, 8000, 80]  # effective transimpedance = Rsns x 10
 adc_offset  = 0 # 6
 adc_cm_gain = 0#.0045
-upper_limit = 4050  # upper limit for current measurement (ADC counts)
-lower_limit =   50  # lower limit for current measurement (ADC counts)
+upper_limit = 4066  # upper limit for current measurement (ADC counts)
+lower_limit =   30  # lower limit for current measurement (ADC counts)
 
 class SMU:
   """SMU object instanciates and initializes ADC, DAC, the selectable sense 
@@ -67,6 +67,7 @@ class SMU_channel:
     channel_reg = self.channel << 3
     i2c_data = bytes([channel_reg, (self.dac_value >> 8), (self.dac_value & 0xff)])
     self.smu.dac.write(i2c_data)
+    time.sleep(0.01) # allow output to settle
 
   def enable_autorange(self):
     self.auto_ranging = True
@@ -89,6 +90,8 @@ class SMU_channel:
       return
 
     self.current_range = value_string
+
+    # print('set value: %d'  % value)
     
     # read current output state
     self.smu.rsns.write(b'\x01')
@@ -99,7 +102,7 @@ class SMU_channel:
     else:
       reg = (reg[0] & 0x03) + (value << 2)
     self.smu.rsns.write(bytes([0x01, reg]))
-    time.sleep(0.01)
+    time.sleep(0.1)
 
   def get_current_raw(self, average):
     """Reads the raw ADC counts. If "average" is true, the ADC sends 8 consequtive samples which 
@@ -119,7 +122,7 @@ class SMU_channel:
     else:
       i2c_data = self.smu.adc.read(2)
       current = 0x0fff & int.from_bytes(i2c_data,"big")
-    # print('raw current %d' %(current))
+    
     return current
 
   def get_current(self, average = True):
@@ -131,6 +134,7 @@ class SMU_channel:
       return(0)
 
     raw_value = self.get_current_raw(average)
+    
     
     if (self.auto_ranging): 
       while ((raw_value < lower_limit) and (self.current_range != 'low')):
@@ -158,17 +162,18 @@ if __name__ == '__main__':
 
   fig, ax = plt.subplots(2,2, sharex='col')
 
-  voltage_sweep  = np.arange(0, 2000, 10)
+  voltage_sweep  = np.arange(0, 1000, 100)
   current_data_array = np.empty([8, voltage_sweep.size])
 
   smu = SMU()
 
   # sweep in auto current ranging mode
   smu.ch[0].enable_autorange()
-  smu.ch[1].enable_autorange()
+ # smu.ch[1].enable_autorange()
   for voltage_step, voltage in enumerate(voltage_sweep):
     smu.ch[0].set_voltage(voltage)   
-    smu.ch[1].set_voltage(voltage) 
+  #  smu.ch[1].set_voltage(voltage) 
+    # print('voltage: %d mV' % voltage)
     current_data_array[0][voltage_step] = smu.ch[0].get_current() 
 #    current_data_array[1][voltage_step] = smu.ch[1].get_current() 
 
