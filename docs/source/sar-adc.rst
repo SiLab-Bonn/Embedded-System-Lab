@@ -95,7 +95,7 @@ Exercises
 There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains the necessary includes and the basic configuration for the SPI interface and the two GPIO signals. Copy it into your ``work`` folder and use it as a template for your scripts. There is also another file called ``sar_adc_solution.py`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck.
 
 
-.. admonition:: Exercise 0. A bit of theory
+.. admonition:: The following preparatory questions should be answered before coming to lab 
 
   #. Show that the output voltage of an R-2R ladder is defined by the formula given above (derive the equation). Hint: Start with a 1-bit DAC and calculate its output impedance. Does it depend on the switch setting? What are the two voltage levels the 1-b DAC can produce? Then, derive a formalism for an n-bit DAC.
   #. Make a plot of an non-ideal ADC transfer curve and explain the terms offset, gain, dynamic range, DNL, INL, missing bits

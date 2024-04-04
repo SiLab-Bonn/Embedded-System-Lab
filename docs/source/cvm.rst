@@ -56,7 +56,7 @@ Exercises
 There is a script ``cvm.py`` in the folder ``code\CVM`` which contains the necessary includes and the basic configuration for implementing a programmable clock with one of the GPIO pins and controlling a SMU module. Note that the clock configuration requires to call a C-library which needs ``root`` privileges. Therefore you need to start the script with ``sudo ./cvm.py``. Copy it into your ``work`` folder and use it as a template for your scripts. There is also another file called ``cvm_solution.py`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck.
 
 
-.. admonition:: Exercise 0. A bit of theory
+.. admonition:: The following preparatory questions should be answered before coming to lab 
 
   #. To measure the average of the periodic charge current, an RC low-pass filter is used. The resulting voltage drop over the R_lpf resistor will reduce the effective charge voltage. How would you need to modify the equation above to compensate for this effect?
   #. The ac-coupling capacitor should be much larger than the capacitance under test to not influence the measurement. If this is not the case, how would you calculate the real capacitance from the measured value?

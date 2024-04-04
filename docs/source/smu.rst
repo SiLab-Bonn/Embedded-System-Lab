@@ -90,14 +90,17 @@ The MOSFET input characteristic (|ID| vs |VGS| curve) is used to extract transco
 
 Exercises 
 ---------
-There is a script ``smu.py`` in the folder ``code\SMU`` which contains the necessary includes and the basic configuration for the I2C interface and the I2C devices (DAC, ADC and |RSNS|-MUX) on the SMU module. Copy it into your ``work`` folder and use it as a template for your scripts. There is also another file called ``smu_solution.py`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck.
+There is a script ``smu.py`` in the folder ``code\SMU`` which contains the necessary includes and the basic configuration for the I2C interface and the I2C devices (DAC, ADC and |RSNS|-MUX) on the SMU module. Copy it into your ``work`` folder and use it as a template for your scripts. There is also another files called ``smu_class.py`` and ``smu_mosfet_solution`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck. 
 
 
-.. admonition:: Exercise 0. A bit of theory
+.. admonition:: The following preparatory questions should be answered before coming to lab 
 
-  #. What do the terms "accuracy" and "precision" mean? Where is the difference? 
-  #. Plot the theoretical current measurement error as a function of the current for a fixed current measurement range (no switching of |RSNS|). Assume that the error is only given by the ADC resolution (i.e. quantization noise). Repeat the plot considering automatic switching of the current measurement range. Also use a logarithmic y-scale for the plots.
-  #. Plot the number of current measurement bins as a function of the connected resistance for each current range (log x-scale and resistor values from 1 to 10^8 Ohm). Use the current ranges from the table above and the output voltage range of 4.096 V with a step size of 1 mV. Hint: Only if the connected resistance is equivalent to the ratio of maximum output voltage (4.096 V) and maximum current for the given range, the number of bins reaches the theoretical maximum of 4096. If the resistance is higher, the number of bins is limited by the resolution of the current measurement (the maximum output voltage is reached before the maximum current value). If the resistance is lower, it is the other way around and the resolution of the voltage generation (DAC) sets the limit. The three plots below illustrate the situation. Shown are the I-V curves for the same three scaled resistors using the three current ranges. The resistance R ist best captured in the middle range while resolution for the the x50 (/50) resistance curves are limited by the ADC (DAC), respectively. Switching to lower (higher) current ranges for the higher (lower) resistance improves the resolution significantly.
+  #. What do the terms accuracy, resolution, and precision mean? Where is the difference? 
+  #. What is the resolution of an ADC? What is the quantization error? (Extra: Derive the formula for the quantization error.)
+  #. Assume you have a voltage source with a maximum output voltage of 4.095 V and 1 mV resolution (12 bit DAC). What would be the optimum current range for measuring the I-V curve of a 1 kOhm resistor? How many I-V measurement points would you get? How many measurement points with not repeating I-V pairs would you get for a 50 kOhm or a 20 Ohm resistor, respectively? Hint: If the resistance is higher than 1 kOhm, the number of independent points is limited by the resolution of the current measurement i.e. the maximum output voltage is reached before the maximum current value. If the resistance is lower, the voltage generation (DAC) sets the limit i.e. the maximum current is reached before the maximum voltage value.
+  #. Plot the number of independent I-V measurement point as a function of the connected resistance for each current range (log x-scale and resistor values from 1 to 10^8 Ohm). Use the current ranges from the table above and the output voltage range of 4.095 V with a step size of 1 mV.
+
+    The three plots below illustrate the situation. Shown are the I-V curves for the same three scaled resistors using the three current ranges. The resistance R ist best captured in the middle range while resolution for the x50 (/50) resistance curves are limited by the ADC (DAC), respectively. Switching to lower (higher) current ranges for the higher (lower) resistance improves the resolution significantly.
 
   
   .. figure:: images/smu_ranges.png
@@ -107,9 +110,9 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
     I-V curves for three scaled resistors using the three available current ranges (current and voltage values in DAC/ADC code units).
 
 
-  #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region?. Plot example I-V curves to explain.
+  #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region? Plot example I-V curves based on a simple (SPICE level 2 MOSFET model) to explain.
   #. Derive the formula for definition of the transconductance |gm|. 
-  #. What different methods exist to extract |VTHR| from I-V curves?
+  #. How would one extract the threshold parameter |VTHR| from Id vs. Ugs curve? Also consider the extraction of the subthreshold slope, the transconductance |gm|, and the output resistance |go| (from the Id vs. Uds curve).
 
 
 .. admonition:: Exercise 1. I-V scan loop implementation
@@ -129,6 +132,22 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
 
 
 
-.. admonition:: Exercise 3. MOSFET Parameter Extraction
+.. admonition:: Exercise 3. MOSFET I-V curves
+
+  For measuring transistor I-V curves and extrating parameters, an N-channel MOSFET (BSP295) plugged into a transistor socket on the SMU module will be used. The gate of the MOSFET is permanetly connected to output 1 and the drain is connected via a jumper to output 2. The MOSFET source is connected to ground.
+  #. The drain current vs. gate voltage curves are measured by sweeping the gate voltage (output 1) and measuring the drain current (output 2) at a constant drain voltage. Write a scan loop which sweeps the gate from 0 to 2000 mV and measures the drain current while keeping the drain voltage constant at 200 mV. Repeat the loop (nested loop) with a range of different drain voltages in the range of 100 to 500 mV.
+  #. Now add a measurement for the dain current vs. drain voltage characteristic. Sweep the drain voltage from 0 to 2000 mV and measure the drain current for different constant gate voltages in the range of 800 to 1100 mV. Where does the transistion from the linear to the saturation region occur?
+
+.. admonition:: Exercise 4. MOSFET parameter extraction
+
+  For extracting some of the MOSFET parameters, the I-V curves (i.e. scan and plotting routines) from the previous exercise will be used and modified.
+
+  #. Implement the extraction of the threshold parameters |VTHR|. Use the drain current vs. gate voltage data from the previous exercise and modify the plot to show the square root of the drain current vs. gate voltage. In a simple SPICE model the threshold voltage is the gate voltage where the square root of the drain current is zero. Why is this not the case in reaity? 
+  #. Now plot the same drain current vs. gate voltage with a logarithmic scale for the drain current. What happens below the threshold voltage? Can the MOSFET still be used to control current in this region? Extract the subthreshold slope (slope factor) from the linear region of the curve.
+  #. Plot the transconductance |gm| as a function of the gate voltage. Also plot |gm|/|ID| and |gm|/sqrt(|ID|). What are these plots showing? What would you expect from a ideal MOSFET model? Take a look at the algebraic presetation of these terms using the formular of the simple MOSFET model.
+  #. Extract the output resistance |go| from the drain current vs. drain voltage curves in the sturation region. Identify the "Early" voltage in the linear extrapolation of the |ID| vs. |VDS| curve. What is the physical meaning of the Early voltage?
+  #. (Extra) Use the extracted parameters with the formulars of a simple MOSFET model to calculate the drain current for the I-V curves. Compare the calculated values with the measured data.
+  #. (Extra) Use the manufacturers SPICE model of the BSP295 MOSFET and simulate I-V curves with 'ltspice'. Compare the simulation with your measurements. 
+
 
   .....

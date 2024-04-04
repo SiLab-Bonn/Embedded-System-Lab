@@ -15,12 +15,12 @@ Embedded System Lab
    hardware-intro
    gpio
    gpio-tutorial
-   sar-adc
    smu
-   fast-adc
+   sar-adc
    cvm
    afe
    psa
+   fast-adc
 
 
 Indices and tables
