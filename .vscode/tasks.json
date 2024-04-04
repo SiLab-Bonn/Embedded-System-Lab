@@ -12,9 +12,9 @@
 				"-Wall",
 				"-shared",
 				"-o",
-				"${fileDirname}/../lib/${fileBasenameNoExtension}.so",
+				"${fileDirname}/../../lib/${fileBasenameNoExtension}.so",
 				"${fileDirname}/${fileBasenameNoExtension}.c",
-				"${fileDirname}/../utils/rpi-dma/rpi_dma_utils.c"
+				"${fileDirname}/../../utils/rpi-dma/rpi_dma_utils.c"
 			],
 			"options": {
 				"cwd": "${fileDirname}"

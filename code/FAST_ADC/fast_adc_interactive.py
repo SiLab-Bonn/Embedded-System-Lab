@@ -36,7 +36,8 @@ TRG_THR.close() # close device
 # init ADC: data array, number of samples, sample rate, trigger mode
 n_samples = 4000 # number of samples 
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_1M, TRIGGER_ADC)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, TRIGGER_ADC)
+ADC.set_time_base(1, TRIGGER_ADC)
 
 # prepare time data series
 time_base = ADC.get_time_base()
@@ -47,28 +48,39 @@ plt.ion() # interactive mode
 fig, waveform = plt.subplots()
 waveform.set_ylabel('ADU')
 waveform.set_xlabel('t[us]')
-waveform.set_xlim(0, n_samples)
+#waveform.set_xlim(0, n_samples)
 waveform.set_ylim(0, 4096)
 ADC.take_data()
 plot1, = waveform.plot(time_data, adc_data)
 
 # define thread function
 def ADC_work_function(stop_event: Event):
-  while not stop_event.is_set():
+  while 1:
     ADC.take_data()
     plot1.set_data(time_data, adc_data)
     fig.canvas.draw()
     time.sleep(0.1)
+    if stop_event.is_set():
+      return()
 
-
+# prepare and start ADC thread
 ADC_stop_event = Event()
 ADC_thread = Thread(target=ADC_work_function,args=(ADC_stop_event, ))
 ADC_thread.start()
 
-input("Press any key to exit.")
-ADC_stop_event.set()
-ADC_thread.join()
+while 1:
+  key = input('Press [1,2,3,4,5] to adjust horizontal scale or q to exit.')
+  if (key.isdigit() and int(key) in range(1, 6)):
+    ADC.set_time_base(int(key), TRIGGER_ADC)
+    time_base = ADC.get_time_base()
+    time_data = np.arange(0, n_samples * time_base, time_base)  
+    waveform.set_xlim(0, n_samples * time_base)
 
-ADC.close_device()
-GPIO.cleanup()
-TRG_THR.close()
+  if key == 'q':
+    ADC_stop_event.set()
+    ADC_thread.join()
+    plt.close()
+    ADC.close_device()
+    GPIO.cleanup()
+    TRG_THR.close()
+    exit()

@@ -38,7 +38,7 @@ adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 TRG_THR.write(b'\20') 
 
 # init ADC: data array, number of samples, sample rate, trigger mode
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, TRIGGER_ADC)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_1M, TRIGGER_ADC)
 
 # prepare data series
 time_base = ADC.get_time_base()

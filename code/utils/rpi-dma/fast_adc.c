@@ -116,6 +116,7 @@ float time_base;
 
 void map_devices(void);
 void smi_start(int nsamples, int packed);
+void set_time_base(int time_base_index, int wait_trigger);
 uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp);
 int  map_adc_data(void *buff, uint16_t *data, int nsamp);
 void smi_init(int width, int ns, int setup, int hold, int strobe, int wait_trigger);
@@ -157,6 +158,27 @@ void init_device(uint16_t *adc_data, int samples, int time_base_index, int wait_
   gpio_mode(SMI_SOE_PIN, GPIO_ALT1);
   gpio_mode(ADC_ENABLE, GPIO_OUT);
 
+  set_time_base(time_base_index, wait_trigger);
+
+//   switch (time_base_index)
+//   {
+//       case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); time_base = 5.0; break;
+//       case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); time_base = 2.0; break;
+//       case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,   wait_trigger); time_base = 1.0; break;
+//       case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M,   wait_trigger); time_base = 0.5; break;
+//       case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M,   wait_trigger); time_base = 0.2; break;
+//       default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,  wait_trigger); time_base = 1.0; break;
+//   }
+
+#if USE_TEST_PIN
+    gpio_mode(TEST_PIN, GPIO_OUT);
+    gpio_out(TEST_PIN, 0);
+#endif  
+  map_uncached_mem(&vc_mem, VC_MEM_SIZE(num_samples+PRE_SAMP)); 
+}
+
+void set_time_base(int time_base_index, int wait_trigger)
+{
   switch (time_base_index)
   {
       case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); time_base = 5.0; break;
@@ -165,13 +187,7 @@ void init_device(uint16_t *adc_data, int samples, int time_base_index, int wait_
       case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M,   wait_trigger); time_base = 0.5; break;
       case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M,   wait_trigger); time_base = 0.2; break;
       default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,  wait_trigger); time_base = 1.0; break;
-  }
-
-#if USE_TEST_PIN
-    gpio_mode(TEST_PIN, GPIO_OUT);
-    gpio_out(TEST_PIN, 0);
-#endif  
-  map_uncached_mem(&vc_mem, VC_MEM_SIZE(num_samples+PRE_SAMP)); 
+  }    
 }
 
 // Initialise SMI, given data width, time step, and setup/hold/strobe counts
@@ -190,8 +206,8 @@ void smi_init(int width, int ns, int setup, int strobe, int hold, int wait_trigg
     smi_dcs = (SMI_DCS_REG *)REG32(smi_regs, SMI_DCS);
     smi_dca = (SMI_DCA_REG *)REG32(smi_regs, SMI_DCA);
     smi_dcd = (SMI_DCD_REG *)REG32(smi_regs, SMI_DCD);
-    smi_cs->value = smi_l->value = smi_a->value = 0;
-    smi_dsr->value = smi_dsw->value = smi_dcs->value = smi_dca->value = 0;
+    //smi_cs->value = smi_l->value = smi_a->value = 0;
+    //smi_dsr->value = smi_dsw->value = smi_dcs->value = smi_dca->value = 0;
     // clock magic ....
     if (*REG32(clk_regs, CLK_SMI_DIV) != divi << 12)
     {
