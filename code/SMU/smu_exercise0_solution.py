@@ -25,8 +25,8 @@ nLogRes  = np.logspace(0, 8, num=1000)
 ADC_code_array     = np.arange(4096)
 
 # list of test resistors [Ohm] for I-V curve plotting 
-#Resistor_list = [10, 1000, 100000]
-Resistor_list = [4000]
+Resistor_list = [10, 1000, 100000]
+# Resistor_list = [4000]
 
 fig, ax = plt.subplots(1,2)
 
