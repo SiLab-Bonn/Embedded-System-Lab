@@ -1,5 +1,7 @@
 import ctypes
+import time
 import matplotlib.pyplot as plt
+from threading import Thread, Event
 import numpy as np
 from i2cdev import I2C
 import RPi.GPIO as GPIO
@@ -28,13 +30,13 @@ TRIGGER_ADC  = 1 # wait for GPIO 24 (DREQ) rising edge, controlled by
 
 # trigger threshold DAC
 TRG_THR= I2C(0x30, 1)  # init DAC as I2C bus device
-TRG_THR.write(b'\200') # set trigger threshold [0..255]
+TRG_THR.write(b'\20') # set trigger threshold [0..255]
 TRG_THR.close() # close device
 
 # init ADC: data array, number of samples, sample rate, trigger mode
-n_samples = 1000 # number of samples 
+n_samples = 4000 # number of samples 
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, TRIGGER_ADC)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_1M, TRIGGER_ADC)
 
 # prepare time data series
 time_base = ADC.get_time_base()
@@ -45,17 +47,28 @@ plt.ion() # interactive mode
 fig, waveform = plt.subplots()
 waveform.set_ylabel('ADU')
 waveform.set_xlabel('t[us]')
+waveform.set_xlim(0, n_samples)
+waveform.set_ylim(0, 4096)
 ADC.take_data()
 plot1, = waveform.plot(time_data, adc_data)
 
-# loop ADC acquisition and waveform display update
-try:
-  while True:
+# define thread function
+def ADC_work_function(stop_event: Event):
+  while not stop_event.is_set():
     ADC.take_data()
     plot1.set_data(time_data, adc_data)
     fig.canvas.draw()
-    fig.canvas.flush_events()
-except:
-  pass
-  ADC.close_device()
-  print("exiting...")
+    time.sleep(0.1)
+
+
+ADC_stop_event = Event()
+ADC_thread = Thread(target=ADC_work_function,args=(ADC_stop_event, ))
+ADC_thread.start()
+
+input("Press any key to exit.")
+ADC_stop_event.set()
+ADC_thread.join()
+
+ADC.close_device()
+GPIO.cleanup()
+TRG_THR.close()

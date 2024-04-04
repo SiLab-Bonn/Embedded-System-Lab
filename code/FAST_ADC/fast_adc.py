@@ -35,10 +35,10 @@ adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 
 # set trigger threshold [0..255]
 #TRG_THR.write(bytes([100])) 
-TRG_THR.write(b'\200') 
+TRG_THR.write(b'\20') 
 
 # init ADC: data array, number of samples, sample rate, trigger mode
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_1M, TRIGGER_ADC)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, TRIGGER_ADC)
 
 # prepare data series
 time_base = ADC.get_time_base()
@@ -58,5 +58,5 @@ plt.show()
 
 ADC.close_device()
 TRG_THR.close()
-GPIO.colse()
+GPIO.cleanup()
 print("exiting...")
