@@ -125,7 +125,7 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
 
 .. admonition:: Exercise 2. Automatic current range selection
 
-  #. Implement an "autoranging" functionality in the scan loop. Measure the diode I-V curve again and plot linear and log current scales. 
+  #. Implement an "auto-ranging" functionality in the scan loop. Measure the diode I-V curve again and plot linear and log current scales. 
   #. Now consider the precision of the current measurement. Repeat each current measurement 100 times and plot the standard deviation as error bars (choose a large voltage step size to limit the scan time). Compare the error to the theoretical limit given by the quantization error (see Exercise 0). What additional noise sources have to be considered?
   #. Improve the measurement precision by averaging over a number of current readings for each voltage step. Consider to adjust the number of averages according to the measurement range to optimize the scan time.
   #. Redo the diode I-V curve with the optimized scan loop and minimum voltage step size. Examine the curve at the points where the current range changes (also plot the derivative). How good do the |RSNS| resistor values match?
@@ -134,19 +134,19 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
 
 .. admonition:: Exercise 3. MOSFET I-V curves
 
-  For measuring transistor I-V curves and extrating parameters, an N-channel MOSFET (BSP295) plugged into a transistor socket on the SMU module will be used. The gate of the MOSFET is permanetly connected to output 1 and the drain is connected via a jumper to output 2. The MOSFET source is connected to ground.
+  For measuring transistor I-V curves and extracting parameters, an N-channel MOSFET (BSP295) plugged into a transistor socket on the SMU module will be used. The gate of the MOSFET is permanently connected to output 1 and the drain is connected via a jumper to output 2. The MOSFET source is connected to ground.
   #. The drain current vs. gate voltage curves are measured by sweeping the gate voltage (output 1) and measuring the drain current (output 2) at a constant drain voltage. Write a scan loop which sweeps the gate from 0 to 2000 mV and measures the drain current while keeping the drain voltage constant at 200 mV. Repeat the loop (nested loop) with a range of different drain voltages in the range of 100 to 500 mV.
-  #. Now add a measurement for the dain current vs. drain voltage characteristic. Sweep the drain voltage from 0 to 2000 mV and measure the drain current for different constant gate voltages in the range of 800 to 1100 mV. Where does the transistion from the linear to the saturation region occur?
+  #. Now add a measurement for the drain current vs. drain voltage characteristic. Sweep the drain voltage from 0 to 2000 mV and measure the drain current for different constant gate voltages in the range of 800 to 1100 mV. Where does the transition from the linear to the saturation region occur?
 
 .. admonition:: Exercise 4. MOSFET parameter extraction
 
   For extracting some of the MOSFET parameters, the I-V curves (i.e. scan and plotting routines) from the previous exercise will be used and modified.
 
-  #. Implement the extraction of the threshold parameters |VTHR|. Use the drain current vs. gate voltage data from the previous exercise and modify the plot to show the square root of the drain current vs. gate voltage. In a simple SPICE model the threshold voltage is the gate voltage where the square root of the drain current is zero. Why is this not the case in reaity? 
+  #. Implement the extraction of the threshold parameters |VTHR|. Use the drain current vs. gate voltage data from the previous exercise and modify the plot to show the square root of the drain current vs. gate voltage. With the ideal quadratic Id-Ugs relation the threshold voltage is the gate voltage where the square root of the drain current is zero. Why is this not the case with a real MOSFET transistor? 
   #. Now plot the same drain current vs. gate voltage with a logarithmic scale for the drain current. What happens below the threshold voltage? Can the MOSFET still be used to control current in this region? Extract the subthreshold slope (slope factor) from the linear region of the curve.
-  #. Plot the transconductance |gm| as a function of the gate voltage. Also plot |gm|/|ID| and |gm|/sqrt(|ID|). What are these plots showing? What would you expect from a ideal MOSFET model? Take a look at the algebraic presetation of these terms using the formular of the simple MOSFET model.
-  #. Extract the output resistance |go| from the drain current vs. drain voltage curves in the sturation region. Identify the "Early" voltage in the linear extrapolation of the |ID| vs. |VDS| curve. What is the physical meaning of the Early voltage?
-  #. (Extra) Use the extracted parameters with the formulars of a simple MOSFET model to calculate the drain current for the I-V curves. Compare the calculated values with the measured data.
+  #. Plot the transconductance |gm| as a function of the gate voltage. Also plot |gm|/|ID| and |gm|/sqrt(|ID|). What are these plots showing? What would you expect from a ideal MOSFET model? Take a look at the algebraic presentation of these terms using the simple MOSFET model equation.
+  #. Extract the output resistance |go| from the drain current vs. drain voltage curves in the saturation region. Identify the "Early" voltage in the linear extrapolation of the |ID| vs. |VDS| curve. What is the physical meaning of the Early voltage?
+  #. (Extra) Use the extracted parameters with the formula of a simple MOSFET model to calculate the drain current for the I-V curves. Compare the calculated values with the measured data.
   #. (Extra) Use the manufacturers SPICE model of the BSS295 MOSFET and simulate I-V curves with 'ltspice'. Compare the simulation with your measurements. 
 
 
