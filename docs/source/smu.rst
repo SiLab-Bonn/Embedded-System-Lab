@@ -101,7 +101,7 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
   #. The measured current is converted to a voltage via the sense resistor |RSNS| and is digitized by the ADC. The maximum current which can be measured is limited by the ADC input voltage range which is also 4095 mV. Calculate the value of the optimum sense resistor |RSNS| for measuring the I-V curve of a 1 kOhm resistor.
   #. How many measurement points would you get for a 5 kOhm or a 200 Ohm load resistor, respectively? Hint: If the resistance is higher than 1 kOhm, the number of independent points is limited by the resolution of the current measurement i.e. the ADC range is not fully utilized. If the resistance is lower, the number of (meaningful) measurement points is defined by the maximum current the ADC can measure which will be reached before the full DAC voltage range is used.
 
-    The plot below illustrates the situation. Shown are the I-V curves for the three resistors using a fixed current range. The 1 kOhm load resistance yields the maximum measurement points while the 5 kOhm (200 Ohm) load resistors I-V curves are limited by the DAC (ADC), respectively. 
+  The plot below illustrates the situation. Shown are the I-V curves for the three resistors using a fixed current range. The 1 kOhm load resistance yields the maximum measurement points while the 5 kOhm (200 Ohm) load resistors I-V curves are limited by the DAC (ADC), respectively. 
 
   
   .. figure:: images/smu_ranges.png
