@@ -147,7 +147,7 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
   #. Plot the transconductance |gm| as a function of the gate voltage. Also plot |gm|/|ID| and |gm|/sqrt(|ID|). What are these plots showing? What would you expect from a ideal MOSFET model? Take a look at the algebraic presetation of these terms using the formular of the simple MOSFET model.
   #. Extract the output resistance |go| from the drain current vs. drain voltage curves in the sturation region. Identify the "Early" voltage in the linear extrapolation of the |ID| vs. |VDS| curve. What is the physical meaning of the Early voltage?
   #. (Extra) Use the extracted parameters with the formulars of a simple MOSFET model to calculate the drain current for the I-V curves. Compare the calculated values with the measured data.
-  #. (Extra) Use the manufacturers SPICE model of the BSP295 MOSFET and simulate I-V curves with 'ltspice'. Compare the simulation with your measurements. 
+  #. (Extra) Use the manufacturers SPICE model of the BSS295 MOSFET and simulate I-V curves with 'ltspice'. Compare the simulation with your measurements. 
 
 
   .....
