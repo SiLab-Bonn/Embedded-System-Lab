@@ -13,11 +13,11 @@ gate.set_current_range('low')
 drain.enable_autorange()
 
 # input characteristics: Id(Ugs)
-fig1, ax = plt.subplots(3,2, sharex='col')
 gate_voltage_sweep       = np.arange( 0, 2000,  10)
 drain_voltage_parameter  = np.arange(100,  201, 50)
 current_data_array = np.empty([drain_voltage_parameter.size, gate_voltage_sweep.size])
 
+fig1, ax = plt.subplots(3,2, sharex='col')
 # Id vs Ugs
 for uds_index, uds in enumerate(drain_voltage_parameter):
   drain.set_voltage(uds)  
@@ -36,9 +36,9 @@ for uds_index, uds in enumerate(drain_voltage_parameter):
   ax[2,1].plot(gate_voltage_sweep, gm/current_data_array[uds_index])  
 
 # output chracteristics: Id(Uds)
-fig2, bx = plt.subplots()
+fig2, bx = plt.subplots(2,1)
 drain_voltage_sweep    = np.arange(  0, 4000, 10)
-gate_voltage_parameter = np.arange(800, 1400, 200)
+gate_voltage_parameter = np.arange(800, 1401, 200)
 current_data_array = np.empty([gate_voltage_parameter.size, drain_voltage_sweep.size])
 
 for ugs_index, ugs in enumerate(gate_voltage_parameter):
@@ -46,7 +46,20 @@ for ugs_index, ugs in enumerate(gate_voltage_parameter):
   for uds_index, uds in tqdm(enumerate(drain_voltage_sweep)):
     drain.set_voltage(uds) 
     current_data_array[ugs_index][uds_index] = drain.get_current() 
-  bx.plot(drain_voltage_sweep, current_data_array[ugs_index], label="{:.2f}".format(ugs))
+  bx[0].plot(drain_voltage_sweep, current_data_array[ugs_index], label="{:.2f}".format(ugs))
+
+time.sleep(0.1)
+
+drain_voltage_sweep    = np.arange(  0, 400, 1)
+gate_voltage_parameter = np.arange(800, 1401, 200)
+current_data_array = np.empty([gate_voltage_parameter.size, drain_voltage_sweep.size])
+
+for ugs_index, ugs in enumerate(gate_voltage_parameter):
+  gate.set_voltage(ugs)  
+  for uds_index, uds in tqdm(enumerate(drain_voltage_sweep)):
+    drain.set_voltage(uds) 
+    current_data_array[ugs_index][uds_index] = drain.get_current() 
+  bx[1].plot(drain_voltage_sweep, current_data_array[ugs_index], label="{:.2f}".format(ugs))  
 
 smu.close()
 
@@ -57,9 +70,10 @@ ax[0,0].legend(title="Uds [mV]")
 ax[0,0].grid()
 
 ax[1,0].text(0, 5, 'sqrt(Id) is proportional to Ugs \nin strong inversion operation', wrap=True, fontsize=8, ha='left')
+ax[1,0].set(ylabel='Id [mA]')
 ax[1,0].grid()
 
-ax[2,0].text(0, 1, 'exp(Id) is proportional to Ugs \nin weak inversion operation', wrap=True, fontsize=8, ha='left')
+ax[2,0].text(0, 1, 'ln(Id) is proportional to Ugs \nin weak inversion operation', wrap=True, fontsize=8, ha='left')
 ax[2,0].set(xlabel='Ugs [mV]', ylabel='SQRT(Id [mA])')
 ax[2,0].set(ylabel='Id [mA]')
 ax[2,0].grid()
@@ -80,8 +94,12 @@ ax[2,1].grid()
 ax[2,1].set_ylim(0, 0.05)
 
 fig2.suptitle('Id vs Uds')
-bx.set(xlabel='Uds [mV]', ylabel='Id [mA]')
-bx.legend(title="Ugs [mV]")
-bx.grid()
+bx[0].set(xlabel='Uds [mV]', ylabel='Id [mA]')
+bx[0].legend(title="Ugs [mV]", loc='upper right')
+bx[0].grid()
+bx[1].set(xlabel='Uds [mV]', ylabel='Id [mA]')
+bx[1].legend(title="Ugs [mV]", loc='upper right')
+bx[1].grid()
+
 
 plt.show()

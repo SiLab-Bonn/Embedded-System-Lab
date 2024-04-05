@@ -13,8 +13,8 @@ DAC_resolution = 12
 ADC_resolution = 12
 
 # Number of codes for the ADC and DAC
-DAC_max_codes = 2**DAC_resolution
-ADC_max_codes = 2**ADC_resolution
+DAC_max_steps = 2**DAC_resolution
+ADC_max_steps = 2**ADC_resolution
 
 # Current measurement ranges are defined by the 
 #  sense resistor value (* the gain of the sense amplifier) = Rsns * 10
@@ -37,11 +37,11 @@ Imin_list = [0, Imax_list[0], Imax_list[1]] # [mA]
 print('Imin list:', Imin_list, 'mA')
 
 # Current value equivalent to one ADC code (LSB, least significant bit) 
-Ilsb_list = [Imax/ADC_max_codes for Imax in Imax_list] # [mA]
+Ilsb_list = [Imax/ADC_max_steps for Imax in Imax_list] # [mA]
 print('Ilsb list:', Ilsb_list, 'mA')
 
 # Voltage value equivalent to one DAC code (LSB, least significant bit) 
-Vlsb = DAC_range/DAC_max_codes # [mV]
+Vlsb = DAC_range/DAC_max_steps # [mV]
 print('Vlsb:', Vlsb, 'mV')
 
  # Current sensing ADC error in mA (quantization noise = Ilsb/sqrt(12))
@@ -53,9 +53,9 @@ color_list  = ['r', 'g','b']
 marker_list = ['.', 'x','+']
 
 # voltage scanning range DAC voltage = DAC_range * DAC_code/4096
-DAC_voltage_steps  = np.arange(0, DAC_range, Vlsb)
-DAC_max_voltage    = DAC_voltage_steps[-1]
-ADC_code_array     = np.arange(ADC_max_codes)
+voltage_steps_array = np.arange(0, DAC_range, Vlsb)
+max_voltage         = voltage_steps_array[-1]
+ADC_steps_array     = np.arange(ADC_max_steps)
 
 # list of load resistors [Ohm] for I-V curve plotting 
 
@@ -64,24 +64,24 @@ ADC_code_array     = np.arange(ADC_max_codes)
 Resistor_list = [200, 1000, 5000]
 Rsns = 1000
 Imax = ADC_range / Rsns 
-Ilsb = Imax / ADC_max_codes
+Ilsb = Imax / ADC_max_steps
 fig1, ax = plt.subplots()
 
 for Rload, marker in zip(Resistor_list, marker_list):
   
   # calculate the current as a function of the applied voltage
-  current_array  = DAC_voltage_steps / Rload 
+  current_array  = voltage_steps_array / Rload 
 
   # calculate the ADC code for the current values
-  ADC_code_array = np.array(current_array / Ilsb).astype(int)
+  ADC_steps_array = np.array(current_array / Ilsb).astype(int)
 
   # calculate the current values from the ADC codes
-  sampled_current_array = ADC_code_array * Ilsb
+  sampled_current_array = ADC_steps_array * Ilsb
 
   # limit the points to the current measurement range
   limited_range = np.where(np.logical_and(sampled_current_array <= Imax, sampled_current_array >= 0))
 
-  Vrange_plot = DAC_voltage_steps[limited_range]
+  Vrange_plot = voltage_steps_array[limited_range]
   Irange_plot = sampled_current_array[limited_range]
 
   ax.step(Vrange_plot, Irange_plot, where='mid', label= str(Rload) + ' Ohm')
@@ -101,18 +101,18 @@ for Rload, marker in zip(Resistor_list, marker_list):
   for current_range in range(3):
 
     # calculate the current as a function of the applied voltage
-    current_array  = DAC_voltage_steps / Rload 
+    current_array  = voltage_steps_array / Rload 
 
     # calculate the ADC code for the current values
-    ADC_code_array = np.array(current_array / Ilsb_list[current_range]).astype(int)
+    ADC_steps_array = np.array(current_array / Ilsb_list[current_range]).astype(int)
 
     # calculate the current values from the ADC codes
-    sampled_current_array = ADC_code_array * Ilsb_list[current_range]
+    sampled_current_array = ADC_steps_array * Ilsb_list[current_range]
 
     # limit the points to the current measurement range
     limited_range = np.where(np.logical_and(sampled_current_array <= Imax_list[current_range], sampled_current_array >= Imin_list[current_range]))
 
-    Vrange_plot = DAC_voltage_steps[limited_range]
+    Vrange_plot = voltage_steps_array[limited_range]
     Irange_plot = sampled_current_array[limited_range]
 
     bx[0].step(Vrange_plot, Irange_plot, where='mid', label= str(Rload) + ' Ohm')
