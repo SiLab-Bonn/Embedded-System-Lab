@@ -100,16 +100,15 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
   #. Assume you have a voltage source with a maximum output voltage of 4095 mV and 1 mV resolution (12 bit DAC). What would be the appropriate current range for measuring the I-V curve of a 1 kOhm load resistor? How many I-V measurement points would you get? 
   #. The measured current is converted to a voltage via the sense resistor |RSNS| and is digitized by the ADC. The maximum current which can be measured is limited by the ADC input voltage range which is also 4095 mV. Calculate the value of the optimum sense resistor |RSNS| for measuring the I-V curve of a 1 kOhm resistor.
   #. How many measurement points would you get for a 5 kOhm or a 200 Ohm load resistor, respectively? Hint: If the resistance is higher than 1 kOhm, the number of independent points is limited by the resolution of the current measurement i.e. the ADC range is not fully utilized. If the resistance is lower, the number of (meaningful) measurement points is defined by the maximum current the ADC can measure which will be reached before the full DAC voltage range is used.
-  #. Plot the number of independent I-V measurement point as a function of the connected resistance for each current range (log x-scale and resistor values from 1 to 10^8 Ohm). Use the current ranges from the table above and the output voltage range of 4.095 V with a step size of 1 mV.
 
-    The three plots below illustrate the situation. Shown are the I-V curves for the same three scaled resistors using the three current ranges. The resistance R ist best captured in the middle range while resolution for the x5 (/5) resistance curves are limited by the ADC (DAC), respectively. Switching to lower (higher) current ranges for the higher (lower) resistance improves the resolution significantly.
+    The  plots below illustrate the situation. Shown are the I-V curves for the three resistors using a fixed current range. The 1 kOhm load resistance yields the maximum measurement points while the 5 kOhm (100 Ohm) load resistors I-V curves are limited by the DAC (ADC), respectively. 
 
   
   .. figure:: images/smu_ranges.png
     :width: 600
     :align: center
 
-    I-V curves for three scaled resistors using the three available current ranges (current and voltage values in DAC/ADC code units).
+    I-V curves for three load resistors values using a fixed current range.
 
 
   #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region? Plot example I-V curves based on a simple (SPICE level 2 MOSFET model) to explain.
