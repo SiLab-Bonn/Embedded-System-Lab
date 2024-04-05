@@ -90,17 +90,19 @@ The MOSFET input characteristic (|ID| vs |VGS| curve) is used to extract transco
 
 Exercises 
 ---------
-There is a script ``smu.py`` in the folder ``code\SMU`` which contains the necessary includes and the basic configuration for the I2C interface and the I2C devices (DAC, ADC and |RSNS|-MUX) on the SMU module. Copy it into your ``work`` folder and use it as a template for your scripts. There is also another files called ``smu_class.py`` and ``smu_mosfet_solution`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck. 
+There is a script ``smu.py`` in the folder ``code\SMU`` which contains the necessary includes and the basic configuration for the I2C interface and the I2C devices (DAC, ADC and |RSNS|-MUX) on the SMU module. Copy it into your ``work`` folder and use it as a template for your scripts. There are also another files called ``smu_class.py``, ``smu_preparation.solution.py``, and ``smu_mosfet_solution.py`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck. 
 
 
 .. admonition:: The following preparatory questions should be answered before coming to lab 
 
   #. What do the terms accuracy, resolution, and precision mean? Where is the difference? 
   #. What is the resolution of an ADC? What is the quantization error? (Extra: Derive the formula for the quantization error.)
-  #. Assume you have a voltage source with a maximum output voltage of 4.095 V and 1 mV resolution (12 bit DAC). What would be the optimum current range for measuring the I-V curve of a 1 kOhm resistor? How many I-V measurement points would you get? How many measurement points with not repeating I-V pairs would you get for a 50 kOhm or a 20 Ohm resistor, respectively? Hint: If the resistance is higher than 1 kOhm, the number of independent points is limited by the resolution of the current measurement i.e. the maximum output voltage is reached before the maximum current value. If the resistance is lower, the voltage generation (DAC) sets the limit i.e. the maximum current is reached before the maximum voltage value.
+  #. Assume you have a voltage source with a maximum output voltage of 4095 mV and 1 mV resolution (12 bit DAC). What would be the appropriate current range for measuring the I-V curve of a 1 kOhm load resistor? How many I-V measurement points would you get? 
+  #. The measured current is converted to a voltage via the sense resistor |RSNS| and is digitized by the ADC. The maximum current which can be measured is limited by the ADC input voltage range which is also 4095 mV. Calculate the value of the optimum sense resistor |RSNS| for measuring the I-V curve of a 1 kOhm resistor.
+  #. How many measurement points would you get for a 5 kOhm or a 200 Ohm load resistor, respectively? Hint: If the resistance is higher than 1 kOhm, the number of independent points is limited by the resolution of the current measurement i.e. the ADC range is not fully utilized. If the resistance is lower, the number of (meaningful) measurement points is defined by the maximum current the ADC can measure which will be reached before the full DAC voltage range is used.
   #. Plot the number of independent I-V measurement point as a function of the connected resistance for each current range (log x-scale and resistor values from 1 to 10^8 Ohm). Use the current ranges from the table above and the output voltage range of 4.095 V with a step size of 1 mV.
 
-    The three plots below illustrate the situation. Shown are the I-V curves for the same three scaled resistors using the three current ranges. The resistance R ist best captured in the middle range while resolution for the x50 (/50) resistance curves are limited by the ADC (DAC), respectively. Switching to lower (higher) current ranges for the higher (lower) resistance improves the resolution significantly.
+    The three plots below illustrate the situation. Shown are the I-V curves for the same three scaled resistors using the three current ranges. The resistance R ist best captured in the middle range while resolution for the x5 (/5) resistance curves are limited by the ADC (DAC), respectively. Switching to lower (higher) current ranges for the higher (lower) resistance improves the resolution significantly.
 
   
   .. figure:: images/smu_ranges.png
