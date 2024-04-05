@@ -5,3 +5,4 @@ code/hello_world
 test.png
 *.pyc
 code/SMU/__pycache__/smu_class.cpython-39.pyc
+work/*
