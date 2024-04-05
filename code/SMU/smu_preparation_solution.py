@@ -115,8 +115,8 @@ for Rload, marker in zip(Resistor_list, marker_list):
     Vrange_plot = voltage_steps_array[limited_range]
     Irange_plot = sampled_current_array[limited_range]
 
-    bx[0].step(Vrange_plot, Irange_plot, where='mid', label= str(Rload) + ' Ohm')
-    bx[1].step(Vrange_plot, Irange_plot, where='mid')
+    bx[0].step(Vrange_plot, Irange_plot, '.--', where='mid', label= str(Rload) + ' Ohm')
+    bx[1].step(Vrange_plot, Irange_plot, '.--', where='mid')
     #ax[0].plot(Vrange_plot, Irange_plot, '.k', label= str(R) + ' Ohm')
     #ax[0].fill_between(Vrange_plot, Irange_plot-Ierror_list[i] * 100, Irange_plot+Ierror_list[i] * 100, color='gray')
 
