@@ -93,7 +93,7 @@ Exercises
 There is a script ``smu.py`` in the folder ``code\SMU`` which contains the necessary includes and the basic configuration for the I2C interface and the I2C devices (DAC, ADC and |RSNS|-MUX) on the SMU module. Copy it into your ``work`` folder and use it as a template for your scripts. There are also another files called ``smu_class.py``, ``smu_preparation.solution.py``, and ``smu_mosfet_solution.py`` which contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck. 
 
 
-.. admonition:: The following preparatory questions should be answered before coming to lab 
+.. admonition:: The following preparatory questions should be answered before coming to lab (SMU related)
 
   #. What do the terms accuracy, resolution, and precision mean? Where is the difference? 
   #. What is the resolution of an ADC? What is the quantization error? (Extra: Derive the formula for the quantization error.)
@@ -108,6 +108,7 @@ There is a script ``smu.py`` in the folder ``code\SMU`` which contains the neces
 
     I-V curves for three load resistors values using a fixed current range.
 
+.. admonition:: Additional preparatory questions to be answered before coming to lab (MOSFET related)
 
   #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region? Plot example I-V curves based on a simple (SPICE level 2 MOSFET model) to explain.
   #. Derive the formula for definition of the transconductance |gm|. 
