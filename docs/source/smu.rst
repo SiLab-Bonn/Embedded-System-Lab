@@ -1,6 +1,6 @@
 .. include:: replacements.rst
 ===================================
-Experiment: MOSFET Parameter Extraction
+Experiment: SMU and MOSFET Parameter Extraction
 ===================================
 
 .. figure:: images/smu.png
