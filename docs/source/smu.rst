@@ -98,7 +98,7 @@ There is a script ``smu.py`` in the folder ``code\SMU`` that contains the necess
 
 The exercise 0 contains preparatory questions related to SMU operation and MOSFET parameter extraction that should be answered before coming to the lab.
 
-.. admonition:: Exercise 0. 
+.. admonition:: Exercise 0. Preparatory questions
 
   #. What do the terms accuracy, resolution, and precision mean? Where is the difference? 
   #. What is the resolution of an ADC? What is the quantization error? (Extra: Derive the formula for the quantization error.)
