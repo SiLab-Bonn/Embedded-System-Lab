@@ -6,3 +6,6 @@ test.png
 *.pyc
 code/SMU/__pycache__/smu_class.cpython-39.pyc
 work/*
+*.ilk
+*.obj
+*.pdb

@@ -28,9 +28,10 @@
             "environment": [],
             "console": "integratedTerminal"
         },
+        
         {
             "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy", // was "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"

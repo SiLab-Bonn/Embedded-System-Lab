@@ -2,7 +2,7 @@
 
 int main()
 {
-  printf("Hello World\nHit \"enter\" to exit.");
+  printf("Hello World!\n'Press Enter to exit...'.");
   getchar();  
   return(0);
 }
