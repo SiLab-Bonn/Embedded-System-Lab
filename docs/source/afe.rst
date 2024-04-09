@@ -156,7 +156,6 @@ The exercise 0 contains preparatory questions that should be answered before com
 
  
 .. admonition:: Exercise 3. Noise performance measurements 
-----------------------------
 
   #. Acquire s-curves for different shaping time constants. What is the effect of the shaping time on the noise? Do not yet connect a sensor diode to the CSA.
   #. Now connect a sensor diode to the CSA and apply 20 V bias voltage. Repeat the s-curves mesurements. What happens if you lower the bias voltage? What is the effect of the detector capacitance on the noise performance?
