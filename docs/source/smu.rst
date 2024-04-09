@@ -95,8 +95,9 @@ Exercises
 The exercises are divided into three parts: The first part is about the basic operation of the SMU module and the implementation of a simple I-V scan loop. The second part is about the implementation of an automatic current range selection and the improvement of the measurement precision. The third part is about the measurement of I-V curves of a MOSFET and the extraction of its parameters. 
 There is a script ``smu.py`` in the folder ``code\SMU`` that contains the necessary includes and the basic configuration for the I2C interface and the I2C devices (DAC, ADC and |RSNS|-MUX) on the SMU module. Copy it into your ``work`` folder and use it as a template for your scripts. There are also another files called ``smu_class.py``, ``smu_preparation.solution.py``, and ``smu_mosfet_solution.py`` that contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck. 
 
+The exercise 0 (SMU and MOSFET) are preparatory questions that should be answered before coming to the lab.
 
-.. admonition:: The following preparatory questions should be answered before coming to lab (SMU related)
+.. admonition:: Exercise 0. SMU related preparatory questions
 
   #. What do the terms accuracy, resolution, and precision mean? Where is the difference? 
   #. What is the resolution of an ADC? What is the quantization error? (Extra: Derive the formula for the quantization error.)
@@ -111,7 +112,7 @@ There is a script ``smu.py`` in the folder ``code\SMU`` that contains the necess
 
     I-V curves for three load resistors values using a fixed current range.
 
-.. admonition:: Additional preparatory questions to be answered before coming to lab (MOSFET related)
+.. admonition:: Exercise 0. MOSFET related preparatory questions
 
   #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region? Plot example I-V curves based on a simple (SPICE level 2 MOSFET model) to explain.
   #. Derive the formula for definition of the transconductance |gm|. 
