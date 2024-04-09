@@ -1,26 +1,33 @@
 import threading
 import time
 
-stop_thread = False
 key = ''
 
-def myThreadFunction():
-  while not stop_thread:
-    print("Thread Function working")
-    print('last key pressed:', key)
-    time.sleep(1)
+ # this function will run in a separate thread and capture user input to control the loop in the main thread
+def getInput():
+  while True:
+    print('Enter value or press ''q'' to stop')
+    global key # use the global variable to communicate between threads (better: use queues)
+    key = input()
 
-my_thread = threading.Thread(target=myThreadFunction)
-my_thread.start()
 
-print('Press ''q'' to stop')
+# instantiate the thread and start it, set the 'daemon flag' to automatically kill the thread when the main thread stops
+inputThread = threading.Thread(target=getInput)
+inputThread.daemon = True  
+inputThread.start()
 
+
+# this is the main thread 
 while True:
-  key = input()
+  # do something with the key input
+  print('Last key pressed:', key)
+
+  # add code for scan loops here
+  time.sleep(1)
+
   if key == 'q':
-    stop_thread = True
-    my_thread.join() # Wait for the thread to finish	
     print("Thread stopped")
-    exit()
+    break 
 
-
+print("Program stopped")
+exit() 
