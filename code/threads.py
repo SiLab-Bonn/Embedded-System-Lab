@@ -1,22 +1,26 @@
 import threading
 import time
 
-class TestThread(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.running=True
-        self.start()
+stop_thread = False
+key = ''
 
-    def run(self):        
-        while self.running:
-            time.sleep(0.5)
-            print("running")
+def myThreadFunction():
+  while not stop_thread:
+    print("Thread Function working")
+    print('last key pressed:', key)
+    time.sleep(1)
 
-    def stop(self):
-        self.running=False
+my_thread = threading.Thread(target=myThreadFunction)
+my_thread.start()
 
-if __name__=='__main__':
+print('Press ''q'' to stop')
 
-    tt=TestThread()
-    a=input('simple stuff working ? -- ')
-    tt.stop()
+while True:
+  key = input()
+  if key == 'q':
+    stop_thread = True
+    my_thread.join() # Wait for the thread to finish	
+    print("Thread stopped")
+    exit()
+
+
