@@ -91,7 +91,8 @@ The MOSFET input characteristic (|ID| vs |VGS| curve) is used to extract transco
  ....
 
 Exercises 
----------
+=========
+
 The exercises are divided into three parts: The first part is about the basic operation of the SMU module and the implementation of a simple I-V scan loop. The second part is about the implementation of an automatic current range selection and the improvement of the measurement precision. The third part is about the measurement of I-V curves of a MOSFET and the extraction of its parameters. 
 There is a script ``smu.py`` in the folder ``code\SMU`` that contains the necessary includes and the basic configuration for the I2C interface and the I2C devices (DAC, ADC and |RSNS|-MUX) on the SMU module. Copy it into your ``work`` folder and use it as a template for your scripts. There are also another files called ``smu_class.py``, ``smu_preparation.solution.py``, and ``smu_mosfet_solution.py`` that contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck. 
 
