@@ -1,6 +1,6 @@
 .. include:: replacements.rst
 ===================================
-Experiment: SMU and MOSFET Parameter Extraction
+Experiment: Source-Monitoring-Unit and MOSFET Parameter Extraction
 ===================================
 
 .. figure:: images/smu.png
@@ -9,12 +9,12 @@ Experiment: SMU and MOSFET Parameter Extraction
 
     Source-Meter Module
 
-In this experiment the characteristic I-V curves of (active) electronic devices will be measured and used for the extraction of devices electrical parameters. For example, a MOSFET is typically characterized by it threshold voltage |VTHR|, its transconductance |gm|, which describes its voltage-to-current gain and other parameters, which can be extracted from I-V measurements. The SMU ('source monitoring unit') module used in this experiment provides two programmable voltage sources with a wide range current measurement capability (~mA down to ~nA) spanning over three current measurement ranges. To achieve the best measurement accuracy, the current measurement range needs to be selected according to the expected current values. The Raspberry Pi communicates with the SMU via an I2C bus that writes the data to set the output voltages, sets the current mesuarement eange, and reads back the measured output current. 
+In this experiment a Source-Monitoring-Unit (SMU) will be used to measure the characteristic I-V curves of (active) electronic devices. The acquired I-V curves are then used for the extraction of the devices electrical parameters. For example, a MOSFET is typically characterized by it threshold voltage |VTHR|, its transconductance |gm|, which describes its voltage-to-current gain and other parameters, which can be extracted from I-V measurements. The SMU ('source monitoring unit') module used in this experiment provides two programmable voltage sources with a wide range current measurement capability (~mA down to ~nA) spanning over three current measurement ranges. To achieve the best measurement accuracy, the current measurement range needs to be selected according to the expected current values. The Raspberry Pi communicates with the SMU via an I2C bus that writes the data to set the output voltages, sets the current mesuarement eange, and reads back the measured output current. 
 
 
 
 Source Monitoring Unit
-=====================
+----------------------
 
 The SMU module is a dual channel voltage source that supports single-quadrant measurements. That means it can only generate positive potentials and the measurement polarity is restricted to current flowing out of the module into the device. Four-quadrant SMUs, as typically available with commercial test equipment, can do bipolar current measurement independent of the polarity of the output voltage. Commercial SMUs can also be configured to work as a programmable current source while this module only implements a voltage source mode.
 
@@ -70,14 +70,14 @@ There are a few more circuit details that are found in the full circuit schemati
 
 
 I-V Curve Measurements
-======================
+----------------------
 
 The simplest I-V curves are obtained by a measuring a device with two ports (a resistor or a diode, for example) connected to one of the SMU outputs. The measurement script then sweeps the the output voltage of the used channel in a given range and step size. The smallest voltage step is 1 mV which corresponds to one DAC bit (see DAC output voltage calculation above). For faster voltage sweeps with less points, the voltage step size can be increased. In the scan loop, the output current is measured for each voltage step and both values are stored for later plotting and analysis. 
 
 Devices with more than two ports like transistors typically have more than one voltage applied. For example the input characteristic of a MOSFET (drain current |ID| as a function of the gate voltage |VGS|) requires the drain and the gate potential to be individually controlled (i.e. |VGS| is swept while |VDS| is held constant). For those kind of I-V measurements, both SMU channels will be used simultaneously. 
 
 MOSFET Parameter Extraction
-===========================
+---------------------------
 
 A MOSFET is characterized with a number of electrical parameters describing its dc- and ac- performance. Many of these parameters are typically found in the devices datasheet and even more parameters are needed for simulation models. Special integrated test equipment dedicated for parameter extraction is typically used for this task. Simple I-V scans, however, can be used to extract some of the basic MOSFET parameters: 
 
@@ -91,14 +91,14 @@ The MOSFET input characteristic (|ID| vs |VGS| curve) is used to extract transco
  ....
 
 Exercises 
-=========
+----------
 
 The exercises are divided into three parts: The first part is about the basic operation of the SMU module and the implementation of a simple I-V scan loop. The second part is about the implementation of an automatic current range selection and the improvement of the measurement precision. The third part is about the measurement of I-V curves of a MOSFET and the extraction of its parameters. 
 There is a script ``smu.py`` in the folder ``code\SMU`` that contains the necessary includes and the basic configuration for the I2C interface and the I2C devices (DAC, ADC and |RSNS|-MUX) on the SMU module. Copy it into your ``work`` folder and use it as a template for your scripts. There are also another files called ``smu_class.py``, ``smu_preparation.solution.py``, and ``smu_mosfet_solution.py`` that contains working code for most of the exercises. Note that this should only be used for reference or as a last resort if you got stuck. 
 
-The exercise 0 (SMU and MOSFET) are preparatory questions that should be answered before coming to the lab.
+The exercise 0 contains preparatory questions related to SMU operation and MOSFET parameter extraction that should be answered before coming to the lab.
 
-.. admonition:: Exercise 0. SMU related preparatory questions
+.. admonition:: Exercise 0. 
 
   #. What do the terms accuracy, resolution, and precision mean? Where is the difference? 
   #. What is the resolution of an ADC? What is the quantization error? (Extra: Derive the formula for the quantization error.)
@@ -107,13 +107,11 @@ The exercise 0 (SMU and MOSFET) are preparatory questions that should be answere
   #. How many measurement points would you get for a 5 kOhm or a 200 Ohm load resistor, respectively? Hint: If the resistance is higher than 1 kOhm, the number of independent points is limited by the resolution of the current measurement i.e. the ADC range is not fully utilized. If the resistance is lower, the number of (meaningful) measurement points is defined by the maximum current the ADC can measure that will be reached before the full DAC voltage range is used. The plot below illustrates the situation. Shown are the I-V curves for the three resistors using a fixed current range. The 1 kOhm load resistance yields the maximum measurement points while the 5 kOhm (200 Ohm) load resistors I-V curves are limited by the DAC (ADC), respectively. 
   #. The current mesurement ranges of the SMU have a ratio of 1\:100\:1000 (see table above). What would be appropriate threshold values (in ADC counts) for the current range switching? Note that the auto-ranging functionality requires one thresholds for switching from a lower range to a higher range and another threshold for switching from a higher to a lower range (i.e. one threshold at the lower ADC count range and one at the higher ADC count range). What relation between the two thresholds must be met to not have 'gaps' in the combined current measuremnt range? Note\: Typically ADCs perform best if not operated at the extreme ends of their range (i.e. keep the ADC values at least ~10-20 counts from their limits).
 
-  .. figure:: images/smu_ranges.png
-    :width: 600
-    :align: center
+     .. figure:: images/smu_ranges.png
+      :width: 600
+      :align: center
 
-    I-V curves for three load resistors values using a fixed current range.
-
-.. admonition:: Exercise 0. MOSFET related preparatory questions
+      I-V curves for three load resistors values using a fixed current range.
 
   #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region? Plot example I-V curves based on a simple (SPICE level 2 MOSFET model) to explain.
   #. Derive the formula for definition of the transconductance |gm|. 

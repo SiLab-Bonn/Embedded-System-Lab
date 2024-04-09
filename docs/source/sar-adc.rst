@@ -141,12 +141,3 @@ There is a script ``sar_adc.py`` in the folder ``code\SAR_ADC`` which contains t
      Example of an INL and DNL characterization
 
   #. Change the above mentioned delay time between DAC register update and comparator read and repeat the INL/DNL analysis. What setting would you chose to optimize linearity? What sample rate does this yield? Plot sample rate vs. DNL for a reasonable range.
-
-
-Keywords and literature references
-----------------------------------
-* ADC architectures
-* R-2R resistor ladder
-* ADC testing methods (histogram method)
-* Integrated- and Differential Non-linearity
-* ...
