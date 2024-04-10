@@ -46,7 +46,7 @@ for uds_index, uds in enumerate(drain_voltage_parameter):
   # plot gm/Id
   ax[2,1].plot(gate_voltage_sweep, gm/current_data_array[uds_index])  
 
-# output chracteristics: Id(Uds)
+# output characteristics: Id(Uds)
 fig2, bx = plt.subplots(2,1)
 drain_voltage_sweep    = np.arange(  0, 4000, 10)
 gate_voltage_parameter = np.arange(800, 1401, 200)
