@@ -12,7 +12,7 @@ GPIO_MODE_ALT0 = 4
 
 BLUE_LED = 27
 CLK      = 4    # GPIO pin for clock output
-frequency = 20 # [kHz]
+frequency = 15  # [kHz]
 
 # initialize GPIO register access
 GPIO_CLIB.setup()

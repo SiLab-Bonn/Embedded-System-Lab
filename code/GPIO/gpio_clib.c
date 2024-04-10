@@ -39,7 +39,7 @@
 
 #define GPCLK_OSC_FREQ  54.0  // Rpi 4: 54 Mhz 
 
-//#define DEBUG 1
+// #define DEBUG 
 
 uint32_t *gpio_virt_addr_ptr;  // pointer to virtual address
 uint32_t *gpfsel0;
@@ -244,6 +244,7 @@ void set_gpclk_freq(int frequency)
 
   divider = GPCLK_OSC_FREQ / (frequency/1000.0); // frequency [kHz]
 
+
   if (divider > 4095)
   {
     printf("GPCLK frequency too low (f_min > 13 kHz)\n");
@@ -260,11 +261,17 @@ void set_gpclk_freq(int frequency)
   div_i = (int)(divider);
   div_f = (int)((divider - div_i) * 1024);
 
+  #ifdef DEBUG 
+    printf("divider = %f\n", divider);        
+    printf("div_i = %d\n", div_i);    
+    printf("div_f = %d\n", div_f);
+  #endif
+
   *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on ???
   *gpclk0_ctl  = GPCLK_PWD | (*gpclk0_ctl & ~GPCLK_ENABLE); // switch off
   while ((*gpclk0_ctl & GPCLK_BUSY) != 0) 
     ; // wait for not busy
-  *gpclk0_div  = GPCLK_PWD | ((0x3ff & div_i) << 12) | (0x3ff & div_f);  // set divider
+  *gpclk0_div  = GPCLK_PWD | ((0xfff & div_i) << 12) | (0xfff & div_f);  // set divider
   *gpclk0_ctl |= GPCLK_PWD | GPCLK_MASH_1 | (0xf & GPCLK_SRC_OSC); // enable fractional divide, OSC as source
   *gpclk0_ctl |= GPCLK_PWD | GPCLK_ENABLE; // switch on
 
