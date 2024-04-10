@@ -24,15 +24,26 @@ for uds_index, uds in enumerate(drain_voltage_parameter):
   for ugs_index, ugs in tqdm(enumerate(gate_voltage_sweep)):
     gate.set_voltage(ugs) 
     current_data_array[uds_index][ugs_index] = drain.get_current() 
+
+  # plot drain current in linear representation
   ax[0,0].plot(gate_voltage_sweep, current_data_array[uds_index], label="{:.2f}".format(uds))
+
+  # plot sqrt of the drain current
   ax[1,0].plot(gate_voltage_sweep, np.sqrt(current_data_array[uds_index]), label="{:.2f}".format(uds))
+
+  # plot log of the drain current, 
   ax[2,0].semilogy(gate_voltage_sweep, current_data_array[uds_index], label="{:.2f}".format(uds))
 
-  # gm vs Id
+  # trasconductance gm = d(Id)/d(Ugs)
   gm = np.diff(current_data_array[uds_index], prepend = 0)/(np.diff(gate_voltage_sweep, prepend = 0.5))
 
+  # plot gm
   ax[0,1].plot(gate_voltage_sweep, gm)
+
+  # plot gm/sqrt(Id)
   ax[1,1].plot(gate_voltage_sweep, gm/np.sqrt(current_data_array[uds_index]))
+
+  # plot gm/Id
   ax[2,1].plot(gate_voltage_sweep, gm/current_data_array[uds_index])  
 
 # output chracteristics: Id(Uds)
