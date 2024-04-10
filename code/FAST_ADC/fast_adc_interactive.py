@@ -1,7 +1,8 @@
 import ctypes
 import time
 import matplotlib.pyplot as plt
-from threading import Thread, Event
+from threading import Thread
+from queue import Queue
 import numpy as np
 from i2cdev import I2C
 import RPi.GPIO as GPIO
@@ -9,8 +10,8 @@ import RPi.GPIO as GPIO
 # GPIO setup
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
-EXT_TRG = 4 # GPIO4 controls external trigger
-GPIO.setup(EXT_TRG, GPIO.IN) # disable output 
+# EXT_TRG = 4 # GPIO4 controls external trigger
+# GPIO.setup(EXT_TRG, GPIO.IN) # disable output 
 
 # access to c-library for fast ADC access with DMA support
 # set return type for time base getter
@@ -23,10 +24,6 @@ SAMPLE_RATE_500k = 2
 SAMPLE_RATE_1M   = 3
 SAMPLE_RATE_2M   = 4
 SAMPLE_RATE_5M   = 5
-# trigger modes
-#trigger_mode = 0 # take data immediately
-trigger_mode  = 1 # wait for GPIO 24 (DREQ) rising edge, controlled by 
-# signal comparator with programmable threshold (jumper INT) or GPIO 4 (jumper EXT)
 
 # trigger threshold DAC
 TRG_THR= I2C(0x30, 1)  # init DAC as I2C bus device
@@ -35,6 +32,10 @@ TRG_THR.close() # close device
 
 # init ADC: data array, number of samples, sample rate, trigger mode
 n_samples = 4000 # number of samples 
+# trigger modes
+AUTO_TRIGGER   = 0 # free-running acquisition 
+NORMAL_TRIGGER = 1 # wait for hardware trigger (jumper TRG on the base board selects trigger source)
+trigger_mode = NORMAL_TRIGGER
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, trigger_mode)
 ADC.set_time_base(1, trigger_mode)
@@ -48,39 +49,45 @@ plt.ion() # interactive mode
 fig, waveform = plt.subplots()
 waveform.set_ylabel('ADU')
 waveform.set_xlabel('t[us]')
-#waveform.set_xlim(0, n_samples)
 waveform.set_ylim(0, 4096)
+waveform.set_xlim(0, n_samples * time_base)
+waveform.grid()
+
+# trigger ADC conversion and initialize plot
 ADC.take_data()
 plot1, = waveform.plot(time_data, adc_data)
 
-# define thread function
-def ADC_work_function(stop_event: Event):
-  while 1:
+# define thread function to capture user input
+def updatePlot(queue):
+  global time_data, n_samples, trigger_mode
+  while True:
+    if not queue.empty():
+      data = queue.get()
+      if (data.isdigit() and int(data) in range(1, 6)):
+        ADC.set_time_base(int(data), trigger_mode)
+        time_base = ADC.get_time_base()
+        time_data = np.arange(0, n_samples * time_base, time_base)  
+        waveform.set_xlim(0, n_samples * time_base)
     ADC.take_data()
     plot1.set_data(time_data, adc_data)
-    fig.canvas.draw()
-    time.sleep(0.1)
-    if stop_event.is_set():
-      return()
+    time.sleep(0.01)
 
-# prepare and start ADC thread
-ADC_stop_event = Event()
-ADC_thread = Thread(target=ADC_work_function,args=(ADC_stop_event, ))
-ADC_thread.start()
+# add queue to pass data between main and plotting thread
+queue = Queue()
 
-while 1:
-  key = input('Press [1,2,3,4,5] to adjust horizontal scale or q to exit.')
-  if (key.isdigit() and int(key) in range(1, 6)):
-    ADC.set_time_base(int(key), trigger_mode)
-    time_base = ADC.get_time_base()
-    time_data = np.arange(0, n_samples * time_base, time_base)  
-    waveform.set_xlim(0, n_samples * time_base)
+# prepare and start user input thread
+updateThread = Thread(target=updatePlot, args=(queue,))
+updateThread.daemon = True
+updateThread.start()
 
+while True:
+  print('Press [1,2,3,4,5] to adjust horizontal scale or q to exit.')
+  key = input()
   if key == 'q':
-    ADC_stop_event.set()
-    ADC_thread.join()
-    plt.close()
-    ADC.close_device()
-    GPIO.cleanup()
-    TRG_THR.close()
-    exit()
+    break
+  queue.put(key)
+
+plt.close()
+ADC.close_device()
+GPIO.cleanup()
+TRG_THR.close()

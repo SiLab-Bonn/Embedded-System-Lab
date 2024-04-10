@@ -3,22 +3,28 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-
 # access to c-library for enhanced GPIO access 
-GPIO = ctypes.CDLL("../lib/gpio_clib.so")  
+GPIO_CLIB = ctypes.CDLL("../lib/gpio_clib.so")  
+
+GPIO_MODE_IN   = 0 
+GPIO_MODE_OUT  = 1 
+GPIO_MODE_ALT0 = 4 
 
 BLUE_LED = 27
-CLK = 4            # GPIO pin for clock output
-GPIO_MODE_ALT0 = 4 # GPIO alternative mode 0 (GPCLK0 on GPIO 4)
-frequency = 100 # [kHz]
-GPIO.setup()
+CLK      = 4    # GPIO pin for clock output
+frequency = 20 # [kHz]
 
-GPIO.set_gpio_mode(BLUE_LED, 1)#GPIO.GPIO_MODE_OUT)
-GPIO.set_gpio_mode(CLK, GPIO_MODE_ALT0) 
-GPIO.set_gpclk_freq(int(frequency)) 
-GPIO.set_gpio_out(BLUE_LED, 1)
+# initialize GPIO register access
+GPIO_CLIB.setup()
+
+GPIO_CLIB.set_gpio_mode(BLUE_LED, GPIO_MODE_OUT)
+GPIO_CLIB.set_gpio_mode(CLK, GPIO_MODE_ALT0) 
+GPIO_CLIB.set_gpclk_freq(frequency) 
+GPIO_CLIB.set_gpio_out(BLUE_LED, 1)
 input('Hit enter to exit')
-GPIO.set_gpio_out(BLUE_LED, 0)
+GPIO_CLIB.set_gpio_out(BLUE_LED, 0)
+GPIO_CLIB.set_gpclk_freq(0) # freq = 0 switches the clock off
 
-GPIO.set_gpclk_freq(0) # switch off
-GPIO.cleanup(0)
+# restore default GPIO mode (input)
+GPIO_CLIB.set_gpio_mode(BLUE_LED, GPIO_MODE_IN)
+GPIO_CLIB.set_gpio_mode(CLK, GPIO_MODE_IN) 

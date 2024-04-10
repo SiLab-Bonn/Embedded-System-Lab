@@ -244,6 +244,19 @@ void set_gpclk_freq(int frequency)
 
   divider = GPCLK_OSC_FREQ / (frequency/1000.0); // frequency [kHz]
 
+  if (divider > 4095)
+  {
+    printf("GPCLK frequency too low (f_min > 13 kHz)\n");
+    return;
+  }
+
+  if (divider < 2) // MASH value + 1
+  {
+    printf("GPCLK frequency too high (f_max < 25 MHz)\n");
+    return;
+  }
+
+
   div_i = (int)(divider);
   div_f = (int)((divider - div_i) * 1024);
 

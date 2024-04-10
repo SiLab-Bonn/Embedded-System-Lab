@@ -386,7 +386,7 @@ uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
     cbs[3].dest_ad = REG_BUS_ADDR(gpio_regs, GPIO_CLR0);
     cbs[3].next_cb = MEM_BUS_ADDR(mp, &cbs[4]);
 
- // Control block 4: disable SMI I/P pins
+ // Control block 4: disable SMI I/O pins
     cbs[4].ti = DMA_CB_SRCE_INC | DMA_CB_DEST_INC | DMA_WAIT_RESP;
     cbs[4].tfr_len = 3 * 4;
     cbs[4].srce_ad = MEM_BUS_ADDR(mp, &modes[3]);

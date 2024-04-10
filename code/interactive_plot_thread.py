@@ -1,51 +1,54 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import threading
+from threading import Thread
+from queue import Queue
 import time
 
 key = ''
 
- # this function will run in a separate thread and capture user input to control the loop in the main thread
-def getInput():
-  while True:
-    print('Enter value or press ''q'' to stop')
-    global key # use the global variable to communicate between threads (better: use queues)
-    key = input()
-
-
-# instantiate the thread and start it, set the 'daemon flag' to automatically kill the thread when the main thread stops
-inputThread = threading.Thread(target=getInput)
-inputThread.daemon = True  
-inputThread.start()
-
 # Data for plotting
-t = np.arange(0.0, 2.0, 0.01)
-s = 1 + np.sin(2 * np.pi * t)
+t0  = 0
+t   = np.arange(0.0, 2.0, 0.01)
+s   = 1 + np.sin(2 * np.pi * t)
+f   = 1
 
 plt.ion()     # intercative mode
 fig, ax = plt.subplots()
 myplot, = ax.plot(t, s)
 
+# plotting will run in a separate thread
+def updatePlot(queue):
+  global f, t0, t, myplot
+  while True:
+    t0 = t0 + 0.1/f
+    if not queue.empty():
+      data = queue.get()
+      if data.isnumeric():
+        f = int(data)
+    s = 1 + np.sin(2 * np.pi * f * (t + t0))
+    myplot.set_ydata(s)    
+    time.sleep(0.1)
+
+# add queue to pass data between main and plotting thread
+queue = Queue()
+
+# instantiate plotting thread and start it, set the 'daemon flag' to automatically kill the thread when the main thread stops
+plotThread = Thread(target=updatePlot, args =(queue,), daemon = True)
+plotThread.start()
+
+# prepare plot window
 ax.set(xlabel='time (s)', ylabel='voltage (mV)', title='Intercative Plot')
 ax.grid()
-
-# draw plot canvas once and update data later on in the loop
 plt.show()
 
-t0 = 0
-f = 1
-
+# main thread
 while True:
-  # end the main loop 
-  if (key == 'q'):
+  print('Enter frequency value or press \'q\' to stop')
+  key = input()  
+  if key == 'q':
     break
+  queue.put(key)
 
-  if key.isnumeric():
-    f = int(key)
-  s = 1 + np.sin(2 * np.pi * f * (t + t0))
-  myplot.set_ydata(s)    
-  t0 = t0 + 0.1
-  plt.pause(0.1)
 
 # add any clean-up code here
 print("Program stopped")
