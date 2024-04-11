@@ -4,7 +4,7 @@ import numpy as np
 import time
 
 # access to c-library for enhanced GPIO access 
-GPIO_CLIB = ctypes.CDLL("../lib/gpio_clib.so")  
+GPIO_CLIB = ctypes.CDLL("/home/pi/Embedded-System-Lab/code/lib/gpio_clib.so")  
 
 GPIO_MODE_IN   = 0 
 GPIO_MODE_OUT  = 1 

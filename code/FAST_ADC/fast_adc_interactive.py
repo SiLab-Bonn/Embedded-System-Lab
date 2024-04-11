@@ -15,7 +15,7 @@ GPIO.setwarnings(False)
 
 # access to c-library for fast ADC access with DMA support
 # set return type for time base getter
-ADC = ctypes.CDLL("../lib/fast_adc.so")  
+ADC = ctypes.CDLL("/home/pi/Embedded-System-Lab/code/lib/fast_adc.so")  
 ADC.get_time_base.restype = ctypes.c_float 
 
 # some constants

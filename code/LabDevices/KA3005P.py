@@ -48,7 +48,7 @@ class KA3005P:
  
   def enable_output(self):
     self.serial.write('OUT1'.encode())
-    time.sleep(0.1)
+    time.sleep(0.5)
  
   def disable_output(self):
     self.serial.write('OUT0'.encode())
