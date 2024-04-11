@@ -47,9 +47,9 @@ time_data = np.arange(0, n_samples * time_base, time_base)
 # prepare waveform display
 plt.ion() # interactive mode
 fig, waveform = plt.subplots()
-waveform.set_ylabel('ADU')
-waveform.set_xlabel('t[us]')
-waveform.set_ylim(0, 4096)
+waveform.set_ylabel('ADC input voltage [mV]')
+waveform.set_xlabel('t [us]')
+waveform.set_ylim(0, 5000)
 waveform.set_xlim(0, n_samples * time_base)
 waveform.grid()
 
