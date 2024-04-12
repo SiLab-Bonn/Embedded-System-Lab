@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -245,8 +246,9 @@ void smi_init(int width, int ns, int setup, int strobe, int hold, int wait_trigg
     }
 }
 
-void take_data(void)
+void take_data(int enable_adc)
 {
+  if(enable_adc == 1)
     gpio_out(ADC_ENABLE, 1);
 //  smi_cs->enable = 1;
 //  smi_cs->clear = 1;  
@@ -265,7 +267,9 @@ void take_data(void)
   smi_dmc->dmaen = 0;
   smi_cs->enable = 0;
   smi_dcs->enable = 0;	
-  gpio_out(ADC_ENABLE, 0);
+
+  if (enable_adc == 1)
+    gpio_out(ADC_ENABLE, 0);
 }
 
 void close_device(void)

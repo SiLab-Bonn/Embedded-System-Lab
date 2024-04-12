@@ -61,7 +61,7 @@ waveform.set_ylim(0, 5000)
 waveform.grid()
 
 # trigger ADC conversion and initialize plot
-ADC.take_data(OSC_MODE)
+ADC.take_data(DSA_MODE)
 plot1, = waveform.plot(time_data, adc_data)
 
 # define thread function to capture user input
@@ -79,7 +79,7 @@ def updatePlot(queue):
         time_base = ADC.get_time_base()
         time_data = np.arange(0, n_samples * time_base, time_base)  
         waveform.set_xlim(0, n_samples * time_base)
-    ADC.take_data(OSC_MODE)
+    ADC.take_data(DSA_MODE)
     cal_adc_data = np.array(adc_data) * ADC_LSB 
     plot1.set_data(time_data, cal_adc_data)
     time.sleep(0.01)
