@@ -1,12 +1,18 @@
 import spidev
 import time
+import os
+
+os.system("sudo raspi-config nonint do_spi 1")
+os.system("sudo raspi-config nonint do_spi 0")
 
 spi = spidev.SpiDev()
 spi.open(0,0)  # (bus, device)
-spi.mode = 0
 spi.max_speed_hz = 1000000
+spi.mode = 0
 
-data_byte = 44
+
+data_byte = 0x11
 
 spi.xfer([data_byte])
         
+spi.close()
