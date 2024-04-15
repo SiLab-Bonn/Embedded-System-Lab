@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
-#GPIO.setwarnings(False)
+GPIO.setwarnings(False)
 
 # SPI clock
 SCK = 11
@@ -19,7 +19,7 @@ GPIO.setup(CS0_B, GPIO.OUT)
 GPIO.output(CS0_B, GPIO.HIGH)
 
 
-data_byte = 0x44
+data_byte = 0x67
 
 # start transfer be pulling chip select low
 GPIO.output(CS0_B, GPIO.LOW)

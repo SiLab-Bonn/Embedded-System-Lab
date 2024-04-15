@@ -33,10 +33,11 @@
 				"-Wall",
 				"-shared",
 				"-o",
-				"${fileDirname}/../../lib/${fileBasenameNoExtension}.so",
+				"-Wpointer-arith",
+				"/home/pi/Embedded-System-Lab/code/lib/${fileBasenameNoExtension}.so",
 				"${fileDirname}/${fileBasenameNoExtension}.c",
-				// "${fileDirname}/../utils/rpi-dma/rpi_dma_utils.c"
-				"${fileDirname}/rpi_dma_utils.c"
+				 "/home/pi/Embedded-System-Lab/code/utils/rpi-dma/rpi_dma_utils.c"
+				//"${fileDirname}/rpi_dma_utils.c"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
