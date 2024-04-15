@@ -47,7 +47,7 @@ print('slope: %.4f nA/kHz' % (slope * 1e6))
 print('capacitance: %.2f pF' % capacitance)
 
 ax.set(xlabel='Frequency [kHz]', ylabel='Current (mA)', title='I-F Curve')
-#plt.show()
+plt.show()
 
 # switch off
 GPIO.set_gpclk_freq(0) # switch off

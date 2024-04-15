@@ -1,11 +1,11 @@
 docs/scratch/~$drawings.pptx
 docs/scratch/drawings.pptx
-*.exe
 code/hello_world
-test.png
-*.pyc
-code/SMU/__pycache__/smu_class.cpython-39.pyc
 work/*
+*.exe
+*.png
+*.pyc
 *.ilk
 *.obj
 *.pdb
+*.csv

@@ -13,7 +13,7 @@ GPIO.setup(EXT_TRG, GPIO.IN) # disable output
 TRG_THR= I2C(0x30, 1)  
 
 # access to c-library for fast ADC access with DMA support
-ADC = ctypes.CDLL("../lib/fast_adc.so")  
+ADC = ctypes.CDLL("/home/pi/Embedded-System-Lab/code/lib/fast_adc.so")  
 # set return type for time base getter
 ADC.get_time_base.restype = ctypes.c_float 
 # some constants
