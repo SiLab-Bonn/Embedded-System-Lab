@@ -5,6 +5,9 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
+#pragma  GCC diagnostic ignored "-Wpointer-arith"
+//warning disable
+
 #define BUS_REG_BASE    0x7E000000
 #define PHYS_REG_BASE   0xFE000000 // RPi 4 
 #define GPIO_BASE       0x7E200000
@@ -280,22 +283,48 @@ void set_gpclk_freq(int frequency)
   #endif
 }
 
+#define MAX_GPIO_NUM 28
 
-// int main()
-// {
-//   static int BLUE_LED = 27;
-//   static int CLK = 4;
+int main()
+{
+  uint32_t reg;
+  int buffer;
+  char mode[16];
+  setup();
 
-//   setup();
-//   set_gpio_mode(CLK, GPIO_MODE_ALT0);
-//   set_gpclk_freq(1.9);
+  printf("GPFSEL0 (%p): 0x%08x \n", (void *)gpfsel0, *gpfsel0);
+  printf("GPFSEL1 (%p): 0x%08x \n", (void *)gpfsel1, *gpfsel1);
+  printf("GPFSEL2 (%p): 0x%08x \n", (void *)gpfsel2, *gpfsel2);
+  printf("GPSET0  (%p): 0x%08x \n", (void *)gpset0, *gpset0);
+  printf("GPCLR0  (%p): 0x%08x \n", (void *)gpclr0, *gpclr0);
+  printf("GPLEV0  (%p): 0x%08x \n", (void *)gplev0, *gplev0);  
 
-//   set_gpio_mode(BLUE_LED, GPIO_MODE_OUT);
-//   set_gpio_out(BLUE_LED, 1); 
+  printf("GPIO | mode\n");
+  for (int i = 0; i < MAX_GPIO_NUM; i++)
+  {
+    if (i <= 10)
+      reg = *gpfsel0;
+    else if (i <= 20)
+      reg = *gpfsel1;
+    else if (i <= 30)
+      reg = *gpfsel2;
+    
+    buffer = 0x7 & (reg >> ((i%10)*3));
+    switch (buffer)
+    {
+      case 0: sprintf(mode, "input"); break;
+      case 1: sprintf(mode, "output"); break;
+      case 2: sprintf(mode, "ALT5"); break;
+      case 3: sprintf(mode, "ALT4"); break;
+      case 4: sprintf(mode, "ALT0"); break;
+      case 5: sprintf(mode, "ALT1"); break;
+      case 6: sprintf(mode, "ALT2"); break;
+      case 7: sprintf(mode, "ALT3"); break;
+    }
+    printf("  %2d   %s\n", i, mode);
 
-//   printf("Hit key to exit.");
-//   getchar();
-//   set_gpio_out(BLUE_LED, 0);
-//   cleanup();
-//   return(0);
-// }
+  }
+
+  cleanup(0);
+  return(0);
+}

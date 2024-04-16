@@ -1,22 +1,18 @@
 import spidev
 import time
+import os
+
+# os.system("sudo raspi-config nonint do_spi 1")
+# os.system("sudo raspi-config nonint do_spi 0")
 
 spi = spidev.SpiDev()
 spi.open(0,0)  # (bus, device)
+spi.max_speed_hz = 1000000
 spi.mode = 0
-spi.max_speed_hz = 7800
 
-data_array = []
-#data_array = [42 for i in range(2)]
 
-try:
-    print("running...")
-    while True:
-        data_array = [0xf0, 0x00, 0x0f]
-        spi.xfer(data_array)
-        time.sleep(0.0000001)
+data_byte = 0x33
+
+spi.xfer([data_byte])
         
-except KeyboardInterrupt:   # Ctrl+C
-    if spi != None:
-        spi.close()
-        print("closed.")
+spi.close()
