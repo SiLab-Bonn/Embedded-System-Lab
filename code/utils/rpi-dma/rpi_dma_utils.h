@@ -194,6 +194,7 @@ void unmap_periph_mem(MEM_MAP *mp);
 void gpio_set(int pin, int mode, int pull);
 void gpio_pull(int pin, int pull);
 void gpio_mode(int pin, int mode);
+int  get_gpio_mode(int pin);
 void gpio_out(int pin, int val);
 uint8_t gpio_in(int pin);
 void disp_mode_vals(uint32_t mode);

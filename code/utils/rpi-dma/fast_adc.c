@@ -112,6 +112,11 @@ uint16_t *adc_data_ptr;
 int num_samples;
 float time_base;
 
+// data bus width and offsst for ADC and digital signal analyzer
+int adc_lsb_pin = ADC_D0_PIN;  // defaults to GPIO 12
+int adc_npins  = ADC_NPINS;   // defaults to 13 = 12 bit data + DREQ
+int pin_modes_to_restore[28];
+
 // Non-volatile memory size
 #define VC_MEM_SIZE(nsamp) (PAGE_SIZE + ((nsamp)+4)*SAMPLE_SIZE)
 
@@ -129,11 +134,33 @@ float get_time_base(void)
 {
   return time_base;
 }
+
 char* Hello(void)
 {
   //system("grep -o BCM2711 /proc/cpuinfo"); 
   system("cat /proc/cpuinfo | grep 'Hardware' | awk '{print $3}'> NULL"); 
   return("Hello World!");
+}
+
+void set_resolution(int num_bits)
+{
+  if (num_bits > 12)
+  {
+    printf("Max. resolution limited to 12 bit.\n");
+    num_bits = 12;
+  }
+  if (num_bits < 4)
+  {
+    printf("Min. resolution limited to 4 bit.\n");
+    num_bits = 4;
+  }
+
+  adc_npins   = num_bits + 1;  // ADC bus width + DREQ bit
+  adc_lsb_pin = ADC_NPINS - adc_npins + ADC_D0_PIN;
+
+  // printf("adc_npins: %d\n", adc_npins);
+  // printf("adc_lsb_pin: %d\n", adc_lsb_pin);
+
 }
 
 // Map GPIO, DMA and SMI registers into virtual mem (user space)
@@ -153,8 +180,12 @@ void init_device(uint16_t *adc_data, int samples, int time_base_index, int wait_
 
   map_devices();
   
-  for (int i=0; i<ADC_NPINS; i++)
-    gpio_mode(ADC_D0_PIN+i, GPIO_IN);
+  // backup pin modes and setup GPIO pins for SMI
+  for (int i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)
+  {
+    pin_modes_to_restore[i] = get_gpio_mode(i);
+    gpio_mode(i, GPIO_ALT1);
+  }
  
   gpio_mode(SMI_SOE_PIN, GPIO_ALT1);
   gpio_mode(ADC_ENABLE, GPIO_OUT);
@@ -278,8 +309,8 @@ void close_device(void)
 
   if (gpio_regs.virt)
   {
-    for (i=0; i<ADC_NPINS; i++)
-      gpio_mode(ADC_D0_PIN+i, GPIO_IN);
+    for (i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)
+      gpio_mode(i, pin_modes_to_restore[i]);
   }
   if (smi_regs.virt)
       *REG32(smi_regs, SMI_CS) = 0;
@@ -302,44 +333,46 @@ void smi_start(int nsamples, int packed)
     smi_cs->start = 1;
 }
 
-// // DMA control block macros
-// #define NUM_CBS         4
-// #define GPIO(r)         BUS_GPIO_REG(r)
-// #define PWM(r)          BUS_PWM_REG(r)
-// #define MEM(m)          BUS_DMA_MEM(m)
-// #define CBS(n)          BUS_DMA_MEM(&dp->cbs[(n)])
-// #define PWM_TI          ((1 << 6) | (DMA_PWM_DREQ << 16))
- 
-// // Control Blocks and data to be in uncached memory
-// typedef struct {
-//     DMA_CB cbs[NUM_CBS];
-//     uint32_t pindata, pwmdata;
-// } DMA_TEST_DATA;
- 
-// // Updated DMA trigger test, using data structure
-// void dma_test_pwm_trigger(MEM_MAP *mp, int pin)
-// {
-//     DMA_TEST_DATA *dp = mp;
-//     DMA_TEST_DATA dma_data = {
-//         .pindata=1<<pin, .pwmdata=PWM_RANGE/2,
-//         .cbs = {
-//           // TI      Srce addr          Dest addr        Len   Next CB
-//             {PWM_TI, MEM(&dp->pindata), GPIO(GPIO_CLR0), 4, 0, CBS(1), 0},  // 0
-//             {PWM_TI, MEM(&dp->pwmdata), PWM(PWM_FIF1),   4, 0, CBS(2), 0},  // 1
-//             {PWM_TI, MEM(&dp->pindata), GPIO(GPIO_SET0), 4, 0, CBS(3), 0},  // 2
-//             {PWM_TI, MEM(&dp->pwmdata), PWM(PWM_FIF1),   4, 0, CBS(0), 0},  // 3
-//         }
-//     };
-//     memcpy(dp, &dma_data, sizeof(dma_data));    // Copy data into uncached memory
-//  //   init_pwm(PWM_FREQ);                         // Enable PWM with DMA
-//  //   *VIRT_PWM_REG(PWM_DMAC) = PWM_DMAC_ENAB|1;
-//     start_dma(&dp->cbs[0]);                     // Start DMA
-//     start_pwm();                                // Start PWM
-//     sleep(4);                                   // Do nothing while LED flashing
-// }
-
 // Start DMA for SMI ADC, return Rx data buffer
 uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
+{
+    DMA_CB   *cbs     = mp->virt;  // DMA control block mapped to virtual memory
+    uint32_t *data    = (uint32_t *)(cbs + 4);
+    uint32_t *pindata = data + 8;
+  //  uint32_t *modes   = data + 16;
+    uint32_t *rxdata  = data + 32;
+   
+    *pindata = 1 << TEST_PIN;
+
+    enable_dma(DMA_CHAN_A);
+  
+// Control blocks 1: set test pin
+    cbs[0].ti = DMA_WAIT_RESP;
+    cbs[0].tfr_len = 4;
+    cbs[0].srce_ad = MEM_BUS_ADDR(mp, pindata);  // index of TEST_PIN
+    cbs[0].dest_ad = REG_BUS_ADDR(gpio_regs, GPIO_SET0);  // GPIO[31:0] output register
+    cbs[0].next_cb = MEM_BUS_ADDR(mp, &cbs[1]); 
+
+// Control block 2: read data
+    cbs[1].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_CB_DEST_INC;
+    cbs[1].tfr_len = (nsamp + PRE_SAMP) * SAMPLE_SIZE;
+    cbs[1].srce_ad = REG_BUS_ADDR(smi_regs, SMI_D);
+    cbs[1].dest_ad = MEM_BUS_ADDR(mp, rxdata);
+    cbs[1].next_cb = MEM_BUS_ADDR(mp, &cbs[2]);
+ 
+ // Control block 3: clear test pin
+    cbs[2].ti = DMA_CB_SRCE_INC | DMA_CB_DEST_INC;
+    cbs[2].tfr_len = 4;
+    cbs[2].srce_ad = MEM_BUS_ADDR(mp, pindata);
+    cbs[2].dest_ad = REG_BUS_ADDR(gpio_regs, GPIO_CLR0);
+
+    start_dma(mp, DMA_CHAN_A, &cbs[0], 0);
+    return(rxdata);
+}
+
+
+// Start DMA for SMI ADC, return Rx data buffer
+uint32_t *adc_dma_start_org(MEM_MAP *mp, int nsamp)
 {
     DMA_CB   *cbs     = mp->virt;  // DMA control block mapped to virtual memory
     uint32_t *data    = (uint32_t *)(cbs + 4);
@@ -354,7 +387,7 @@ uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
     modes[2] = modes[5] = *REG32(gpio_regs, GPIO_MODE2);  
                                                                       
     // Get mode values with ADC pins set to SMI
-    for (i=ADC_D0_PIN; i<ADC_D0_PIN+ADC_NPINS; i++)  // loop thru GPIO pin numbers connected to ADC
+    for (i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)  // loop thru GPIO pin numbers connected to ADC
         mode_word(&modes[i/10], i%10, GPIO_ALT1);    // set bits accordingly 
 
     *pindata = 1 << TEST_PIN;
@@ -427,7 +460,7 @@ int adc_gpio_val(void)
 {
     int v = *REG32(gpio_regs, GPIO_LEV0);
 
-    return((v>>ADC_D0_PIN) & ((1 << ADC_NPINS)-1));
+    return((v>>adc_lsb_pin) & ((1 << adc_npins)-1));
 }
 
 // Display bit values in register

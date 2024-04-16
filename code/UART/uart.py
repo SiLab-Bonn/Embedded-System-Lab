@@ -4,11 +4,11 @@ import time
 import serial.tools.list_ports
 
 
-# TRG = 4
+TRG = 4
 
-# GPIO.setwarnings(False)
-# GPIO.setmode(GPIO.BCM) # use pin numbers according to the GPIO naming
-# GPIO.setup(TRG, GPIO.OUT)
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM) # use pin numbers according to the GPIO naming
+GPIO.setup(TRG, GPIO.OUT)
 
 
 ports = serial.tools.list_ports.comports()
@@ -26,10 +26,10 @@ ser.write(b'0')
     
 while True:    
   key = input("Transmit: ")
-  #GPIO.output(TRG, GPIO.HIGH)
+  GPIO.output(TRG, GPIO.HIGH)
   ser.write(key.encode())
   ser.flush()
-  #GPIO.output(TRG, GPIO.LOW)
+  GPIO.output(TRG, GPIO.LOW)
 
   response = ser.read(ser.in_waiting).decode().strip()
   print("Received:", response)   

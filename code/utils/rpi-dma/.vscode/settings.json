@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "unistd.h": "c"
-    },
-    "C_Cpp.errorSquiggles": "Disabled",
-    "editor.tabSize": 2
-}

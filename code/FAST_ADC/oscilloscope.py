@@ -43,6 +43,7 @@ AUTO_TRIGGER   = 0 # free-running acquisition
 NORMAL_TRIGGER = 1 # wait for hardware trigger (jumper TRG on the base board selects trigger source)
 trigger_mode = NORMAL_TRIGGER
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
+ADC.set_resolution(12)
 ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, trigger_mode)
 ADC.set_time_base(1, trigger_mode)
 
@@ -64,7 +65,7 @@ waveform.grid()
 ADC.take_data(OSC_MODE)
 plot1, = waveform.plot(time_data, adc_data)
 
-# define thread function to capture user input
+# define thread function 
 def updatePlot(queue):
   global time_data, n_samples, trigger_mode, cal_adc_data
   stop_received = False
@@ -72,13 +73,14 @@ def updatePlot(queue):
     if not queue.empty():
       data = queue.get()
       if data == 'q':
-        stop_received = True
+        stop_received = True  
         break
       if (data.isdigit() and int(data) in range(1, 6)):
         ADC.set_time_base(int(data), trigger_mode)
         time_base = ADC.get_time_base()
         time_data = np.arange(0, n_samples * time_base, time_base)  
         waveform.set_xlim(0, n_samples * time_base)
+    
     ADC.take_data(OSC_MODE)
     cal_adc_data = np.array(adc_data) * ADC_LSB 
     plot1.set_data(time_data, cal_adc_data)

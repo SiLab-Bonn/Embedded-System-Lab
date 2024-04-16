@@ -81,11 +81,11 @@ ax[0,0].legend(title="Uds [mV]")
 ax[0,0].grid()
 
 ax[1,0].text(0, 5, 'sqrt(Id) is proportional to Ugs \nin strong inversion operation', wrap=True, fontsize=8, ha='left')
-ax[1,0].set(ylabel='Id [mA]')
+ax[1,0].set(ylabel='sqrt(Id [mA])')
 ax[1,0].grid()
 
 ax[2,0].text(0, 1, 'ln(Id) is proportional to Ugs \nin weak inversion operation', wrap=True, fontsize=8, ha='left')
-ax[2,0].set(xlabel='Ugs [mV]', ylabel='SQRT(Id [mA])')
+ax[2,0].set(xlabel='Ugs [mV]', ylabel='Id [mA]')
 ax[2,0].set(ylabel='Id [mA]')
 ax[2,0].grid()
 
