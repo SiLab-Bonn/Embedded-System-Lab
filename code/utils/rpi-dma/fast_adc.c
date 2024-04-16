@@ -347,13 +347,15 @@ uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
     enable_dma(DMA_CHAN_A);
   
 // Control blocks 1: set test pin
-    cbs[0].ti = DMA_WAIT_RESP;
+    cbs[0].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_WAIT_RESP;
+  //  cbs[0].ti = DMA_WAIT_RESP;
     cbs[0].tfr_len = 4;
     cbs[0].srce_ad = MEM_BUS_ADDR(mp, pindata);  // index of TEST_PIN
     cbs[0].dest_ad = REG_BUS_ADDR(gpio_regs, GPIO_SET0);  // GPIO[31:0] output register
     cbs[0].next_cb = MEM_BUS_ADDR(mp, &cbs[1]); 
 
 // Control block 2: read data
+//    cbs[1].ti = DMA_CB_DEST_INC;
     cbs[1].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_CB_DEST_INC;
     cbs[1].tfr_len = (nsamp + PRE_SAMP) * SAMPLE_SIZE;
     cbs[1].srce_ad = REG_BUS_ADDR(smi_regs, SMI_D);

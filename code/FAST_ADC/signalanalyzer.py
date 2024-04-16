@@ -32,12 +32,8 @@ OSC_MODE = 1
 LSA_MODE = 0
 LSA_CHANNELS = 4
 
-# init DAC to set trigger threshold
-TRG_THR= I2C(0x30, 1) # init DAC as I2C bus device
-TRG_THR.write(b'\20') # set trigger threshold [0..255]
-
 # init ADC: data array, number of samples, sample rate, trigger mode
-n_samples = 1000 # number of samples 
+n_samples = 1500 # number of samples 
 
 # trigger modes
 AUTO_TRIGGER   = 0 # free-running acquisition 
@@ -46,7 +42,7 @@ trigger_mode = NORMAL_TRIGGER
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 ADC.set_resolution(LSA_CHANNELS)
 ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, trigger_mode)
-ADC.set_time_base(1, trigger_mode)
+ADC.set_time_base(5, trigger_mode)
 
 # prepare time data series
 time_base = ADC.get_time_base()
@@ -139,4 +135,3 @@ updateThread.join()
 plt.close()
 ADC.close_device()
 GPIO.cleanup()
-TRG_THR.close()

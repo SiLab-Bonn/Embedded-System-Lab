@@ -20,10 +20,12 @@ spi.mode = 0
 spi_byte = 0x00
 
 while (input() != 'q'):
-  print("Sending data", spi_byte)
+  print("SPI data 0x%02x" % spi_byte)
   GPIO.output(TRG, GPIO.HIGH)
-  #time.sleep(0.01)
+
   spi.xfer([spi_byte])
+  
+  time.sleep(0.0001)
   GPIO.output(TRG, GPIO.LOW)
   time.sleep(0.1)
   spi_byte += 1
