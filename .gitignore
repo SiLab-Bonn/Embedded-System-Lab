@@ -9,3 +9,4 @@ work/*
 *.obj
 *.pdb
 *.csv
+code/lib/gpio.so

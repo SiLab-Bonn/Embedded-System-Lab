@@ -75,18 +75,25 @@ The **Python** example uses the `Rpi.GPIO library <https://sourceforge.net/p/ras
   import RPi.GPIO as GPIO
 
   # tell the library to use pin numbers according to the GPIO naming
-  GPIO.setmode(GPIO.BCM) 
+  GPIO.setmode(GPIO.BCM)
 
   # define GPIO27 as an output
   GPIO.setup(27, GPIO.OUT)
-  
-  # toggle th output state
-  GPIO.output(27, GPIO.LOW)
+
+  # set the output to high
   GPIO.output(27, GPIO.HIGH)
+
+  # wait for user input
+  input()
+
+  # set the output to low
   GPIO.output(27, GPIO.LOW)
-  
+
+  # wait for user input
+  input()
+
   # set GPIO configuration back to default
-  GPIO.cleanup()  
+  GPIO.cleanup()
   
 Exercises 
 ---------  
