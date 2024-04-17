@@ -23,7 +23,7 @@ For more complex tasks and data transfers requiring higher bandwidth, standardiz
 Basic GPIO Operation
 =====================
 
-Here is the description of the basic **GPIO Function Register** (see also chapter 6.1 in BCM2837-ARM-Peripherals document):
+Here is the description of the basic **GPIO Function Register** (see also chapter 5.1 in BCM2711-peripherals document):
 
 
 .. table:: **GPIO Function Select Register (GPFSEL0 @ 0x7E200000)**
