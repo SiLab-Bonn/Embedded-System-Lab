@@ -40,7 +40,7 @@ A multi-tasking operating system, which is typically run on a computing system, 
 
 .. note:: It is not possible to directly access I/O registers or memory locations. To use I/O or memory resources, a user accessible **virtual address** has to be mapped to the **physical addresses**. Since the register addresses values referenced in the BCM2837-ARM-Peripherals document are referring to the system **bus address** space handled by the VideoCore, the resulting address offsets as seen by the CPU have to be calculated. 
 
-A generic procedure to access peripheral resources looks like this: At first the address at which the CPU can access the IO periphery register is calculated. This step converts the address at which the peripheral register is located on the VideoCore bus to the physical address the CPU can access. Than a user accessible virtual memory location has to be allocated and mapped to the physical address of the I/O resource. The pseudo code for such an operation is:
+A generic procedure to access peripheral resources looks like this: At first the address at which the CPU can access the IO periphery register is calculated. This step converts the address at which the peripheral register is located on the VideoCore bus to the physical address the CPU can access. Then, a user accessible virtual memory location has to be allocated and mapped to the physical address of the I/O resource. The pseudo code for such an operation is:
 
 .. code::
     
