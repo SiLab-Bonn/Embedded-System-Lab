@@ -132,7 +132,7 @@ Exercises
 
   Prerequisites:
     - Enabled 'Serial port', and disabled 'Serial Console' in the Raspberry Pi setting.
-    - A Python script that instanciates a serial port object (for example PySerial) and allows sending and receiving data.
+    - A Python library that instanciates a serial port object (for example PySerial) and allows sending and receiving data.
     - A direct connection between RX and TX pins (loop-back) on a single board for testing the script. 
     - A cross-over connection for making the RX-TX / TX-RX connection between two boards.
   
