@@ -10,3 +10,4 @@ work/*
 *.pdb
 *.csv
 code/lib/gpio.so
+code/GPIO/gpio
