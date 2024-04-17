@@ -55,11 +55,11 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
 .. code-block:: c
 
   // main() block: define GPIO27 as output and toggling it once and cleanup
-  *gpfsel2 = 0b001 << (27 - 20); // output mode: FSEL[3:0] = 0b001, GPIO27 FSEL field starts at bit 7
-  *gpclr0 = 27;  // set output to '0'
-  *gpset0 = 27;  // set output to '1'
-  *gpclr0 = 27;  // set output to '0'
-  *gpfsel2 = 0;  // set default mode (all input) 
+  *gpfsel2 = 0b001 << (7*3); // output mode: FSEL[3:0] = 0b001, GPIO27 FSEL field starts at bit (7*3) = 21
+  *gpclr0  = 1 << 27;  // set output to '0'
+  *gpset0  = 1 << 27;  // set output to '1'
+  *gpclr0  = 1 << 27;  // set output to '0'
+  *gpfsel2 = 0;       // set default mode (all GPIO becocme inputs) 
   munmap(gpio_virt_addr_ptr, 0x1000); // free allocated memory
 
 .. warning::
