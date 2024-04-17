@@ -18,7 +18,7 @@ The BCM2711 has 54 general purpose input/output pins of which 28 are available o
 
 There are control registers which configure the GPIO pins to become an input or output pin according to the required functionality. For simple control tasks where timing certainy and speed aren't importantly, this basic appoach of the CPU is manually reading and writing each bit is sufficient. This is often colloquially called `'bit banging' <https://en.wikipedia.org/wiki/Bit_banging>`_.
 
-For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are used. To optionally offload some work for the CPU, special hardware blocks are available in the I/O periphery that implement these protocols with precise (i.e. hardware controlled) timing. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`. Note that while this document actually describes a predecessor of the RPi 4's BCM2711 (RPi 1's BCM2835) the description of the GPIO pins and other peripherals is still accurate aside from a few details like bus address offsets (see below).
+For more complex tasks and data transfers requiring higher bandwidth, standardized serial protocols are used. To optionally offload some work for the CPU, special hardware blocks are available in the I/O periphery that implement these protocols with precise (i.e. hardware controlled) timing. These blocks are enabled by selecting alternative function modes for a given GPIO pin. Every GPIO pin can carry an alternate function (up to 6) but not every alternate functions is available to a given pin as described in Table 6-31 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>` (Page 102, or see `Alternate GPIO Functions`_ below). Note that while this document actually describes a predecessor of the RPi 4's BCM2711 (RPi 1's BCM2835) the description of the GPIO pins and other peripherals is still accurate aside from a few details like bus address offsets (see below).
 
 Basic GPIO Operation
 =====================
@@ -72,7 +72,7 @@ By default, all GPIO are configured as inputs (``FSELn = 000``) after a reboot u
                         1 = pin n is high
     =====  ===========  ======================  ====  =======
 
-To use a GPIO pin as an output, the value ``0x001`` has to be written to the corresponding GPFSEL register. The output state is set by using the  **Pin Output Set/Clear Registers**:
+To use a GPIO pin as an output, the value ``0b001`` has to be written to the corresponding GPFSEL register. The output state is set by using the  **Pin Output Set/Clear Registers**:
 
 .. table:: **GPIO Pin Output Set Registers (GPSET0 @ 0x7E20001C)**
 
@@ -90,7 +90,7 @@ To use a GPIO pin as an output, the value ``0x001`` has to be written to the cor
     31-0   CLRn         1 = set pin to logic 0   R/W      0
     =====  ===========  ======================  ====  =======
 
-Note that there are two registers of each LEV-, SET- and CLR-type (GPxxx0 and GPxxx1) to cover all 56 GPIO pins. Writing a 0 to one of the SET/CLR-registers has no effect. 
+Note that there are two 32 registers of each LEV-, SET- and CLR-type (eg. GPSET0 and GPSET1) to cover all 56 GPIO pins. Writing a 0 to any of the SET/CLR-registers has no effect. 
 
 .. note::
 
@@ -117,7 +117,7 @@ There are more GPIO configuration registers (documented and undocumented) which 
 
 Alternate GPIO Functions
 ========================
-The GPIO pins can not only act a simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols are directly supported with dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, these configurations settings are more complex. Typically, a user will call functions from a library to set-up and use the alternate function modes. This table shows the available alternate functions which can be selected via the appropriate GPFSEL registers for each GPIO pin. Note that all alternate functions require a number of consecutive pins to be set to the same mode.
+The GPIO pins can not only act as simple inputs or outputs but can be used to implement more complex I/O operations. A couple of industrial standard protocols are directly supported with dedicated hardware blocks. These alternate functions are configured and controlled via peripheral registers in a similar way like the basic input/output modes. However, the configurations settings are more complex. Typically, a user will call functions from a library to set-up and use the alternate function modes. This table shows the available alternate functions which can be selected via the appropriate GPFSEL registers for each GPIO pin. Note that all alternate functions require a number of consecutive pins to be set to the same mode.
 
 .. figure:: images/GPIO_Alt.png
     :width: 600
@@ -145,9 +145,9 @@ The data transmission is asynchronous as there is no additional clock signal inv
 
 The parity (if selected as odd or even) adds an additional bit to the end of the data transfer (before the stop bit) which value is chosen such that the total number of logic ones in the transfer (data bits plus parity bit) is even (or odd as specified in the protocol configuration). The receiver can use the parity bit to check the integrity of the data received. 
 
-Optional features for controlling the data transfer (handshaking), either using additional control lines or the transmission of special control characters are sometimes used but will be omitted here. 
+Optional features for controlling the data transfer (handshaking), either using additional control lines or through the transmission of special control characters, are sometimes used but will be omitted here. 
 
-Data are being sent always one byte at a time. A data transmission starts by sending a start bit (always 0), then the data bits LSB first, the parity bit (if configured) and finally the stop bit(s) which are always 1. The period of one bit cycle is 1/F_baud.
+Data is always being sent one byte at a time. A data transmission starts by sending a start bit (always 0), then the data bits LSB first, the parity bit (if configured) and finally the stop bit(s) which are always 1. The period of one bit cycle is :math:`\frac{1}{F_{\text{baud}}}`.
 
 .. figure:: images/UART_timing.png
     :width: 600
@@ -155,10 +155,10 @@ Data are being sent always one byte at a time. A data transmission starts by sen
     
     Timing diagram of an UART transfer of one byte (0xcd): one start bit, 8 data bits, even parity, and one stop bit (8E1).
 
-The encoding and decoding of the parity bit is done in the UART hardware. If even (odd) parity is selected the transmitter will set the parity to a logic value such the sum off all data bytes including the parity bit is even (odd). The checking of the validity of a received byte is transparent to the user. A mismatch of calculated and received parity will be notified to the user as a receive error. However, multiple (odd) bit errors can not be detected.
+The encoding and decoding of the parity bit is done in the UART hardware. If even (odd) parity is selected the transmitter will set the parity bit to a logic value such that the sum off all data bytes including the parity bit is even (odd). The checking of the validity of a received byte is transparent to the user. A mismatch of calculated and received parity will be notified to the user as a receive error. However, an even number of bit errors can not be detected.
 
 .. note::
-    The signal names RX and TX, which are commonly used for labeling the UART bus, can cause confusion when connecting one device with another. Since a device sends data via its TX pin and expects to receive data via its RX pin, at some point the TX labeled net from one device needs to be connected to the RX labeled net of the other device and vice versa.
+    The signal names RX and TX, which are commonly used for labeling the UART bus, can be a cause of confusion when connecting one device with another. Since a device sends data via its TX pin and expects to receive data via its RX pin, at some point the TX labeled net from one device needs to be connected to the RX labeled net of the other device and vice versa.
 
 In the GPIO alternate modes table, the UART signals are marked in red with the names ``TXDn`` and ``RXDn``. The UART port is available on ``GPIO14`` (TX) and ``GPIO15`` (RX) when mode 0 or 5 is selected. Additional signals for hardware handshaking (``CTS1`` and ``RTS1``) are available on ``GPIO16`` and ``GPIO17`` when mode 5 is used.
 
@@ -166,7 +166,7 @@ In the GPIO alternate modes table, the UART signals are marked in red with the n
 
 I2C
 ---
-The Inter-Integrated-Circuit (I2C) bus is a synchronous two-wire serial interface which can transfer data between a master and multiple slaves. It uses bidirectional data (**SDA**) and clock (**SCL**) lines to transfer the data. The clock line is usually driven by the host while the data line will be controlled by the host or the device depending on the transfer direction. There are extensions to this standard functionality (multiple masters, clock stretching) which are not covered here. The data rate is typically 100 kHz with options for faster modes like 400 kHz and 1 MHz. 
+The Inter-Integrated-Circuit (I2C or also :math:`I^2C`) bus is a synchronous two-wire serial interface which can transfer data between a master and multiple slaves. It uses bidirectional data (**SDA**) and clock (**SCL**) lines to transfer the data. The clock line is usually driven by the host while the data line will be controlled by the host or the device depending on the transfer direction. There are extensions to this standard functionality (multiple masters, clock stretching) which are not covered here. The data rate is typically 100 kHz with options for faster modes like 400 kHz and 1 MHz. 
 
 .. figure:: images/I2C_bus.png
     :width: 300
@@ -178,7 +178,7 @@ The SDA and SCL line drivers are implemented as so-called open-drain buffers. Th
     :width: 500
     :align: center
     
-    Implementation of SDA/SCL driver and receiver. The open drain outputs (driven by the inverted output signal TX_B) avoid potential bus conflicts when master and one or more slaves try to drive the SDA line with different logic levels.
+    Implementation of SDA/SCL driver and receiver. The outputs are open-drain and driven by the inverted output signal TX_B.
 
 A I2C transmission is initiated by the master sending a **START** condition (falling edge on the SDA line while SCL level is HIGH) which initializes the I2C interfaces of the devices on the bus. Similar to the start condition, a **STOP** condition is send after the communication has finished (rising edge on the SDA line while SCL level is HIGH).
 
@@ -226,7 +226,7 @@ A transfer on the SPI bus is initiated by the master pulling the CS_B line of th
     :width: 400
     :align: center
 
-    Functional block diagram of an SPI device interface. During an write access to the device the active low CS_B line enables shift register and output buffer. When the CS_B line goes high the shift register data is transferred to the data latch. Additional logic (not shown) allows data from the latch (or other selected registers) to be loaded back into the shift register for reading. 
+    Functional block diagram of an SPI device interface. During a write access to the device the active low CS_B line enables shift register and output buffer. When the CS_B line goes high the shift register data is transferred to the data latch. Additional logic (not shown) allows data from the latch (or other selected registers) to be loaded back into the shift register for reading. 
 
 
 An SPI bus is used for the communication with most of the modules in this lab course. Using ALT mode 0 for GPIO[11:8] enables the bus.
