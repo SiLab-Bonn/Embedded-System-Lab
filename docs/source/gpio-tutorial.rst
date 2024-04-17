@@ -100,9 +100,9 @@ Exercises
 
 .. admonition:: Exercise 1. GPIO programming with C-code
 
-  Copy the file :file:`gpio.c` from the :file:`code/GPIO` folder to your :file:`work` folder. Compile ( ``CTRL+F7`` or ``CTRL+Shift+b``) and run the program by typing :file:`sudo -E ./gpio` into a terminal from within your :file:`work` folder.
+  Copy the file :file:`gpio.c` from the :file:`code/GPIO` folder to your :file:`work` folder. Compile (``CTRL+Shift+b`` or ``Terminal->Run build Task``) and run the program by typing :file:`sudo -E ./gpio` into a terminal from within your :file:`work` folder.
   
-If you recieve an error about 'gpio' not found, double check that you've compiled the source code into a binary with the correct file name.
+  If you recieve an error about 'gpio' not found, double check that you've compiled the source code into a binary with the correct file name.
 
   1. Connect an oscilloscope probe to the GPIO27 pin (red LED of the RGB LED) on the base board and adjust the oscilloscope setting such that it triggers on the output pulse when the GPIO program runs. Make sure you select an appropriate horizontal resolution because the pulse will be very narrow (~ 30ns).
   2. Add a loop statement around the code which toggles the GPIO output state to produce a stream of output pulses. 
