@@ -137,7 +137,7 @@ Exercises
     - A cross-over connection for making the RX-TX / TX-RX connection between two boards.
   
   Tasks:
-    - Write a script, using the `PySerial library<https://pyserial.readthedocs.io/en/latest/shortintro.html>`, to transmit user input strings across the serial interface. Make sure you properly convert strings to a binary format. (Hint: `str.encode()<https://docs.python.org/3/library/stdtypes.html#str.encode>` )
+    - Write a script, using the `PySerial library <https://pyserial.readthedocs.io/en/latest/shortintro.html>`_, to transmit user input strings across the serial interface. Make sure you properly convert strings to a binary format. (Hint: `str.encode() <https://docs.python.org/3/library/stdtypes.html#str.encode>`_)
     - Connect an oscilloscope to RX (TX) pins and examine the waveform. Set various serial port configuration parameters (baud rate, number of stop bits, parity) and explain their effect.
     - Connect the serial link between two boards connecting TX of one board to RX of the other board and vice versa.
     - Make sure the serial configuration is the same on both boards and send and receive data.
