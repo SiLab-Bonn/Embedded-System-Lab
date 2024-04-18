@@ -115,7 +115,7 @@ Exercises
     
   Measure the pulse width again for the different pulse width modifications. What happens when the CPU runs other tasks while the output is toggling (start another application or just move a window with the mouse). Explain what you see.
 
-.. admonition:: Exercise 2.  GPIO programming with Python 
+.. admonition:: Exercise 2. GPIO programming with Python 
 
   Copy the file :file:`gpio.py` from the :file:`code/GPIO` folder to your :file:`work` folder. Proceed similar to the tasks in the C-code exercises.
 
@@ -126,7 +126,7 @@ Exercises
   5. Increase the pulse width by inserting calls to ``sleep()`` (add ``import time`` at the top of your script). 
   6. Adjust both C- and Python codes to generate a ~100 us pulse. How stable is the pulse width? Is there a difference between the C-code and Python implementation? 
   
-.. admonition:: Exercise 3.  Serial UART communication with Python
+.. admonition:: Exercise 3. Serial UART communication with Python
   
   The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards (or a board with itself, in loopback) and to establish a serial link using the UART interface on GPIO pins 14 (TX) and 15 (RX).
 
