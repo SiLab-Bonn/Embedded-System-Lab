@@ -44,8 +44,8 @@ NORMAL_TRIGGER = 1 # wait for hardware trigger (jumper TRG on the base board sel
 trigger_mode = NORMAL_TRIGGER
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 ADC.set_resolution(12)
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, trigger_mode)
-ADC.set_time_base(1, trigger_mode)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M)
+ADC.set_time_base(1)
 
 # prepare time data series
 time_base = ADC.get_time_base()
@@ -69,22 +69,47 @@ plot1, = waveform.plot(time_data, adc_data)
 def updatePlot(queue):
   global time_data, n_samples, trigger_mode, cal_adc_data
   stop_received = False
+  trigger_armed = True
+  trigger_mode_single = False
+  trigger_received = False
   while not stop_received:
     if not queue.empty():
       data = queue.get()
+
       if data == 'q':
         stop_received = True  
         break
+      
+      # auto trigger mode, loop continuously
+      if (data == 'a'):
+        trigger_mode_single = False
+        trigger_armed = True
+          
+      # wati for single trigger
+      if (data == 's'):
+        trigger_mode_single = True
+        trigger_armed = True
+      
+      # time base setting
       if (data.isdigit() and int(data) in range(1, 6)):
-        ADC.set_time_base(int(data), trigger_mode)
+        ADC.set_time_base(int(data))
         time_base = ADC.get_time_base()
         time_data = np.arange(0, n_samples * time_base, time_base)  
         waveform.set_xlim(0, n_samples * time_base)
     
-    ADC.take_data(OSC_MODE)
-    cal_adc_data = np.array(adc_data) * ADC_LSB 
-    plot1.set_data(time_data, cal_adc_data)
-    time.sleep(0.01)
+    # data taking
+    if (trigger_armed):
+      if (ADC.take_data(OSC_MODE) == 0):
+        trigger_received = True
+      else:
+        trigger_received = False
+      cal_adc_data = np.array(adc_data) * ADC_LSB 
+      plot1.set_data(time_data, cal_adc_data)
+      time.sleep(0.01)
+      
+      # don't re-arm trigger in single mode when trigger has been received
+      if (trigger_mode_single and trigger_received):
+        trigger_armed = False
 
 # add queue to pass data between main and plotting thread
 queue = Queue()
@@ -97,11 +122,13 @@ while True:
   os.system('cls||clear')
   print(
 'Commands:\n\
-  Set sample frequency [0.2, 0.5, 1, 2, 5] MHz: <1,2,3,4,5>\n\
-  Save plot image (png): <i>\n\
-  Save waveform data (cvs): <d>\n\
-  Quit: <q>')
-  key = input()
+  <1..5>  Sample frequency [0.2, 0.5, 1, 2, 5] MHz\n\
+  <a>     Auto trigger mode\n\
+  <s>     Single trigger mode\n\
+  <i>     Save plot image (png)\n\
+  <d>     Save waveform data (cvs)\n\
+  <q>     Quit')
+  key = input('Enter command:')
   queue.put(key)
   
   if key == 'q':
