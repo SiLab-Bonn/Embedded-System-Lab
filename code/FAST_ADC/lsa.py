@@ -28,9 +28,9 @@ SAMPLE_RATE_2M   = 4  # 0.5 us
 SAMPLE_RATE_5M   = 5  # 0.25 us
 
 # operation mode
-OSC_MODE = 1
-LSA_MODE = 0
-LSA_CHANNELS = 4
+OSC_MODE = 0
+LSA_MODE = 1
+LSA_CHANNELS = 8
 
 # init ADC: data array, number of samples, sample rate, trigger mode
 n_samples = 1500 # number of samples 
@@ -41,8 +41,7 @@ NORMAL_TRIGGER = 1 # wait for hardware trigger (jumper TRG on the base board sel
 trigger_mode = NORMAL_TRIGGER
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 ADC.set_resolution(LSA_CHANNELS)
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, trigger_mode)
-ADC.set_time_base(5, trigger_mode)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, LSA_MODE)
 
 # prepare time data series
 time_base = ADC.get_time_base()
@@ -60,7 +59,7 @@ waveform.set_yticks(np.arange(0, LSA_CHANNELS, 1))  # Set interval to desired va
 waveform.grid()
 
 # trigger ADC conversion and initialize plot
-ADC.take_data(LSA_MODE)
+ADC.take_data()
 #plot1, = waveform.plot(time_data, adc_data)
 int_array = np.array(adc_data).newbyteorder('S')
 byte_array = int_array.view(np.uint8)
@@ -76,28 +75,53 @@ for i in range(LSA_CHANNELS):
 def updatePlot(queue):
   global time_data, n_samples, trigger_mode, cal_adc_data
   stop_received = False
+  trigger_armed = True
+  trigger_mode_single = False
+  trigger_received = False  
   while not stop_received:
     if not queue.empty():
       data = queue.get()
+      
       if data == 'q':
         stop_received = True
         break
+
+      # auto trigger mode, loop continuously
+      if (data == 'a'):
+        trigger_mode_single = False
+        trigger_armed = True
+          
+      # wati for single trigger
+      if (data == 's'):
+        trigger_mode_single = True
+        trigger_armed = True
+      
+      # time base setting
       if (data.isdigit() and int(data) in range(1, 6)):
-        ADC.set_time_base(int(data), trigger_mode)
+        ADC.set_time_base(int(data))
         time_base = ADC.get_time_base()
         time_data = np.arange(0, n_samples * time_base, time_base)  
         waveform.set_xlim(0, n_samples * time_base)
     
-    ADC.take_data(LSA_MODE)
+    # data taking
+    if (trigger_armed):
+      if (ADC.take_data() == 0):
+        trigger_received = True
+      else:
+        trigger_received = False
 
-    int_array = np.array(adc_data).newbyteorder('S')
-    byte_array = int_array.view(np.uint8)
-    bit_array = np.unpackbits(byte_array)
+      int_array = np.array(adc_data).newbyteorder('S')
+      byte_array = int_array.view(np.uint8)
+      bit_array = np.unpackbits(byte_array)
 
-    #print(int_array[0], bit_array[0:16])
-    
-    for i, line in enumerate(lines):
-      line.set_data(time_data, i + 0.5*bit_array[(15-i)::16])
+      #print(int_array[0], bit_array[0:16])
+      
+      for i, line in enumerate(lines):
+        line.set_data(time_data, i + 0.5*bit_array[(15-i)::16])
+
+      # don't re-arm trigger in single mode when trigger has been received
+      if (trigger_mode_single and trigger_received):
+        trigger_armed = False      
 
 # add queue to pass data between main and plotting thread
 queue = Queue()
@@ -110,11 +134,13 @@ while True:
   os.system('cls||clear')
   print(
 'Commands:\n\
-  Set sample frequency [0.2, 0.5, 1, 2, 5] MHz: <1,2,3,4,5>\n\
-  Save plot image (png): <i>\n\
-  Save waveform data (cvs): <d>\n\
-  Quit: <q>')
-  key = input()
+  <1..5>  Sample frequency [0.2, 0.5, 1, 2, 5] MHz\n\
+  <a>     Auto trigger mode\n\
+  <s>     Single trigger mode\n\
+  <i>     Save plot image (png)\n\
+  <d>     Save waveform data (cvs)\n\
+  <q>     Quit')
+  key = input('Enter command:')
   queue.put(key)
   
   if key == 'q':

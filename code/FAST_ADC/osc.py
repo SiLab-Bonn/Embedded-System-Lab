@@ -28,8 +28,8 @@ SAMPLE_RATE_2M   = 4  # 0.5 us
 SAMPLE_RATE_5M   = 5  # 0.25 us
 
 # operation mode
-OSC_MODE = 1
-DSA_MODE = 0
+OSC_MODE = 0
+DSA_MODE = 1
 
 # init DAC to set trigger threshold
 TRG_THR= I2C(0x30, 1) # init DAC as I2C bus device
@@ -38,14 +38,10 @@ TRG_THR.write(b'\20') # set trigger threshold [0..255]
 # init ADC: data array, number of samples, sample rate, trigger mode
 n_samples = 4000 # number of samples 
 ADC_LSB = 5000.0/4096 # 12 bit ADC, 5000 mV full range
-# trigger modes
-AUTO_TRIGGER   = 0 # free-running acquisition 
-NORMAL_TRIGGER = 1 # wait for hardware trigger (jumper TRG on the base board selects trigger source)
-trigger_mode = NORMAL_TRIGGER
+
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 ADC.set_resolution(12)
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M)
-ADC.set_time_base(1)
+ADC.init_device(adc_data, n_samples, SAMPLE_RATE_200k, OSC_MODE)
 
 # prepare time data series
 time_base = ADC.get_time_base()
@@ -62,7 +58,7 @@ waveform.set_ylim(0, 5000)
 waveform.grid()
 
 # trigger ADC conversion and initialize plot
-ADC.take_data(OSC_MODE)
+ADC.take_data()
 plot1, = waveform.plot(time_data, adc_data)
 
 # define thread function 
@@ -99,7 +95,7 @@ def updatePlot(queue):
     
     # data taking
     if (trigger_armed):
-      if (ADC.take_data(OSC_MODE) == 0):
+      if (ADC.take_data() == 0):
         trigger_received = True
       else:
         trigger_received = False

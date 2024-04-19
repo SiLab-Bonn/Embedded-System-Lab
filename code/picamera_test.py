@@ -4,7 +4,7 @@ import time
 
 cam = Picamera2()
 config = cam.create_preview_configuration(main={"size": (1600, 1200)})
-config["transform"] = Transform(hflip=1, vflip=1)
+#config["transform"] = Transform(hflip=1, vflip=1)
 cam.configure(config)
 #cam.set_controls({"AfMode": controls.AfModeEnum.Auto, "AfTrigger": controls.AfTriggerEnum.Start})
 cam.set_controls({"AfMode": controls.AfModeEnum.Continuous})

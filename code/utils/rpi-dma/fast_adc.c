@@ -68,11 +68,9 @@
 #define ADC_NPINS       13  // 12 data bits + GPIO24 (DREQ for triggered DMA access)
 #define SMI_SOE_PIN     6
 #define SMI_SWE_PIN     7
-// #define SMI_ACK_PIN     24 // ?? CHECK ??
 #define SMI_DREQ_PIN    24
 #define ADC_ENABLE      25
-#define TEST_PIN        26
-#define USE_TEST_PIN    1
+#define ADC_DISABLE_MSBS  26 // control of ADC bits [11:4], disable for LSA mode
 
 // DMA request threshold
 #define REQUEST_THRESH  4
@@ -183,7 +181,7 @@ void map_devices(void)
     map_periph(&smi_regs, (void *)SMI_BASE, PAGE_SIZE);
 }
 
-void init_device(uint16_t *adc_data, int samples, int time_base_index, int wait_trigger)
+void init_device(uint16_t *adc_data, int samples, int time_base_index, int mode)
 {
   num_samples = samples;
   adc_data_ptr = adc_data;
@@ -199,13 +197,15 @@ void init_device(uint16_t *adc_data, int samples, int time_base_index, int wait_
  
   gpio_mode(SMI_SOE_PIN, GPIO_ALT1);
   gpio_mode(ADC_ENABLE, GPIO_OUT);
+  gpio_mode(ADC_DISABLE_MSBS, GPIO_OUT);
 
+  if (mode == 0)
+    gpio_out(ADC_DISABLE_MSBS, 0);  // oscilloscope mode, ADC bits [11:4] are enabled
+  else
+    gpio_out(ADC_DISABLE_MSBS, 1);  // logic signal analyzer mode, ADC bits [11:4] are disabled
+  
   set_time_base(time_base_index);
 
-#if USE_TEST_PIN
-    gpio_mode(TEST_PIN, GPIO_OUT);
-    gpio_out(TEST_PIN, 0);
-#endif  
   map_uncached_mem(&vc_mem, VC_MEM_SIZE(num_samples+PRE_SAMP)); 
 }
 
@@ -270,14 +270,13 @@ void smi_init(int width, int ns, int setup, int strobe, int hold)
 
 }
 
-int take_data(int enable_adc)
+int take_data()
 {
   uint16_t timeout_counter = 0;
   uint16_t timeout = time_base * (num_samples+PRE_SAMP) + 10; // timeout in us
   int return_value = 0;
   
-  if(enable_adc == 1)
-    gpio_out(ADC_ENABLE, 1);
+  gpio_out(ADC_ENABLE, 1);
 
   smi_dmc->dmaen = 1;
   smi_l->len = num_samples + PRE_SAMP;
@@ -308,8 +307,7 @@ int take_data(int enable_adc)
   smi_cs->enable = 0;
   smi_dcs->enable = 0;	
 
-  if (enable_adc == 1)
-    gpio_out(ADC_ENABLE, 0);
+  gpio_out(ADC_ENABLE, 0);
   
   return return_value;
 }
@@ -349,36 +347,18 @@ uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
 {
     DMA_CB   *cbs     = mp->virt;  // DMA control block mapped to virtual memory
     uint32_t *data    = (uint32_t *)(cbs + 4);
-    uint32_t *pindata = data + 8;
+  //  uint32_t *pindata = data + 8;
   //  uint32_t *modes   = data + 16;
     uint32_t *rxdata  = data + 32;
    
-    *pindata = 1 << TEST_PIN;
-
     enable_dma(DMA_CHAN_A);
   
-// Control blocks 1: set test pin
-    cbs[0].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_WAIT_RESP;
-  //  cbs[0].ti = DMA_WAIT_RESP;
-    cbs[0].tfr_len = 4;
-    cbs[0].srce_ad = MEM_BUS_ADDR(mp, pindata);  // index of TEST_PIN
-    cbs[0].dest_ad = REG_BUS_ADDR(gpio_regs, GPIO_SET0);  // GPIO[31:0] output register
-    cbs[0].next_cb = MEM_BUS_ADDR(mp, &cbs[1]); 
-
-// Control block 2: read data
-//    cbs[1].ti = DMA_CB_DEST_INC;
-    cbs[1].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_CB_DEST_INC;
-    cbs[1].tfr_len = (nsamp + PRE_SAMP) * SAMPLE_SIZE;
-    cbs[1].srce_ad = REG_BUS_ADDR(smi_regs, SMI_D);
-    cbs[1].dest_ad = MEM_BUS_ADDR(mp, rxdata);
-    cbs[1].next_cb = MEM_BUS_ADDR(mp, &cbs[2]);
+// Control block 0: read data
+    cbs[0].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_CB_DEST_INC;
+    cbs[0].tfr_len = (nsamp + PRE_SAMP) * SAMPLE_SIZE;
+    cbs[0].srce_ad = REG_BUS_ADDR(smi_regs, SMI_D);
+    cbs[0].dest_ad = MEM_BUS_ADDR(mp, rxdata);
  
- // Control block 3: clear test pin
-    cbs[2].ti = DMA_CB_SRCE_INC | DMA_CB_DEST_INC;
-    cbs[2].tfr_len = 4;
-    cbs[2].srce_ad = MEM_BUS_ADDR(mp, pindata);
-    cbs[2].dest_ad = REG_BUS_ADDR(gpio_regs, GPIO_CLR0);
-
     start_dma(mp, DMA_CHAN_A, &cbs[0], 0);
     return(rxdata);
 }
@@ -403,7 +383,7 @@ uint32_t *adc_dma_start_org(MEM_MAP *mp, int nsamp)
     for (i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)  // loop thru GPIO pin numbers connected to ADC
         mode_word(&modes[i/10], i%10, GPIO_ALT1);    // set bits accordingly 
 
-    *pindata = 1 << TEST_PIN;
+ //   *pindata = 1 << TEST_PIN;
 
     enable_dma(DMA_CHAN_A);
   

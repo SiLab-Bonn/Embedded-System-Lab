@@ -23,11 +23,10 @@ while (input() != 'q'):
   print("SPI data 0x%02x" % spi_byte)
   GPIO.output(TRG, GPIO.HIGH)
 
-  spi.xfer([spi_byte])
+  spi.xfer([0x33, spi_byte])
   
-  time.sleep(0.0001)
   GPIO.output(TRG, GPIO.LOW)
-  time.sleep(0.1)
+
   spi_byte += 1
 
 spi.close()
