@@ -39,7 +39,7 @@ and therefore
   
 Circuit Implementation 
 ----------------------
-The switches for charing and discharging the capacitance are implemented with a CMOS inverter. The power supply of the inverter is connected via an RC low-pass filter to the voltage source V0 and the inverter input is connected to a GPIO signal with programmable frequency. The low-pass filter smoothes the current transients during the charing phase and thus allows the measurement of the average current. The output of the inverter is connected to the capacitance under test. To characterise the (bias-) voltage dependence of a sensor diode capacitance, the output of the CBCM circuit is ac-coupled. That allows the connection of a bias voltage source to the detector diode. A large series resistor R_bias (1 Meg Ohm) isolates the bias voltage source from the CBCM circuit. 
+The switches for charing and discharging the capacitance are implemented with a CMOS inverter. The power supply of the inverter is connected via an RC low-pass filter to the voltage source V0 and the inverter input is connected to a GPIO signal with programmable frequency. The low-pass filter smooths the current transients during the charing phase and thus allows the measurement of the average current. The output of the inverter is connected to the capacitance under test. To characterise the (bias-) voltage dependence of a sensor diode capacitance, the output of the CBCM circuit is ac-coupled. That allows the connection of a bias voltage source to the detector diode. A large series resistor R_bias (1 Meg Ohm) isolates the bias voltage source from the CBCM circuit. 
 
 .. figure:: images/CVM_circuit.png
     :width: 600
