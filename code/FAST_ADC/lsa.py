@@ -91,7 +91,7 @@ def updatePlot(queue):
         trigger_mode_single = False
         trigger_armed = True
           
-      # wati for single trigger
+      # wait for single trigger
       if (data == 's'):
         trigger_mode_single = True
         trigger_armed = True

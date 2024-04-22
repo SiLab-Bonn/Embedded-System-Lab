@@ -70,7 +70,7 @@
 #define SMI_SWE_PIN     7
 #define SMI_DREQ_PIN    24
 #define ADC_ENABLE      25
-#define ADC_DISABLE_MSBS  26 // control of ADC bits [11:4], disable for LSA mode
+#define ADC_DISABLE_HBYTE  26 // control of ADC bits [11:4], disable for LSA mode
 
 // DMA request threshold
 #define REQUEST_THRESH  4
@@ -115,7 +115,7 @@ bool trigger_mode_single = false;
 
 // data bus width and offsst for ADC and digital signal analyzer
 int adc_lsb_pin = ADC_D0_PIN;  // defaults to GPIO 12
-int adc_npins  = ADC_NPINS;   // defaults to 13 = 12 bit data + DREQ
+int adc_npins  = ADC_NPINS;    // defaults to 13 = 12 bit data + DREQ
 int pin_modes_to_restore[28];
 
 // Non-volatile memory size
@@ -189,7 +189,8 @@ void init_device(uint16_t *adc_data, int samples, int time_base_index, int mode)
   map_devices();
   
   // backup pin modes and setup GPIO pins for SMI
-  for (int i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)
+ // for (int i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)
+  for (int i=ADC_D0_PIN; i<ADC_D0_PIN+ADC_NPINS; i++)
   {
     pin_modes_to_restore[i] = get_gpio_mode(i);
     gpio_mode(i, GPIO_ALT1);
@@ -197,12 +198,12 @@ void init_device(uint16_t *adc_data, int samples, int time_base_index, int mode)
  
   gpio_mode(SMI_SOE_PIN, GPIO_ALT1);
   gpio_mode(ADC_ENABLE, GPIO_OUT);
-  gpio_mode(ADC_DISABLE_MSBS, GPIO_OUT);
+  gpio_mode(ADC_DISABLE_HBYTE, GPIO_OUT);
 
   if (mode == 0)
-    gpio_out(ADC_DISABLE_MSBS, 0);  // oscilloscope mode, ADC bits [11:4] are enabled
+    gpio_out(ADC_DISABLE_HBYTE, 0);  // oscilloscope mode, ADC bits [11:4] are enabled
   else
-    gpio_out(ADC_DISABLE_MSBS, 1);  // logic signal analyzer mode, ADC bits [11:4] are disabled
+    gpio_out(ADC_DISABLE_HBYTE, 1);  // logic signal analyzer mode, ADC bits [11:4] are disabled
   
   set_time_base(time_base_index);
 
@@ -318,7 +319,9 @@ void close_device(void)
 
   if (gpio_regs.virt)
   {
-    for (i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)
+    for (i=ADC_D0_PIN; i<ADC_D0_PIN+ADC_NPINS; i++)
+
+//    for (i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)
       gpio_mode(i, pin_modes_to_restore[i]);
   }
   if (smi_regs.virt)
