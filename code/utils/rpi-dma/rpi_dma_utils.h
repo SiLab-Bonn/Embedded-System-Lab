@@ -213,6 +213,7 @@ void enable_dma(int chan);
 void start_dma(MEM_MAP *mp, int chan, DMA_CB *cbp, uint32_t csval);
 uint32_t dma_transfer_len(int chan);
 uint32_t dma_active(int chan);
+bool dma_dreq_paused(int chan);
 void stop_dma(int chan);
 void disp_dma(int chan);
 void init_pwm(int freq, int range, int val);

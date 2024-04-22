@@ -42,7 +42,7 @@ def sar_loop(resolution = dac_resolution):
     dac_register |= 1 << (dac_bit)             # set next DAC register bit 
     write_dac(dac_register)                    # update DAC register
     dac_register_array.append(dac_register >> res_offest)    # store current dac register value for later plotting
-    time.sleep(0.001)                         # wait for comparator to settle
+   #time.sleep(0.001)                         # wait for comparator to settle
     comp_out = GPIO.input(COMP)                # read comparator output
     if (not comp_out):                         # subtract current DAC bit if DAC voltage is higher than input voltage
       dac_register -= 1 << (dac_bit)           
@@ -52,7 +52,7 @@ def sar_loop(resolution = dac_resolution):
 def read_adc(resolution = dac_resolution):
   resolution = min(dac_resolution, resolution)
   GPIO.output(SAMPLE, GPIO.HIGH) # close sample switch (sample mode)
-  time.sleep(0.001)
+  time.sleep(0.0001)
   GPIO.output(SAMPLE, GPIO.LOW)  # open sample switch (hold mode)
   return sar_loop(resolution)
 

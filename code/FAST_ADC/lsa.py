@@ -30,15 +30,11 @@ SAMPLE_RATE_5M   = 5  # 0.25 us
 # operation mode
 OSC_MODE = 0
 LSA_MODE = 1
-LSA_CHANNELS = 8
+LSA_CHANNELS = 4
 
 # init ADC: data array, number of samples, sample rate, trigger mode
-n_samples = 1500 # number of samples 
-
-# trigger modes
-AUTO_TRIGGER   = 0 # free-running acquisition 
-NORMAL_TRIGGER = 1 # wait for hardware trigger (jumper TRG on the base board selects trigger source)
-trigger_mode = NORMAL_TRIGGER
+n_samples = 10000 # number of samples 
+trigger_mode_single = False
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 ADC.set_resolution(LSA_CHANNELS)
 ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, LSA_MODE)
@@ -49,6 +45,7 @@ time_data = np.arange(0, n_samples * time_base, time_base)
 cal_adc_data = np.array(n_samples)
 
 # prepare waveform display
+colors = ['green', 'tab:pink', 'tab:blue', 'y', 'black', 'gray', 'purple', 'orange']
 plt.ion() # interactive mode
 fig, waveform = plt.subplots(num = 'Logic Signal Analyzer')
 waveform.set_xlabel('t [us]')
@@ -68,12 +65,12 @@ bit_array = np.unpackbits(byte_array)
 lines = []
 
 for i in range(LSA_CHANNELS):
-  line, = waveform.plot(time_data, i + 0.5*bit_array[i::16])
+  line, = waveform.plot(time_data, i + 0.5*bit_array[i::16], color = colors[i])
   lines.append(line)
 
 # define thread function 
 def updatePlot(queue):
-  global time_data, n_samples, trigger_mode, cal_adc_data
+  global time_data, n_samples, cal_adc_data, trigger_mode_single, time_base
   stop_received = False
   trigger_armed = True
   trigger_mode_single = False
@@ -97,7 +94,7 @@ def updatePlot(queue):
         trigger_armed = True
       
       # time base setting
-      if (data.isdigit() and int(data) in range(1, 6)):
+      if (data.isdigit() and int(data) in range(1, 8)):
         ADC.set_time_base(int(data))
         time_base = ADC.get_time_base()
         time_data = np.arange(0, n_samples * time_base, time_base)  
@@ -132,9 +129,11 @@ updateThread.start()
 
 while True:
   os.system('cls||clear')
+  print('Sample frequency %.1f MHz' % (1 / time_base))
+  print('Trigger mode: %s' % ('Auto' if not trigger_mode_single else 'Single'))
   print(
-'Commands:\n\
-  <1..5>  Sample frequency [0.2, 0.5, 1, 2, 5] MHz\n\
+'\nCommands:\n\
+  <1..7>  Sample frequency [0.2, 0.5, 1, 2, 5, 10, 25] MHz\n\
   <a>     Auto trigger mode\n\
   <s>     Single trigger mode\n\
   <i>     Save plot image (png)\n\
