@@ -20,12 +20,9 @@ GPIO.setwarnings(False)
 ADC = ctypes.CDLL("/home/pi/Embedded-System-Lab/code/lib/fast_adc.so")  
 ADC.get_time_base.restype = ctypes.c_float 
 
-# some constants
-SAMPLE_RATE_200k = 1  # 5 us
-SAMPLE_RATE_500k = 2  # 2 us
-SAMPLE_RATE_1M   = 3  # 1 us
-SAMPLE_RATE_2M   = 4  # 0.5 us
-SAMPLE_RATE_5M   = 5  # 0.25 us
+# sample frequencies
+sample_freq_list = [0, 0.2, 0.5, 1, 2, 5, 10, 25]
+freq_index = 5
 
 # operation mode
 OSC_MODE = 0
@@ -37,7 +34,7 @@ n_samples = 10000 # number of samples
 trigger_mode_single = False
 adc_data = (ctypes.c_uint16 * n_samples)() # array to store ADC data
 ADC.set_resolution(LSA_CHANNELS)
-ADC.init_device(adc_data, n_samples, SAMPLE_RATE_5M, LSA_MODE)
+ADC.init_device(adc_data, n_samples, freq_index, LSA_MODE)
 
 # prepare time data series
 time_base = ADC.get_time_base()
@@ -70,7 +67,7 @@ for i in range(LSA_CHANNELS):
 
 # define thread function 
 def updatePlot(queue):
-  global time_data, n_samples, cal_adc_data, trigger_mode_single, time_base
+  global time_data, n_samples, cal_adc_data, trigger_mode_single, time_base, freq_index, trigger_armed
   stop_received = False
   trigger_armed = True
   trigger_mode_single = False
@@ -79,23 +76,13 @@ def updatePlot(queue):
     if not queue.empty():
       data = queue.get()
       
-      if data == 'q':
+      if data == 'stop':
         stop_received = True
         break
 
-      # auto trigger mode, loop continuously
-      if (data == 'a'):
-        trigger_mode_single = False
-        trigger_armed = True
-          
-      # wait for single trigger
-      if (data == 's'):
-        trigger_mode_single = True
-        trigger_armed = True
-      
-      # time base setting
-      if (data.isdigit() and int(data) in range(1, 8)):
-        ADC.set_time_base(int(data))
+      if data == 'update':
+        # time base setting
+        ADC.set_time_base(int(freq_index))
         time_base = ADC.get_time_base()
         time_data = np.arange(0, n_samples * time_base, time_base)  
         waveform.set_xlim(0, n_samples * time_base)
@@ -110,9 +97,7 @@ def updatePlot(queue):
       int_array = np.array(adc_data).newbyteorder('S')
       byte_array = int_array.view(np.uint8)
       bit_array = np.unpackbits(byte_array)
-
-      #print(int_array[0], bit_array[0:16])
-      
+   
       for i, line in enumerate(lines):
         line.set_data(time_data, i + 0.5*bit_array[(15-i)::16])
 
@@ -129,7 +114,8 @@ updateThread.start()
 
 while True:
   os.system('cls||clear')
-  print('Sample frequency %.1f MHz' % (1 / time_base))
+  print('\033[1m' + 'Logic Signal Analyzer' + '\033[0m' + '\n')
+  print('Sample frequency: %.1f MHz' % sample_freq_list[freq_index])
   print('Trigger mode: %s' % ('Auto' if not trigger_mode_single else 'Single'))
   print(
 '\nCommands:\n\
@@ -140,9 +126,25 @@ while True:
   <d>     Save waveform data (cvs)\n\
   <q>     Quit')
   key = input('Enter command:')
-  queue.put(key)
   
+  if (key.isdigit() and int(key) in range(1, 8)):
+    freq_index = int(key) 
+    queue.put('update')
+
+  # auto trigger mode, loop continuously
+  if (key == 'a'):
+    trigger_mode_single = False
+    trigger_armed = True
+    queue.put('update')
+      
+  # wait for single trigger
+  if (key == 's'):
+    trigger_mode_single = True
+    trigger_armed = True    
+    queue.put('update')
+
   if key == 'q':
+    queue.put('stop')
     break
   
   if key == 'i':

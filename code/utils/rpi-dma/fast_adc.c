@@ -281,7 +281,7 @@ void smi_init(int width, int ns, int setup, int strobe, int hold)
 int take_data()
 {
   uint16_t timeout_counter = 0;
-  uint16_t timeout = time_base * (num_samples+PRE_SAMP) + 10; // timeout in us
+  uint16_t timeout = time_base * (num_samples+PRE_SAMP) + 5; // timeout in us
   int return_value = 0;
   
   gpio_out(ADC_ENABLE, 1);
@@ -380,7 +380,7 @@ uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
 
 // Control block 1: read data
     cbs[1].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_CB_DEST_INC;
-    cbs[1].tfr_len = nsamp * SAMPLE_SIZE;
+    cbs[1].tfr_len = (nsamp) * SAMPLE_SIZE;
     cbs[1].srce_ad = REG_BUS_ADDR(smi_regs, SMI_D);
     cbs[1].dest_ad = MEM_BUS_ADDR(mp, rxdata);
  
