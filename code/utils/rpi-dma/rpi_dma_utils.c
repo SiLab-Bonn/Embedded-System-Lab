@@ -16,6 +16,7 @@
 //
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -111,6 +112,13 @@ void gpio_mode(int pin, int mode)
 {
     volatile uint32_t *reg = REG32(gpio_regs, GPIO_MODE0) + pin / 10, shift = (pin % 10) * 3;
     *reg = (*reg & ~(7 << shift)) | (mode << shift);
+}
+
+// Get input or output or ALT mode
+int get_gpio_mode(int pin)
+{
+    volatile uint32_t *reg = REG32(gpio_regs, GPIO_MODE0) + pin / 10, shift = (pin % 10) * 3;
+    return (*reg >> shift) & 7;
 }
 
 // Set an O/P pin
@@ -281,6 +289,12 @@ uint32_t dma_transfer_len(int chan)
 uint32_t dma_active(int chan)
 {
     return((*REG32(dma_regs, DMA_REG(chan, DMA_CS))) & 1);
+}
+
+// Check if DREQ has been paused
+bool dma_dreq_paused(int chan)
+{
+    return((*REG32(dma_regs, DMA_REG(chan, DMA_CS))) && (1 << 4) == (1 << 4));
 }
 
 // Halt current DMA operation by resetting controller

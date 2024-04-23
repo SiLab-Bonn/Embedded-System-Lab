@@ -13,7 +13,9 @@ There are other editors / development environments available in the Raspberry Pi
 Folder Structure
 ================
 
-The code examples and additional documentation is maintained on  `GitHub <https://github.com/silab-bonn/Embedded-System-Lab>`_. The project structure on the Raspberry Pi file system is organized like this::
+The code examples and additional documentation is maintained on  `GitHub <https://github.com/silab-bonn/Embedded-System-Lab>`_. The project structure on the Raspberry Pi file system is organized like this:
+
+.. code-block:: text
 
  |__home
  |  |__ Embedded-System-Lab (GitHub root directory)
@@ -21,6 +23,8 @@ The code examples and additional documentation is maintained on  `GitHub <https:
  |  |  |__ docs (sources for this documentation)
  |  |  |__ hardware (documentation: schematics, datasheets)
  |  |__ work (user working directory, not synchronized to GitHub)
+
+
 
  
 .. note:: 

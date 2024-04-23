@@ -35,15 +35,15 @@
 
 // SMI transfer timing: unit [ns], setup, strobe, hold
 #if PHYS_REG_BASE == PI_4_REG_BASE        // Timings for RPi v4 (1.5 GHz): divider, setup, strobe, hold
-#define SMI_TIMING_200k 30, 62, 126, 62 // 200 kS/s   (div = 15, 250 cycles)
-#define SMI_TIMING_500k 20, 38, 74, 38  // 500 kS/s   (div = 10, 150 cycles)
-#define SMI_TIMING_1M   10, 38, 74, 38  // 1 MS/s     (div = 5, 150 cycles)
-#define SMI_TIMING_2M   10, 19, 37, 19  // 2 MS/s     (div = 5, 75 cycles)
-#define SMI_TIMING_5M    6, 12, 26, 12  // 5 MS/s     (div = 3, 50 cycles)
-#define SMI_TIMING_10M   6,  6, 13,  6  // 10 MS/s    (div = 3, 25 cycles)
-#define SMI_TIMING_20M   4,  5,  9,  5  // 19.74 MS/s (div = 2, 19 cycles)
-#define SMI_TIMING_25M   4,  3,  8,  4  // 25 MS/s    (div = 2, 15 cycles)
-#define SMI_TIMING_31M   4,  3,  6,  3  // 31.25 MS/s (div = 2, 12 cycles)
+#define SMI_TIMING_200k 30, 62, 126, 62 // 200 kS/s   (div = 30, 250 cycles)
+#define SMI_TIMING_500k 20, 38, 74, 38  // 500 kS/s   (div = 20, 150 cycles)
+#define SMI_TIMING_1M   10, 38, 74, 38  // 1 MS/s     (div = 10, 150 cycles)
+#define SMI_TIMING_2M   10, 19, 37, 19  // 2 MS/s     (div = 10, 75 cycles)
+#define SMI_TIMING_5M    6, 12, 26, 12  // 5 MS/s     (div = 6, 50 cycles)
+#define SMI_TIMING_10M   6,  6, 13,  6  // 10 MS/s    (div = 6, 25 cycles)
+#define SMI_TIMING_19M   4,  5,  9,  5  // 19.74 MS/s (div = 4, 19 cycles)
+#define SMI_TIMING_25M   4,  3,  8,  4  // 25 MS/s    (div = 4, 15 cycles)
+#define SMI_TIMING_31M   4,  3,  6,  3  // 31.25 MS/s (div = 4, 12 cycles)
 #else                                   // Timings for RPi v0-3 (1 GHz)
 #define SMI_TIMING_200k 20, 62, 126, 62 // 200 kS/s
 #define SMI_TIMING_500k 20, 25, 50, 25  // 500 kS/s
@@ -68,11 +68,9 @@
 #define ADC_NPINS       13  // 12 data bits + GPIO24 (DREQ for triggered DMA access)
 #define SMI_SOE_PIN     6
 #define SMI_SWE_PIN     7
-// #define SMI_ACK_PIN     24 // ?? CHECK ??
 #define SMI_DREQ_PIN    24
 #define ADC_ENABLE      25
-#define TEST_PIN        26
-#define USE_TEST_PIN    1
+#define ADC_DISABLE_HBYTE  26 // control of ADC bits [11:4], disable for LSA mode
 
 // DMA request threshold
 #define REQUEST_THRESH  4
@@ -108,19 +106,33 @@ volatile SMI_DCD_REG *smi_dcd;
 void     *rx_buffer_ptr;
 uint16_t *adc_data_ptr;
 
+
+// register to store controll block 0 address
+uint32_t cb0_addr;
+uint32_t cb1_addr;
+
 // number of samples
 int num_samples;
 float time_base;
+
+// trigger modes
+bool trigger_mode_single = false;
+
+// data bus width and offsst for ADC and digital signal analyzer
+int adc_lsb_pin = ADC_D0_PIN;  // defaults to GPIO 12
+int adc_npins  = ADC_NPINS;    // defaults to 13 = 12 bit data + DREQ
+int pin_modes_to_restore[28];
 
 // Non-volatile memory size
 #define VC_MEM_SIZE(nsamp) (PAGE_SIZE + ((nsamp)+4)*SAMPLE_SIZE)
 
 void map_devices(void);
 void smi_start(int nsamples, int packed);
-void set_time_base(int time_base_index, int wait_trigger);
+void set_time_base(int time_base_index);
+void set_tigger_mode(int mode);
 uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp);
 int  map_adc_data(void *buff, uint16_t *data, int nsamp);
-void smi_init(int width, int ns, int setup, int hold, int strobe, int wait_trigger);
+void smi_init(int width, int ns, int setup, int hold, int strobe);
 void disp_smi(void);
 void mode_word(uint32_t *wp, int n, uint32_t mode);
 void disp_reg_fields(char *regstrs, char *name, uint32_t val);
@@ -129,11 +141,39 @@ float get_time_base(void)
 {
   return time_base;
 }
+
 char* Hello(void)
 {
   //system("grep -o BCM2711 /proc/cpuinfo"); 
   system("cat /proc/cpuinfo | grep 'Hardware' | awk '{print $3}'> NULL"); 
   return("Hello World!");
+}
+
+void set_resolution(int num_bits)
+{
+  if (num_bits > 12)
+  {
+    printf("Max. resolution limited to 12 bit.\n");
+    num_bits = 12;
+  }
+  if (num_bits < 4)
+  {
+    printf("Min. resolution limited to 4 bit.\n");
+    num_bits = 4;
+  }
+
+  adc_npins   = num_bits + 1;  // ADC bus width + DREQ bit
+  adc_lsb_pin = ADC_NPINS - adc_npins + ADC_D0_PIN;
+  // printf("adc_npins: %d\n", adc_npins);
+  // printf("adc_lsb_pin: %d\n", adc_lsb_pin);
+}
+
+void set_trigger_mode(int mode)
+{
+  if (mode == 0)
+    trigger_mode_single = false;
+  else
+    trigger_mode_single = true;
 }
 
 // Map GPIO, DMA and SMI registers into virtual mem (user space)
@@ -146,54 +186,53 @@ void map_devices(void)
     map_periph(&smi_regs, (void *)SMI_BASE, PAGE_SIZE);
 }
 
-void init_device(uint16_t *adc_data, int samples, int time_base_index, int wait_trigger)
+void init_device(uint16_t *adc_data, int samples, int time_base_index, int mode)
 {
   num_samples = samples;
   adc_data_ptr = adc_data;
 
   map_devices();
   
-  for (int i=0; i<ADC_NPINS; i++)
-    gpio_mode(ADC_D0_PIN+i, GPIO_IN);
+  // backup pin modes and setup GPIO pins for SMI
+ // for (int i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)
+  for (int i=ADC_D0_PIN; i<ADC_D0_PIN+ADC_NPINS; i++)
+  {
+    pin_modes_to_restore[i] = get_gpio_mode(i);
+    gpio_mode(i, GPIO_ALT1);
+  }
  
   gpio_mode(SMI_SOE_PIN, GPIO_ALT1);
   gpio_mode(ADC_ENABLE, GPIO_OUT);
+  gpio_mode(ADC_DISABLE_HBYTE, GPIO_OUT);
 
-  set_time_base(time_base_index, wait_trigger);
+  if (mode == 0)
+    gpio_out(ADC_DISABLE_HBYTE, 0);  // oscilloscope mode, ADC bits [11:4] are enabled
+  else
+    gpio_out(ADC_DISABLE_HBYTE, 1);  // logic signal analyzer mode, ADC bits [11:4] are disabled
+  
+  set_time_base(time_base_index);
 
-//   switch (time_base_index)
-//   {
-//       case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); time_base = 5.0; break;
-//       case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); time_base = 2.0; break;
-//       case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,   wait_trigger); time_base = 1.0; break;
-//       case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M,   wait_trigger); time_base = 0.5; break;
-//       case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M,   wait_trigger); time_base = 0.2; break;
-//       default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,  wait_trigger); time_base = 1.0; break;
-//   }
-
-#if USE_TEST_PIN
-    gpio_mode(TEST_PIN, GPIO_OUT);
-    gpio_out(TEST_PIN, 0);
-#endif  
   map_uncached_mem(&vc_mem, VC_MEM_SIZE(num_samples+PRE_SAMP)); 
 }
 
-void set_time_base(int time_base_index, int wait_trigger)
+void set_time_base(int time_base_index)
 {
   switch (time_base_index)
   {
-      case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k, wait_trigger); time_base = 5.0; break;
-      case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k, wait_trigger); time_base = 2.0; break;
-      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,   wait_trigger); time_base = 1.0; break;
-      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M,   wait_trigger); time_base = 0.5; break;
-      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M,   wait_trigger); time_base = 0.2; break;
-      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M,  wait_trigger); time_base = 1.0; break;
+      case 1: smi_init(SMI_NUM_BITS, SMI_TIMING_200k); time_base = 5.0; break;
+      case 2: smi_init(SMI_NUM_BITS, SMI_TIMING_500k); time_base = 2.0; break;
+      case 3: smi_init(SMI_NUM_BITS, SMI_TIMING_1M);   time_base = 1.0; break;
+      case 4: smi_init(SMI_NUM_BITS, SMI_TIMING_2M);   time_base = 0.5; break;
+      case 5: smi_init(SMI_NUM_BITS, SMI_TIMING_5M);   time_base = 0.2; break;
+      case 6: smi_init(SMI_NUM_BITS, SMI_TIMING_10M);  time_base = 0.1; break;
+      case 7: smi_init(SMI_NUM_BITS, SMI_TIMING_25M);  time_base = 0.04; break;
+      default: smi_init(SMI_NUM_BITS, SMI_TIMING_1M);  time_base = 1.0; break;
   }    
 }
 
 // Initialise SMI, given data width, time step, and setup/hold/strobe counts
 // Step value is in nanoseconds: even numbers, 2 to 30
-void smi_init(int width, int ns, int setup, int strobe, int hold, int wait_trigger)
+void smi_init(int width, int ns, int setup, int strobe, int hold)
 {
     int divi = ns / 2;
 
@@ -234,42 +273,58 @@ void smi_init(int width, int ns, int setup, int strobe, int hold, int wait_trigg
     smi_dmc->reqr    = smi_dmc->reqw    = REQUEST_THRESH;
 
     // external DREQ setup
-    if (wait_trigger)
-    {
-      smi_dsr->rdreq = 1;
-      smi_dmc->dmap = 1;
-    }
-    else
-    {
-      smi_dsr->rdreq = 0;
-      smi_dmc->dmap = 0;
-    }
+    smi_dsr->rdreq = 1;
+    smi_dmc->dmap = 1;
+
 }
 
-void take_data(int enable_adc)
+int take_data()
 {
-  if(enable_adc == 1)
-    gpio_out(ADC_ENABLE, 1);
-//  smi_cs->enable = 1;
-//  smi_cs->clear = 1;  
-  rx_buffer_ptr = adc_dma_start(&vc_mem, num_samples);
+  uint16_t timeout_counter = 0;
+  uint16_t timeout = time_base * (num_samples+PRE_SAMP) + 5; // timeout in us
+  int return_value = 0;
+  
+  gpio_out(ADC_ENABLE, 1);
 
+  // start SMI
   smi_dmc->dmaen = 1;
   smi_l->len = num_samples + PRE_SAMP;
   smi_cs->pxldat = 1;  // pack bytes to words
   smi_cs->enable = 1;
   smi_cs->clear  = 1;
   smi_cs->start  = 1;  
+  
+  // start DMA
+  rx_buffer_ptr = adc_dma_start(&vc_mem, num_samples);
+
   while (dma_active(DMA_CHAN_A)) 
-    ;
+  {
+    usleep(1);
+
+    if (*REG32(dma_regs, DMA_REG(DMA_CHAN_A, DMA_CONBLK_AD)) == cb0_addr) // still first controll block active
+    {
+      timeout_counter ++;
+    }
+ 
+    if (timeout_counter > timeout) 
+    {
+      //printf("Timeout: DMA transfer not finished after %d us.\n", timeout);
+      stop_dma(DMA_CHAN_A);
+      return_value = -1;
+      break;
+    }
+  }
+
   map_adc_data(rx_buffer_ptr, adc_data_ptr, num_samples);
   //disp_reg_fields(smi_cs_regstrs, "CS", *REG32(smi_regs, SMI_CS));
-  smi_dmc->dmaen = 0;
-  smi_cs->enable = 0;
-  smi_dcs->enable = 0;	
+  
+ smi_dmc->dmaen = 0;
+ smi_cs->enable = 0;
+ smi_dcs->enable = 0;	
 
-  if (enable_adc == 1)
-    gpio_out(ADC_ENABLE, 0);
+  gpio_out(ADC_ENABLE, 0);
+  
+  return return_value;
 }
 
 void close_device(void)
@@ -278,8 +333,9 @@ void close_device(void)
 
   if (gpio_regs.virt)
   {
-    for (i=0; i<ADC_NPINS; i++)
-      gpio_mode(ADC_D0_PIN+i, GPIO_IN);
+    for (i=ADC_D0_PIN; i<ADC_D0_PIN+ADC_NPINS; i++)
+//    for (i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)
+      gpio_mode(i, pin_modes_to_restore[i]);
   }
   if (smi_regs.virt)
       *REG32(smi_regs, SMI_CS) = 0;
@@ -302,44 +358,39 @@ void smi_start(int nsamples, int packed)
     smi_cs->start = 1;
 }
 
-// // DMA control block macros
-// #define NUM_CBS         4
-// #define GPIO(r)         BUS_GPIO_REG(r)
-// #define PWM(r)          BUS_PWM_REG(r)
-// #define MEM(m)          BUS_DMA_MEM(m)
-// #define CBS(n)          BUS_DMA_MEM(&dp->cbs[(n)])
-// #define PWM_TI          ((1 << 6) | (DMA_PWM_DREQ << 16))
- 
-// // Control Blocks and data to be in uncached memory
-// typedef struct {
-//     DMA_CB cbs[NUM_CBS];
-//     uint32_t pindata, pwmdata;
-// } DMA_TEST_DATA;
- 
-// // Updated DMA trigger test, using data structure
-// void dma_test_pwm_trigger(MEM_MAP *mp, int pin)
-// {
-//     DMA_TEST_DATA *dp = mp;
-//     DMA_TEST_DATA dma_data = {
-//         .pindata=1<<pin, .pwmdata=PWM_RANGE/2,
-//         .cbs = {
-//           // TI      Srce addr          Dest addr        Len   Next CB
-//             {PWM_TI, MEM(&dp->pindata), GPIO(GPIO_CLR0), 4, 0, CBS(1), 0},  // 0
-//             {PWM_TI, MEM(&dp->pwmdata), PWM(PWM_FIF1),   4, 0, CBS(2), 0},  // 1
-//             {PWM_TI, MEM(&dp->pindata), GPIO(GPIO_SET0), 4, 0, CBS(3), 0},  // 2
-//             {PWM_TI, MEM(&dp->pwmdata), PWM(PWM_FIF1),   4, 0, CBS(0), 0},  // 3
-//         }
-//     };
-//     memcpy(dp, &dma_data, sizeof(dma_data));    // Copy data into uncached memory
-//  //   init_pwm(PWM_FREQ);                         // Enable PWM with DMA
-//  //   *VIRT_PWM_REG(PWM_DMAC) = PWM_DMAC_ENAB|1;
-//     start_dma(&dp->cbs[0]);                     // Start DMA
-//     start_pwm();                                // Start PWM
-//     sleep(4);                                   // Do nothing while LED flashing
-// }
-
 // Start DMA for SMI ADC, return Rx data buffer
 uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
+{
+    DMA_CB   *cbs     = mp->virt;  // DMA control block mapped to virtual memory
+    uint32_t *data    = (uint32_t *)(cbs + 4);
+  //  uint32_t *pindata = data + 8;
+  //  uint32_t *modes   = data + 16;
+    uint32_t *rxdata  = data + 32;
+
+    cb0_addr = MEM_BUS_ADDR(mp, &cbs[0]);    
+   
+    enable_dma(DMA_CHAN_A);
+  
+// Control block 0: read data pre-sample data
+    cbs[0].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_CB_DEST_INC;
+    cbs[0].tfr_len = PRE_SAMP * SAMPLE_SIZE;
+    cbs[0].srce_ad = REG_BUS_ADDR(smi_regs, SMI_D);
+    cbs[0].dest_ad = MEM_BUS_ADDR(mp, rxdata);
+    cbs[0].next_cb = MEM_BUS_ADDR(mp, &cbs[1]); 
+
+// Control block 1: read data
+    cbs[1].ti = DMA_SRCE_DREQ | (DMA_SMI_DREQ << 16) | DMA_CB_DEST_INC;
+    cbs[1].tfr_len = (nsamp) * SAMPLE_SIZE;
+    cbs[1].srce_ad = REG_BUS_ADDR(smi_regs, SMI_D);
+    cbs[1].dest_ad = MEM_BUS_ADDR(mp, rxdata);
+ 
+    start_dma(mp, DMA_CHAN_A, &cbs[0], 0);
+    return(rxdata);
+}
+
+
+// Start DMA for SMI ADC, return Rx data buffer
+uint32_t *adc_dma_start_org(MEM_MAP *mp, int nsamp)
 {
     DMA_CB   *cbs     = mp->virt;  // DMA control block mapped to virtual memory
     uint32_t *data    = (uint32_t *)(cbs + 4);
@@ -354,10 +405,10 @@ uint32_t *adc_dma_start(MEM_MAP *mp, int nsamp)
     modes[2] = modes[5] = *REG32(gpio_regs, GPIO_MODE2);  
                                                                       
     // Get mode values with ADC pins set to SMI
-    for (i=ADC_D0_PIN; i<ADC_D0_PIN+ADC_NPINS; i++)  // loop thru GPIO pin numbers connected to ADC
+    for (i=adc_lsb_pin; i<adc_lsb_pin+adc_npins; i++)  // loop thru GPIO pin numbers connected to ADC
         mode_word(&modes[i/10], i%10, GPIO_ALT1);    // set bits accordingly 
 
-    *pindata = 1 << TEST_PIN;
+ //   *pindata = 1 << TEST_PIN;
 
     enable_dma(DMA_CHAN_A);
   
@@ -427,7 +478,7 @@ int adc_gpio_val(void)
 {
     int v = *REG32(gpio_regs, GPIO_LEV0);
 
-    return((v>>ADC_D0_PIN) & ((1 << ADC_NPINS)-1));
+    return((v>>adc_lsb_pin) & ((1 << adc_npins)-1));
 }
 
 // Display bit values in register

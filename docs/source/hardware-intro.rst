@@ -24,7 +24,7 @@ The following is a block diagram of the BCM2711 chip; the specific SOC used in R
 
 Memory and I/O Access
 =====================
-The operating system and the user programs run on a quad-core CPU (ARM Cortex A-72) while graphics/video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral I/O blocks attached to the system bus. The address translation between system bus, CPU, and user and kernel program space is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC/ARM MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces (see also section 1.2 in :download:`BCM2837-ARM-Peripherals.pdf <documents/BCM2837-ARM-Peripherals.pdf>`):
+The operating system and the user programs run on a quad-core CPU (ARM Cortex A-72) while graphics/video data processing is handled by VideoCore VPU. Both the CPU and the VPU share the same system memory and peripheral I/O blocks attached to the system bus. The address translation between system bus, CPU, and user and kernel program space is done by so-called memory management units (MMU). One MMU manages the resource sharing between CPU and VPU (VC/ARM MMU) while the other MMU (ARM MMU) maps memory and I/O peripherals to virtual user- and kernel-address space. The following block diagram shows the relations between the different address spaces (see also section 1.2 in :download:`bcm2711-peripherals.pdf <documents/bcm2711-peripherals.pdf>`):
 
 .. figure:: images/address_spaces.png
     :width: 800
@@ -38,9 +38,9 @@ The actual access to memory or I/O resources is managed via the VPU MMU which co
 
 A multi-tasking operating system, which is typically run on a computing system, cannot allow user code to direct access to the physical address space, since concurrent access from different tasks to the same resource would compromise data integrity and security. Therefore, user code must use **virtual addresses**, which are mapped by the CPU MMU to the physical address space. This allows parallel running user (and kernel) task to access shared resources in an orderly way. The structure of this virtual address space is shown in the right column.
 
-.. note:: It is not possible to directly access I/O registers or memory locations. To use I/O or memory resources, a user accessible **virtual address** has to be mapped to the **physical addresses**. Since the register addresses values referenced in the BCM2837-ARM-Peripherals document are referring to the system **bus address** space handled by the VideoCore, the resulting address offsets as seen by the CPU have to be calculated. 
+.. note:: It is not possible to directly access I/O registers or memory locations. To use I/O or memory resources, a user accessible **virtual address** has to be mapped to the **physical addresses**. Since the register addresses values referenced in the BCM2711-peripherals document are referring to the system **bus address** space handled by the VideoCore, the resulting address offsets as seen by the CPU have to be calculated. 
 
-A generic procedure to access peripheral resources looks like this: At first the address at which the CPU can access the IO periphery register is calculated. This step converts the address at which the peripheral register is located on the VideoCore bus to the physical address the CPU can access. Than a user accessible virtual memory location has to be allocated and mapped to the physical address of the I/O resource. The pseudo code for such an operation is:
+A generic procedure to access peripheral resources looks like this: At first the address at which the CPU can access the IO periphery register is calculated. This step converts the address at which the peripheral register is located on the VideoCore bus to the physical address the CPU can access. Then, a user accessible virtual memory location has to be allocated and mapped to the physical address of the I/O resource. The pseudo code for such an operation is:
 
 .. code::
     
@@ -65,8 +65,8 @@ A demonstration of accessing the GPIO registers is shown next in section :ref:`g
 
 Further reading
 ---------------
-- `BCM2835 ARM Peripherals <https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf>`_
-- `BCM2835 data sheet errata <https://elinux.org/BCM2835_datasheet_errata>`_
+- `Raspberry Pi Documentation <https://www.raspberrypi.com/documentation/computers/processors.html>`_
+- `BCM2711 ARM Peripherals <https://datasheets.raspberrypi.com/bcm2711/bcm2711-peripherals.pdf>`_
 - `Raspberry Pi DMA programming in C <https://iosoft.blog/2020/05/25/raspberry-pi-dma-programming/>`_
 
 

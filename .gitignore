@@ -1,5 +1,6 @@
 docs/scratch/~$drawings.pptx
 docs/scratch/drawings.pptx
+docs/_build/*
 code/hello_world
 work/*
 *.exe
@@ -9,3 +10,5 @@ work/*
 *.obj
 *.pdb
 *.csv
+code/lib/gpio.so
+code/GPIO/gpio
