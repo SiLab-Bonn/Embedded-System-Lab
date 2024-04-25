@@ -82,7 +82,7 @@ def threshold_scan(threshold, charge_range, time_constant_range, n_injections = 
     ax.plot(charge_data, hit_data, label=time_constants_list[time_constant])
     charge_data = []
     hit_data = []
-
+ 
   ax.set(xlabel='charge (DAC)', ylabel='hit count', title='Threshold scan')
   ax.legend(title="shaper time constant")
   ax.grid()
@@ -99,12 +99,16 @@ def inject(threshold, charge, time_constant, n_injections):
     time.sleep(0.0002)
   
 charge_range = range(30, 100, 1)
-threshold = 2000
+threshold = 3800
 time_constant_range = range(6,7)
 
-threshold_scan(threshold, charge_range, time_constant_range, plot='csa')
-#inject(3000, 200, 5, 1)
+threshold_scan(threshold, charge_range, time_constant_range, plot='sha')
 
+# while True:
+#   inject(3000, 200, 7, 1)
+
+#update_spi_regs(2000, 1000, 5, 'sha')
+#input()
 
 
 spi.close()
