@@ -68,14 +68,15 @@
 		},
 		{
 			"type": "cppbuild",
-			"label": "C/C++: gcc build active file",
+			"label": "C/C++: gcc build JTAG programmer (Linux)",
 			"command": "/usr/bin/gcc",
 			"args": [
 				"-fdiagnostics-color=always",
-				"-g",
-				"${file}",
+				"${fileDirname}/micro.c",
+				"${fileDirname}/ports.c",
+				"${fileDirname}/lenval.c",
 				"-o",
-				"${fileDirname}/${fileBasenameNoExtension}"
+				"${fileDirname}/jtag_programmer"
 			],
 			"options": {
 				"cwd": "${fileDirname}"
@@ -85,29 +86,7 @@
 			],
 			"group": "build",
 			"detail": "compiler: /usr/bin/gcc"
-		},
-		{
-			"type": "cppbuild",
-			"label": "C/C++: gcc build active file",
-			"command": "/usr/bin/gcc",
-			"args": [
-				"-fdiagnostics-color=always",
-				"-g",
-				"${file}",
-				"-o",
-				"${fileDirname}/${fileBasenameNoExtension}"
-			],
-			"options": {
-				"cwd": "${fileDirname}"
-			},
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "compiler: /usr/bin/gcc"
-		}
+		}		
+
 	]
 }

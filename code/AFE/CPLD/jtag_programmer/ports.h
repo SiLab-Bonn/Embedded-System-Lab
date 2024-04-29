@@ -7,12 +7,31 @@
 #ifndef ports_dot_h
 #define ports_dot_h
 
-/* these constants are used to send the appropriate ports to setPort */
-/* they should be enumerated types, but some of the microcontroller  */
-/* compilers don't like enumerated types */
-#define TCK (short) 0
-#define TMS (short) 1
-#define TDI (short) 2
+#include "stdio.h"
+#include <bcm_host.h>
+#include <fcntl.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/mman.h>
+
+
+/* GPIO numbers for each signal. Negative values are invalid */
+static int tms_gpio =  1;
+static int tck_gpio =  0;
+static int tdo_gpio = 27;
+static int tdi_gpio = 26;
+
+void set_gpio_mode(int pin, int mode);
+void set_gpio_pull(int pin, int mode);
+void set_gpio_out(int pin, int level);
+bool get_gpio_in(int pin);
+bool setup_gpio_regs();
+void cleanup_gpio_regs(int def);
+
 
 /* set the port "p" (TCK, TMS, or TDI) to val (0 or 1) */
 extern void setPort(short p, short val);

@@ -55,6 +55,7 @@
     #include <stdlib.h>
     #include <string.h>
     #include <time.h>
+    #include <unistd.h>
 #endif  /* DEBUG_MODE */
 
 #include "micro.h"
@@ -435,7 +436,7 @@ int xsvfInfoInit( SXsvfInfo* pXsvfInfo )
     pXsvfInfo->ucCommand        = XCOMPLETE;
     pXsvfInfo->lCommandCount    = 0;
     pXsvfInfo->iErrorCode       = XSVF_ERROR_NONE;
-    pXsvfInfo->ucMaxRepeat      = 0;
+    pXsvfInfo->ucMaxRepeat      = 0;  // was 0
     pXsvfInfo->ucTapState       = XTAPSTATE_RESET;
     pXsvfInfo->ucEndIR          = XTAPSTATE_RUNTEST;
     pXsvfInfo->ucEndDR          = XTAPSTATE_RUNTEST;
@@ -477,9 +478,9 @@ short xsvfGetAsNumBytes( long lNumBits )
 *****************************************************************************/
 void xsvfTmsTransition( short sTms )
 {
-    setPort( TMS, sTms );
-    setPort( TCK, 0 );
-    setPort( TCK, 1 );
+    setPort( tms_gpio, sTms );
+    setPort( tck_gpio, 0 );
+    setPort( tck_gpio, 1 );
 }
 
 /*****************************************************************************
@@ -508,8 +509,8 @@ int xsvfGotoTapState( unsigned char*   pucTapState,
         xsvfTmsTransition( 1 );
         for ( i = 0; i < 5; ++i )
         {
-            setPort( TCK, 0 );
-            setPort( TCK, 1 );
+            setPort( tck_gpio, 0 );
+            setPort( tck_gpio, 1 );
         }
         *pucTapState    = XTAPSTATE_RESET;
         XSVFDBG_PRINTF( 3, "   TMS Reset Sequence -> Test-Logic-Reset\n" );
@@ -748,15 +749,15 @@ void xsvfShiftOnly( long    lNumBits,
             if ( iExitShift && !lNumBits )
             {
                 /* Exit Shift-DR state */
-                setPort( TMS, 1 );
+                setPort( tms_gpio, 1 );
             }
 
             /* Set the new TDI value */
-            setPort( TDI, (short)(ucTdiByte & 1) );
+            setPort( tdi_gpio, (short)(ucTdiByte & 1) );
             ucTdiByte   >>= 1;
 
             /* Set TCK low */
-            setPort( TCK, 0 );
+            setPort( tck_gpio, 0 );
 
             if ( pucTdo )
             {
@@ -766,7 +767,7 @@ void xsvfShiftOnly( long    lNumBits,
             }
 
             /* Set TCK high */
-            setPort( TCK, 1 );
+            setPort( tck_gpio, 1 );
         }
 
         /* Save the TDO byte value */
@@ -1126,7 +1127,7 @@ int xsvfDoXSIR( SXsvfInfo* pXsvfInfo )
                                  ucShiftIrBits, &(pXsvfInfo->lvTdi),
                                  /*plvTdoCaptured*/0, /*plvTdoExpected*/0,
                                  /*plvTdoMask*/0, pXsvfInfo->ucEndIR,
-                                 pXsvfInfo->lRunTestTime, /*ucMaxRepeat*/0 );
+                                 pXsvfInfo->lRunTestTime, /*ucMaxRepeat*/ 0 );
     }
 
     if ( iErrorCode != XSVF_ERROR_NONE )
@@ -1764,14 +1765,25 @@ int main( int iArgc, char** ppzArgv )
     clock_t startClock;
     clock_t endClock;
 
+    char buffer[] = "afe.xsvf";
+
     iErrorCode          = XSVF_ERRORCODE( XSVF_ERROR_NONE );
-    pzXsvfFileName      = 0;
+    pzXsvfFileName      = NULL;
 
     printf( "XSVF Player v%s, Xilinx, Inc.\n", XSVF_VERSION );
 
+    // printf( "argc = %d\n", iArgc );
+    // printf( "argv = \n");
+    // for ( i = 0; i < iArgc; ++i )
+    // {
+    //     printf( "   %s \n", ppzArgv[ i ] );
+    // }
+
     for ( i = 1; i < iArgc ; ++i )
     {
-        if ( !_stricmp( ppzArgv[ i ], "-v" ) )
+        //printf("Arg %d = %s\n", i, ppzArgv[ i ]);
+
+        if ( !strcmp( ppzArgv[ i ], "-v" ) )
         {
             ++i;
             if ( i >= iArgc )
@@ -1791,7 +1803,9 @@ int main( int iArgc, char** ppzArgv )
         }
     }
 
-    if ( !pzXsvfFileName )
+    setup_gpio_regs();
+   
+    if ( pzXsvfFileName == 0)
     {
         printf( "USAGE:  playxsvf [-v level] filename.xsvf\n" );
         printf( "where:  -v level      = verbose, level = 0-4 (default=0)\n" );
@@ -1809,7 +1823,7 @@ int main( int iArgc, char** ppzArgv )
         else
         {
             /* Initialize the I/O.  SetPort initializes I/O on first call */
-            setPort( TMS, 1 );
+            setPort( tms_gpio, 1 );
 
             /* Execute the XSVF in the file */
             startClock  = clock();
@@ -1819,7 +1833,9 @@ int main( int iArgc, char** ppzArgv )
             printf( "Execution Time = %.3f seconds\n",
                     (((double)(endClock - startClock))/CLOCKS_PER_SEC) );
         }
-    }
+     }
+
+    cleanup_gpio_regs(0);
 
     return( iErrorCode );
 }

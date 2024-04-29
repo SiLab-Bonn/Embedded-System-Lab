@@ -35,7 +35,13 @@
 #define GPIO_SET0       0x1C  // set outputs to '1' GPIO 0-31
 #define GPIO_CLR0       0x28  // set outputs to '0' GPIO 0-31
 #define GPIO_LEV0       0x34  // get input states GPIO 0-31
+#define GPIO_PUD0       0xE4  // pull-up/down enable
+#define GPIO_PUD1       0xE8  // pull-up/down enable
 #define GPIO_FSEL_BITS  3
+#define GPIO_PUD_BITS   2
+#define GPIO_PU_OFF     0x0
+#define GPIO_PU_DOWN    0x2
+#define GPIO_PU_UP      0x1   
 
 // #define DEBUG 
 
@@ -49,8 +55,13 @@ uint32_t gpfsel2_prev;
 uint32_t *gpset0;
 uint32_t *gpclr0;
 uint32_t *gplev0;
+uint32_t *gppud0;
+uint32_t *gppud1;
+uint32_t gppud0_prev;
+uint32_t gppud1_prev;
 
 void set_gpio_mode(int pin, int mode);
+void set_gpio_pull(int pin, int mode);
 void set_gpio_out(int pin, int level);
 bool get_gpio_in(int pin);
 
@@ -69,7 +80,7 @@ static int verbose = 0;
 #define LISTEN_PORT 2542
 
 /* Transition delay coefficients */
-#define JTAG_DELAY (200)
+#define JTAG_DELAY (10)
 static unsigned int jtag_delay = JTAG_DELAY;
 
 bool setup_gpio_regs()
@@ -111,11 +122,15 @@ bool setup_gpio_regs()
   gpset0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_SET0);
   gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
   gplev0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_LEV0);
+  gppud0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_PUD0);
+  gppud1  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_PUD1);
 
   // store values for clean-up
   gpfsel0_prev = *gpfsel0;
   gpfsel1_prev = *gpfsel1;
   gpfsel2_prev = *gpfsel2;
+  gppud0_prev = *gppud0;
+  gppud1_prev = *gppud1;
 
   #ifdef DEBUG
     // print virtual addresses and register content
@@ -128,16 +143,20 @@ bool setup_gpio_regs()
   #endif  
 
    set_gpio_mode(tdo_gpio, 0);  // TDO input
+   set_gpio_pull(tdo_gpio, GPIO_PU_DOWN);  // ???
 
-   set_gpio_out(tck_gpio, 0);
+   set_gpio_out(tck_gpio, 1);  // was 0
    set_gpio_out(tms_gpio, 1);
-   set_gpio_out(tdi_gpio, 0);
+   set_gpio_out(tdi_gpio, 1);  // was 0
 
    set_gpio_mode(tck_gpio, 1); // TCK output 
    set_gpio_mode(tms_gpio, 1); // TMS output 
    set_gpio_mode(tdi_gpio, 1); // TDI output
+   set_gpio_pull(tck_gpio, GPIO_PU_UP);  // 
+   set_gpio_pull(tms_gpio, GPIO_PU_UP);  // 
+   set_gpio_pull(tdi_gpio, GPIO_PU_UP);  // 
 
-   JTAG_write(0, 1, 0);
+   JTAG_write(1, 1, 1); // was 0,1,0
 
   return true;
 }
@@ -161,6 +180,25 @@ void cleanup(int force_default)
 
   // free allocated memory
   munmap(gpio_virt_addr_ptr, 0x1000);
+}
+
+void set_gpio_pull(int pin, int mode)
+{
+  int offset;
+  int mask = 0x3;
+  // configure GPIO pull mode
+  if (pin < 16)
+  {
+     offset = GPIO_PUD_BITS * pin;
+    *gppud0 &= ~(mask << offset);
+    *gppud0 |= mode << offset;
+  }
+  else if (pin < 32)
+  {   
+    offset = GPIO_PUD_BITS * (pin - 16);
+    *gppud1 &= ~(mask << offset);
+    *gppud1 |= mode << offset;
+  }
 }
 
 void set_gpio_mode(int pin, int mode)
@@ -226,8 +264,8 @@ static uint32_t JTAG_xfer(int n, uint32_t tms, uint32_t tdi)
 
    for (int i = 0; i < n; i++) {
       JTAG_write(0, tms & 1, tdi & 1);
+      tdo |= JTAG_read() << i;  // ???
       JTAG_write(1, tms & 1, tdi & 1);
-      tdo |= JTAG_read() << i;
       tms >>= 1;
       tdi >>= 1;
    }
@@ -252,7 +290,7 @@ int handle_data(int fd) {
    do {
       char cmd[16];
       unsigned char buffer[2048], result[1024];
-      memset(cmd, 0, 16);
+       memset(cmd, 0, 16);
 
       if (sread(fd, cmd, 2) != 1)
          return 1;
@@ -371,7 +409,7 @@ int handle_data(int fd) {
          }
       }
 
-      JTAG_write(0, 1, 0);
+      JTAG_write(1, 1, 1);  // was 0,1,0
 
       if (write(fd, result, nr_bytes) != nr_bytes) {
          perror("write");
