@@ -12,53 +12,218 @@
 #include "ports.h"
 /*#include "prgispx.h"*/
 
-#include "stdio.h"
+
+
+#pragma  GCC diagnostic ignored "-Wpointer-arith"
+//warning disable
+
+// start address of the I/O peripheral register space on the VideoCore bus
+#define BUS_REG_BASE    0x7E000000
+// start address of the I/O peripheral register space seen from the CPU bus
+#define PHYS_REG_BASE   0xFE000000 // RPi 4
+// start address of the GPIO register space on the VideoCore bus
+#define GPIO_BASE       0x7E200000
+// address offsets for the individual registers
+#define GPIO_FSEL0      0x00  // mode selsction GPIO 0-9
+#define GPIO_FSEL1      0x04  // mode selsction GPIO 10-19
+#define GPIO_FSEL2      0x08  // mode selsction GPIO 20-29
+#define GPIO_SET0       0x1C  // set outputs to '1' GPIO 0-31
+#define GPIO_CLR0       0x28  // set outputs to '0' GPIO 0-31
+#define GPIO_LEV0       0x34  // get input states GPIO 0-31
+#define GPIO_PUD0       0xE4  // pull-up/down enable
+#define GPIO_PUD1       0xE8  // pull-up/down enable
+#define GPIO_FSEL_BITS  3
+#define GPIO_PUD_BITS   2
+#define GPIO_PU_OFF     0x0
+#define GPIO_PU_DOWN    0x2
+#define GPIO_PU_UP      0x1   
+
+// #define DEBUG 
+
+uint32_t *gpio_virt_addr_ptr;  // pointer to virtual address
+uint32_t *gpfsel0;
+uint32_t *gpfsel1;
+uint32_t *gpfsel2;
+uint32_t gpfsel0_prev;
+uint32_t gpfsel1_prev;
+uint32_t gpfsel2_prev;
+uint32_t *gpset0;
+uint32_t *gpclr0;
+uint32_t *gplev0;
+uint32_t *gppud0;
+uint32_t *gppud1;
+uint32_t gppud0_prev;
+uint32_t gppud1_prev;
+
+
+/* GPIO numbers for each signal. Negative values are invalid */
+extern int tms_gpio;
+extern int tck_gpio;
+extern int tdo_gpio;
+extern int tdi_gpio;
+
+
+bool setup_gpio_regs()
+{
+  uint32_t  gpio_phys_addr;  // GPIO register CPU bus address 
+
+  int file_descriptor;  // handle for memory mapping
+
+  // calculate the physical address from the bus address
+  gpio_phys_addr = GPIO_BASE - BUS_REG_BASE + PHYS_REG_BASE;
+
+  // get a handle to the physical memory space
+  if ((file_descriptor = open("/dev/mem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)  // requires root permissions ("sudo ...")
+ // if ((file_descriptor = open("/dev/gpiomem", O_RDWR|O_SYNC|O_CLOEXEC)) < 0)  // only requires *gpio' group
+  {
+      printf("Error: can't open /dev/mem, run using sudo\n");
+      return false;
+  }
+
+  // allocate virtual memory and map the physical address to it
+  gpio_virt_addr_ptr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, gpio_phys_addr);
+//  gpio_virt_addr_ptr = mmap(0, 0x1000, PROT_WRITE|PROT_READ, MAP_SHARED, file_descriptor, 0); // gpiomem automatically points to g'pio_phys_addr'
+  close(file_descriptor);
+
+  // check the results
+  if (gpio_virt_addr_ptr == MAP_FAILED)
+  {
+      printf("Error: can't map memory\n");
+      return false;
+  }
+  #ifdef DEBUG 
+    printf("Success: Map %p -> %p\n", (void *)gpio_phys_addr, (void *)gpio_virt_addr_ptr);
+  #endif
+
+  // define variables to access the specific registers
+  gpfsel0 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL0);
+  gpfsel1 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL1);
+  gpfsel2 = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_FSEL2);
+  gpset0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_SET0);
+  gpclr0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_CLR0);
+  gplev0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_LEV0);
+  gppud0  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_PUD0);
+  gppud1  = (uint32_t*)((void *)gpio_virt_addr_ptr + GPIO_PUD1);
+
+  // store values for clean-up
+  gpfsel0_prev = *gpfsel0;
+  gpfsel1_prev = *gpfsel1;
+  gpfsel2_prev = *gpfsel2;
+  gppud0_prev = *gppud0;
+  gppud1_prev = *gppud1;
+
+  #ifdef DEBUG
+    // print virtual addresses and register content
+    printf("GPFSEL0 (%p): 0x%08x \n", (void *)gpfsel0, *gpfsel0);
+    printf("GPFSEL1 (%p): 0x%08x \n", (void *)gpfsel1, *gpfsel1);
+    printf("GPFSEL2 (%p): 0x%08x \n", (void *)gpfsel2, *gpfsel2);
+    printf("GPSET0  (%p): 0x%08x \n", (void *)gpset0, *gpset0);
+    printf("GPCLR0  (%p): 0x%08x \n", (void *)gpclr0, *gpclr0);
+    printf("GPLEV0  (%p): 0x%08x \n", (void *)gplev0, *gplev0);
+  #endif  
+
+   set_gpio_mode(tdo_gpio, 0);  // TDO input
+   set_gpio_pull(tdo_gpio, GPIO_PU_UP);  // ???
+
+   set_gpio_out(tck_gpio, 1);  // was 0
+   set_gpio_out(tms_gpio, 1);
+   set_gpio_out(tdi_gpio, 1);  // was 0
+
+   set_gpio_mode(tck_gpio, 1); // TCK output 
+   set_gpio_mode(tms_gpio, 1); // TMS output 
+   set_gpio_mode(tdi_gpio, 1); // TDI output
+   set_gpio_pull(tck_gpio, GPIO_PU_UP);  // 
+   set_gpio_pull(tms_gpio, GPIO_PU_UP);  // 
+   set_gpio_pull(tdi_gpio, GPIO_PU_UP);  // 
+
+  return true;
+}
+
+void cleanup_gpio_regs(int force_default)
+{
+  if (force_default == 1)
+  {
+    // restore default mode 
+    *gpfsel0 = 0x21200900;
+    *gpfsel1 = 0x00000024;
+    *gpfsel2 = 0x12000000;
+  }
+  else
+  {
+    // restore previous mode
+    *gpfsel0 = gpfsel0_prev;
+    *gpfsel1 = gpfsel1_prev;
+    *gpfsel2 = gpfsel2_prev;
+  }
+
+
+  set_gpio_mode(tdo_gpio, 0);  
+  set_gpio_mode(tck_gpio, 0);  
+  set_gpio_mode(tdi_gpio, 0);
+  set_gpio_mode(tms_gpio, 0);
+
+  // free allocated memory
+  munmap(gpio_virt_addr_ptr, 0x1000);
+}
+
+void set_gpio_pull(int pin, int mode)
+{
+  int offset;
+  int mask = 0x3;
+  // configure GPIO pull mode
+  if (pin < 16)
+  {
+     offset = GPIO_PUD_BITS * pin;
+    *gppud0 &= ~(mask << offset);
+    *gppud0 |= mode << offset;
+  }
+  else if (pin < 32)
+  {   
+    offset = GPIO_PUD_BITS * (pin - 16);
+    *gppud1 &= ~(mask << offset);
+    *gppud1 |= mode << offset;
+  }
+}
+
+void set_gpio_mode(int pin, int mode)
+{
+  int offset;
+  int mask = 0x7;
+  // configure GPIO mode
+  if (pin < 10)
+  {
+     offset = GPIO_FSEL_BITS * pin;
+    *gpfsel0 &= ~(mask << offset);
+    *gpfsel0 |= mode << offset;
+  }
+  else if (pin < 20)
+  {   
+    offset = GPIO_FSEL_BITS * (pin - 10);
+    *gpfsel1 &= ~(mask << offset);
+    *gpfsel1 |= mode << offset;
+  }
+  else if (pin < 30)
+  {
+    offset = GPIO_FSEL_BITS * (pin - 20);
+    *gpfsel2 &= ~(mask << offset);
+    *gpfsel2 |= mode << offset;
+  }
+}
+
+void set_gpio_out(int pin, int level)
+{
+  if (level)
+    *gpset0 = 1 << pin; 
+  else
+    *gpclr0 = 1 << pin;
+}
+
+bool get_gpio_in(int pin)
+{
+  return (*gplev0 & (1 << pin)) ? 1 : 0;
+}
+
 extern FILE *in;
-static int  g_iTCK = 0; /* For xapp058_example .exe */
-static int  g_iTMS = 0; /* For xapp058_example .exe */
-static int  g_iTDI = 0; /* For xapp058_example .exe */
-
-#ifdef WIN95PP
-#include "conio.h"
-
-#define DATA_OFFSET    (unsigned short) 0
-#define STATUS_OFFSET  (unsigned short) 1
-#define CONTROL_OFFSET (unsigned short) 2
-
-typedef union outPortUnion {
-    unsigned char value;
-    struct opBitsStr {
-        unsigned char tdi:1;
-        unsigned char tck:1;
-        unsigned char tms:1;
-        unsigned char zero:1;
-        unsigned char one:1;
-        unsigned char bit5:1;
-        unsigned char bit6:1;
-        unsigned char bit7:1;
-    } bits;
-} outPortType;
-
-typedef union inPortUnion {
-    unsigned char value;
-    struct ipBitsStr {
-        unsigned char bit0:1;
-        unsigned char bit1:1;
-        unsigned char bit2:1;
-        unsigned char bit3:1;
-        unsigned char tdo:1;
-        unsigned char bit5:1;
-        unsigned char bit6:1;
-        unsigned char bit7:1;
-    } bits;
-} inPortType;
-
-static inPortType in_word;
-static outPortType out_word;
-static unsigned short base_port = 0x378;
-static int once = 0;
-#endif
-
 
 /*BYTE *xsvf_data=0;*/
 
@@ -67,50 +232,20 @@ static int once = 0;
 /* if in debugging mode, then just set the variables */
 void setPort(short p,short val)
 {
-#ifdef WIN95PP
-    /* Old Win95 example that is similar to a GPIO register implementation.
-       The old Win95 example maps individual bits of the 
-       8-bit register (out_word) to the JTAG signals: TCK, TMS, TDI. 
-       */
+	struct timespec ts, dummy;
 
-    /* Initialize static out_word register bits just once */
-    if (once == 0) {
-        out_word.bits.one = 1;
-        out_word.bits.zero = 0;
-        once = 1;
-    }
-
-    /* Update the local out_word copy of the JTAG signal to the new value. */
-    if (p==TMS)
-        out_word.bits.tms = (unsigned char) val;
-    if (p==TDI)
-        out_word.bits.tdi = (unsigned char) val;
-    if (p==TCK) {
-        out_word.bits.tck = (unsigned char) val;
-        (void) _outp( (unsigned short) (base_port + 0), out_word.value );
-        /* To save HW write cycles, this example only writes the local copy
-           of the JTAG signal values to the HW register when TCK changes. */
-    }
-#endif
-    /* Printing code for the xapp058_example.exe.  You must set the specified
-       JTAG signal (p) to the new value (v).  See the above, old Win95 code
-       as an implementation example. */
-    if (p==TMS)
-        g_iTMS = val;
-    if (p==TDI)
-        g_iTDI = val;
-    if (p==TCK) {
-        g_iTCK = val;
-        printf( "TCK = %d;  TMS = %d;  TDI = %d\n", g_iTCK, g_iTMS, g_iTDI );
-    }
+    set_gpio_out(p, val);
+    ts.tv_sec = 0;
+    ts.tv_nsec = 250L;
+    nanosleep(&ts, &dummy);
 }
 
 
 /* toggle tck LH.  No need to modify this code.  It is output via setPort. */
 void pulseClock()
 {
-    setPort(TCK,0);  /* set the TCK port to low  */
-    setPort(TCK,1);  /* set the TCK port to high */
+    setPort(tck_gpio,0);  /* set the TCK port to low  */
+    setPort(tck_gpio,1);  /* set the TCK port to high */
 }
 
 
@@ -127,19 +262,8 @@ void readByte(unsigned char *data)
 /* read the TDO bit from port */
 unsigned char readTDOBit()
 {
-#ifdef WIN95PP
-    /* Old Win95 example that is similar to a GPIO register implementation.
-       The old Win95 reads the hardware input register and extracts the TDO
-       value from the bit within the register that is assigned to the
-       physical JTAG TDO signal. 
-       */
-    in_word.value = (unsigned char) _inp( (unsigned short) (base_port + STATUS_OFFSET) );
-    if (in_word.bits.tdo == 0x1) {
-        return( (unsigned char) 1 );
-    }
-#endif
     /* You must return the current value of the JTAG TDO signal. */
-    return( (unsigned char) 0 );
+    return( (unsigned char) get_gpio_in(tdo_gpio) );
 }
 
 /* waitTime:  Implement as follows: */
@@ -153,18 +277,49 @@ unsigned char readTDOBit()
 /*                              requirement is also satisfied.               */
 void waitTime(long microsec)
 {
-    static long tckCyclesPerMicrosec    = 1; /* must be at least 1 */
-    long        tckCycles   = microsec * tckCyclesPerMicrosec;
-    long        i;
-
+    
+	struct timespec ts, dummy;
+	
+	//clock_gettime(CLOCK_REALTIME, &ts);
+	//long n_time = (ts.tv_sec * 1000000000) + ts.tv_nsec;
+	
+   //static long tckCyclesPerMicrosec  = 1; /* must be at least 1 */
+   //long        tckCycles   = microsec * tckCyclesPerMicrosec;
+   //long        i;
+    
     /* This implementation is highly recommended!!! */
     /* This implementation requires you to tune the tckCyclesPerMicrosec 
        variable (above) to match the performance of your embedded system
        in order to satisfy the microsec wait time requirement. */
-    for ( i = 0; i < tckCycles; ++i )
-    {
-        pulseClock();
-    }
+    //for ( i = 0; i < tckCycles; ++i )
+    //{
+    //    pulseClock();
+    //}
+	//clock_gettime(CLOCK_REALTIME, &ts);
+	//long n_now = (ts.tv_sec * 1000000000) + ts.tv_nsec;
+    //while (n_now - n_time < microsec * 1000) {
+	//	pulseClock();
+	//    clock_gettime(CLOCK_REALTIME, &ts);
+	//    n_now = (ts.tv_sec * 1000000000) + ts.tv_nsec;
+	//}
+    set_gpio_out(tck_gpio, 0);
+    ts.tv_sec = 0;
+    ts.tv_nsec = microsec * 1000L;
+    nanosleep(&ts, &dummy);
+
+
+    // static long tckCyclesPerMicrosec    = 20; /* must be at least 1 */
+    // long        tckCycles   = microsec * tckCyclesPerMicrosec;
+    // long        i;
+
+    // /* This implementation is highly recommended!!! */
+    // /* This implementation requires you to tune the tckCyclesPerMicrosec 
+    //    variable (above) to match the performance of your embedded system
+    //    in order to satisfy the microsec wait time requirement. */
+    // for ( i = 0; i < tckCycles; ++i )
+    // {
+    //     pulseClock();
+    // }
 
 #if 0
     /* Alternate implementation */
