@@ -246,13 +246,17 @@ static int JTAG_read(void)
 
 static void JTAG_write(int tck, int tms, int tdi)
 {
+   struct timespec ts, dummy;   
    uint32_t set = tck<<tck_gpio | tms<<tms_gpio | tdi<<tdi_gpio;
    uint32_t clear = !tck<<tck_gpio | !tms<<tms_gpio | !tdi<<tdi_gpio;
 
    *gpset0 = set;
    *gpclr0 = clear;
 
-   usleep(jtag_delay);
+   ts.tv_sec = 0;
+   ts.tv_nsec = 500L;
+   
+   nanosleep(&ts, &dummy);  
 
    // for (unsigned int i = 0; i < jtag_delay; i++)
    //    asm volatile ("");
