@@ -18,18 +18,19 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module afe_main
+module afe
 (
-    input  MOSI,
-    output MISO,
-    input  CS_B,
-    input  SCLK,
-    input  INJ_IN,
+	input  MOSI,
+	output MISO,
+	input  CS_B,
+	input  SCLK,
+	input  INJ_IN,
 	input  COMP,
-    output HIT,
+	output HIT,
 	output INJ_OUT,
 	output[7:0] GPIO,
-    input  CLK
+	input  CLK,
+	output LED
 );
 
 

@@ -21,8 +21,101 @@
 
   <sourceproject xmlns="http://www.xilinx.com/XMLSchema" xil_pn:fileType="FILE_XISE" xil_pn:name="AFE.xise"/>
 
-  <files xmlns="http://www.xilinx.com/XMLSchema"/>
+  <files xmlns="http://www.xilinx.com/XMLSchema">
+    <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="../Xilinx/AFE/xst"/>
+    <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="_ngo"/>
+    <file xil_pn:fileType="FILE_XMSGS" xil_pn:name="_xmsgs/ngdbuild.xmsgs"/>
+    <file xil_pn:fileType="FILE_XMSGS" xil_pn:name="_xmsgs/xst.xmsgs"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGDBUILD_LOG" xil_pn:name="afe.bld"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_CHK" xil_pn:name="afe.chk"/>
+    <file xil_pn:fileType="FILE_CMD_LOG" xil_pn:name="afe.cmd_log"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_CXT" xil_pn:name="afe.cxt"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_GYD" xil_pn:name="afe.gyd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_JEDEC" xil_pn:name="afe.jed"/>
+    <file xil_pn:fileType="FILE_LOG" xil_pn:name="afe.log"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_LSO" xil_pn:name="afe.lso"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_MFD" xil_pn:name="afe.mfd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGA" xil_pn:name="afe.nga"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGC" xil_pn:name="afe.ngc"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGD" xil_pn:name="afe.ngd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGR" xil_pn:name="afe.ngr"/>
+    <file xil_pn:fileType="FILE_PAD_MISC" xil_pn:name="afe.pad"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_PNX" xil_pn:name="afe.pnx"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="afe.prj"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe.rpt"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_STX" xil_pn:name="afe.stx"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_REPORT" xil_pn:name="afe.syr"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe.tim"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe.tspec"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_VM6" xil_pn:name="afe.vm6"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe.xml"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST" xil_pn:name="afe.xst"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_build.xml"/>
+    <file xil_pn:fileType="FILE_XRPT" xil_pn:name="afe_ngdbuild.xrpt"/>
+    <file xil_pn:fileType="FILE_PAD_EXCEL_REPORT" xil_pn:name="afe_pad.csv"/>
+    <file xil_pn:fileType="FILE_XRPT" xil_pn:name="afe_xst.xrpt"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="webtalk_pn.xml"/>
+    <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="xlnx_auto_0_xdb"/>
+  </files>
 
-  <transforms xmlns="http://www.xilinx.com/XMLSchema"/>
+  <transforms xmlns="http://www.xilinx.com/XMLSchema">
+    <transform xil_pn:end_ts="1714484054" xil_pn:in_ck="118811536" xil_pn:name="TRANEXT_xstsynthesize_xbr" xil_pn:prop_ck="1861434877241969051" xil_pn:start_ts="1714484039">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+      <outfile xil_pn:name="../Xilinx/AFE/xst"/>
+      <outfile xil_pn:name="_xmsgs/xst.xmsgs"/>
+      <outfile xil_pn:name="afe.lso"/>
+      <outfile xil_pn:name="afe.ngc"/>
+      <outfile xil_pn:name="afe.ngr"/>
+      <outfile xil_pn:name="afe.prj"/>
+      <outfile xil_pn:name="afe.stx"/>
+      <outfile xil_pn:name="afe.syr"/>
+      <outfile xil_pn:name="afe.xst"/>
+      <outfile xil_pn:name="afe_xst.xrpt"/>
+      <outfile xil_pn:name="webtalk_pn.xml"/>
+    </transform>
+    <transform xil_pn:end_ts="1714484054" xil_pn:in_ck="129385764984" xil_pn:name="TRAN_compileBCD2" xil_pn:prop_ck="3734212952590958" xil_pn:start_ts="1714484054">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+    </transform>
+    <transform xil_pn:end_ts="1714484066" xil_pn:in_ck="-1356950286254520470" xil_pn:name="TRAN_ngdbuild" xil_pn:prop_ck="2434330539670293515" xil_pn:start_ts="1714484054">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+      <outfile xil_pn:name="_ngo"/>
+      <outfile xil_pn:name="_xmsgs/ngdbuild.xmsgs"/>
+      <outfile xil_pn:name="afe.bld"/>
+      <outfile xil_pn:name="afe.ngd"/>
+      <outfile xil_pn:name="afe_ngdbuild.xrpt"/>
+    </transform>
+    <transform xil_pn:end_ts="1714484081" xil_pn:in_ck="129385757491" xil_pn:name="TRANEXT_vm6File_xbr" xil_pn:prop_ck="-1616460296047693490" xil_pn:start_ts="1714484066">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+      <outfile xil_pn:name="afe.chk"/>
+      <outfile xil_pn:name="afe.cxt"/>
+      <outfile xil_pn:name="afe.gyd"/>
+      <outfile xil_pn:name="afe.log"/>
+      <outfile xil_pn:name="afe.mfd"/>
+      <outfile xil_pn:name="afe.nga"/>
+      <outfile xil_pn:name="afe.pad"/>
+      <outfile xil_pn:name="afe.pnx"/>
+      <outfile xil_pn:name="afe.rpt"/>
+      <outfile xil_pn:name="afe.tim"/>
+      <outfile xil_pn:name="afe.tspec"/>
+      <outfile xil_pn:name="afe.vm6"/>
+      <outfile xil_pn:name="afe.xml"/>
+      <outfile xil_pn:name="afe_build.xml"/>
+      <outfile xil_pn:name="afe_pad.csv"/>
+    </transform>
+    <transform xil_pn:end_ts="1714484086" xil_pn:in_ck="129385766355" xil_pn:name="TRANEXT_crtProg_xbr" xil_pn:prop_ck="5245363024343" xil_pn:start_ts="1714484081">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+      <outfile xil_pn:name="afe.jed"/>
+    </transform>
+    <transform xil_pn:end_ts="1714484081" xil_pn:in_ck="129385766355" xil_pn:name="TRAN_timRpt" xil_pn:prop_ck="111903974446" xil_pn:start_ts="1714484076">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="WarningsGenerated"/>
+      <status xil_pn:value="ReadyToRun"/>
+    </transform>
+  </transforms>
 
 </generated_project>
