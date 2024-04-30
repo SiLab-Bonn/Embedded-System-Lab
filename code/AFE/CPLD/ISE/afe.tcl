@@ -35,8 +35,8 @@
 #        when this script was generated.
 # 
 
-set myProject "AFE"
-set myScript "AFE.tcl"
+set myProject "afe"
+set myScript "afe.tcl"
 
 # 
 # Main (top-level) routines
@@ -61,8 +61,6 @@ proc run_process {} {
       return false
    }
    
-	# delete all generated files - only for full implementation
-   project clean
 	
    set_process_props
    #
@@ -82,6 +80,24 @@ proc run_process {} {
    puts "Run completed (successfully)."
    project close
 
+}
+
+proc clean_project {} {
+   global myScript
+   global myProject
+
+   ## put out a 'heartbeat' - so we know something's happening.
+   puts "\n$myScript: cleaning ($myProject)...\n"
+
+   if { ! [ open_project ] } {
+      return false
+   }
+   
+   # delete all generated files - only for full implementation
+   project clean
+
+   puts "Clean completed (successfully)."
+   project close
 }
 
 # 
@@ -162,6 +178,7 @@ proc show_help {} {
    puts "   add_source_files  - add source files"
    puts "   create_libraries  - create vhdl libraries"
    puts "   set_process_props - set process property values"
+   puts "   clean_project     - delete all generated files"
    puts "   show_help         - print this message"
    puts ""
 }
@@ -227,12 +244,12 @@ proc add_source_files {} {
 
    puts "$myScript: Adding sources to project..."
 
-   xfile add "afe_main.ucf"
-   xfile add "afe_main.v"
+   xfile add "afe.ucf"
+   xfile add "afe.v"
    xfile add "afe_tb.v"
 
    # Set the Top Module as well...
-   project set top "afe_main"
+   project set top "afe"
 
    puts "$myScript: project sources reloaded."
 
@@ -361,7 +378,7 @@ proc set_process_props {} {
    project set "Logic Optimization" "Density" -process "Fit"
    project set "Synthesis Constraints File" "" -process "Synthesize - XST"
    project set "Maximum Number of Lines in Report" "1000" -process "Generate Text Power Report"
-   project set "Output File Name" "afe_main" -process "Generate IBIS Model"
+   project set "Output File Name" "afe" -process "Generate IBIS Model"
    project set "Use Direct Input for Input Registers" "true" -process "Fit"
    project set "Collapsing Pterm Limit (3-56)" "28" -process "Fit"
    project set "Safe Implementation" "No" -process "Synthesize - XST"
@@ -383,6 +400,7 @@ proc main {} {
          "show_help"           { show_help }
          "run_process"         { run_process }
          "rebuild_project"     { rebuild_project }
+         "clean_project"       { clean_project }
          "set_project_props"   { set_project_props }
          "add_source_files"    { add_source_files }
          "create_libraries"    { create_libraries }

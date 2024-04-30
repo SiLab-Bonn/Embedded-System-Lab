@@ -1,0 +1,11 @@
+setMode -bs
+setCable -target "xilinx_xvc host=pilab07.physik.uni-bonn.de:2542 disableversioncheck=true"
+#Identify
+addDevice -p 1 -file afe.jed
+#erase -p 1 
+#blankCheck -p 1
+program -e -p 1
+checksum -p 1
+quit
+
+
