@@ -34,6 +34,8 @@ module afe
 );
 
 
+reg[7:0] tot_counter;
+reg[2:0] ptr;
 reg[7:0] sr_in;
 reg[7:0] gpio_reg;
 reg hit_reg;
@@ -41,7 +43,7 @@ reg sout;
 wire clk_buf;
 wire sclk_buf;
 
-assign MISO = CS_B? 1'b0 : 1'bz;
+assign MISO = CS_B? 1'b0 : tot_counter[ptr];
 assign GPIO = gpio_reg;
 assign HIT = hit_reg;
 assign INJ_OUT = INJ_IN;
@@ -50,6 +52,13 @@ assign LED = 1;
 BUFG CLK_BUFG_INST (.O(clk_buf), .I(CLK));
 BUFG SCLK_BUFG_INST (.O(sclk_buf), .I(SCLK));
 
+always @(posedge clk_buf)
+begin
+  if (!INJ_IN) // reset TOT counter
+    tot_counter <= 0;
+  else if (COMP)
+    tot_counter <= tot_counter + 1;
+end
 
 always @(posedge sclk_buf or posedge CS_B)
 begin
