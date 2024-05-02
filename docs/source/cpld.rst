@@ -7,7 +7,7 @@ Environment setup
 
 The development of FPGA (or CPLD) firmware requires tools (Xilinx ISE) which are not available for a Raspeberry Pi. Therefore, a remote Linux machine will be used to compile the firmware. The ouput of the design implementation will be a binary file that can be loaded into the CPLD using a JTAG interface. Follow these steps to setup the environment:
 
-1. The folder ``/home/pi/Embedded-System-Lab/code/AFE/`` has a subfolder called ISE that contains the required files and scripts for the design implementation. This folder should be copied to your work folder ``/home/pi/work``.
+1. The folder ``/home/pi/Embedded-System-Lab/code/AFE/`` has a subfolder called ``ISE`` that contains the required files and scripts for the design implementation. This folder should be copied to your work folder ``/home/pi/work``.
 
 2. Open a terminal and go to ``/home/pi/work/ISE``. There is a script called ``connect_remote_host.sh`` that will connect to the remote Linux machine and mount your local folder ``/home/pi/work/ISE`` there. Run the script by typing:
 
