@@ -13,7 +13,7 @@ The development of FPGA (or CPLD) firmware requires tools (Xilinx ISE) which are
 
   .. code-block:: bash
 
-    ``./connect_remote_host.sh``
+    ./connect_remote_host.sh
 
   Type ``pwd`` to check if the folder is mounted correctly. The output should be  ``/home/pi/pilab<xy>-remote`` where <xy> is the number of the local Rasperry Pi. The command ``ls`` should list the folder ``ISE``. Keep the terminal session open, you will nee it for the design implementation
 
@@ -23,7 +23,7 @@ The design of the CPLD logic can now be done on the local Raspberry Pi while the
  
   .. code-block:: bash
   
-    ``./implement_design.sh``
+    ./implement_design.sh
 
   The script will execute a sequence of tasks accoring to the CPLD design flow: 
 
@@ -38,7 +38,7 @@ The design of the CPLD logic can now be done on the local Raspberry Pi while the
 
   .. code-block:: bash
   
-    ``sudo /home/pi/Embedded-System-Lab/code/AFE/CPLD/jtag_programmer/jtag_programmer /home/pi/work/ISE/afe.xsvf``
+    sudo /home/pi/Embedded-System-Lab/code/AFE/CPLD/jtag_programmer/jtag_programmer /home/pi/work/ISE/afe.xsvf
 
   If you see ``SUCCESS - Completed XSVF execution.`` at the end of the messages the CPLD has been programmed successfully.
 
