@@ -11,17 +11,21 @@ The development of FPGA (or CPLD) firmware requires tools (Xilinx ISE) which are
 
 2. Open a terminal and go to ``/home/pi/work/ISE``. There is a script called ``connect_remote_host.sh`` that will connect to the remote Linux machine and mount your local folder ``/home/pi/work/ISE`` there. Run the script by typing:
 
-  ``./connect_remote_host.sh``
+  .. code-block:: bash
 
-  Type ``pwd``to check if the folder is mounted correctly. The output should be  ``/home/pi/pilab<xy>-remote`` where <xy> is the number of the local Rasperry Pi. The command ``ls`` should list the folder ``ISE``. Keep the terminal session open, you will nee it for the design implementation
+    ``./connect_remote_host.sh``
+
+  Type ``pwd`` to check if the folder is mounted correctly. The output should be  ``/home/pi/pilab<xy>-remote`` where <xy> is the number of the local Rasperry Pi. The command ``ls`` should list the folder ``ISE``. Keep the terminal session open, you will nee it for the design implementation
 
 The design of the CPLD logic can now be done on the local Raspberry Pi while the design implementation will be executed on the remote machine:
 
 1. Edit the Verilog code ``afe.v`` in your local work folder according to your design ideas. Save the file and call the design implemetation script by typing into the terminal with the ssh connection to the remote machine:
+ 
+  .. code-block:: bash
+  
+    ``./implement_design.sh``
 
-  ``./implement_design.sh``
-
-  Now a couple of tasks will be executed on the remote machine. 
+  The script will execute a sequence of tasks accoring to the CPLD design flow: 
 
   * Design synthesis
   * Translation
@@ -32,7 +36,9 @@ The design of the CPLD logic can now be done on the local Raspberry Pi while the
 
 2. Now you can use the JTAG programming tool ``jtag_programmer`` to program the CPLD (you will need a special cable to connect the CPLD's JTAG interface to the GPIO port of the Raspberry Pi). The programming tool is located in the folder ``/home/pi/Embedded-System-Lab/code/AFE/jtag_programmer``. To execute the tool on the local Raspberry Pi, open a new terminal and type:
 
-  ``sudo /home/pi/Embedded-System-Lab/code/AFE/CPLD/jtag_programmer/jtag_programmer /home/pi/work/ISE/afe.xsvf``
+  .. code-block:: bash
+  
+    ``sudo /home/pi/Embedded-System-Lab/code/AFE/CPLD/jtag_programmer/jtag_programmer /home/pi/work/ISE/afe.xsvf``
 
   If you see ``SUCCESS - Completed XSVF execution.`` at the end of the messages the CPLD has been programmed successfully.
 
