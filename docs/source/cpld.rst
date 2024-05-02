@@ -21,7 +21,7 @@ The design of the CPLD logic can now be done on the local Raspberry Pi while the
 
 1. Edit the Verilog code ``afe.v`` in your local work folder according to your design ideas. Save the file and call the design implemetation script by typing into the terminal with the ssh connection to the remote machine:
  
-  .. code-block:: bash
+  .. code-block::
   
     ./implement_design.sh
 
@@ -36,7 +36,7 @@ The design of the CPLD logic can now be done on the local Raspberry Pi while the
 
 2. Now you can use the JTAG programming tool ``jtag_programmer`` to program the CPLD (you will need a special cable to connect the CPLD's JTAG interface to the GPIO port of the Raspberry Pi). The programming tool is located in the folder ``/home/pi/Embedded-System-Lab/code/AFE/jtag_programmer``. To execute the tool on the local Raspberry Pi, open a new terminal and type:
 
-  .. code-block:: bash
+  .. code-block::
   
     sudo /home/pi/Embedded-System-Lab/code/AFE/CPLD/jtag_programmer/jtag_programmer /home/pi/work/ISE/afe.xsvf
 
