@@ -139,6 +139,7 @@ The exercise 0 contains preparatory questions related to SMU operation and MOSFE
 .. admonition:: Exercise 3. MOSFET I-V curves
 
   For measuring transistor I-V curves and extracting parameters, an N-channel MOSFET (BSP295) plugged into a transistor socket on the SMU module will be used. The gate of the MOSFET is permanently connected to output 1 and the drain is connected via a jumper to output 2. The MOSFET source is connected to ground.
+
   #. The drain current vs. gate voltage curves are measured by sweeping the gate voltage (output 1) and measuring the drain current (output 2) at a constant drain voltage. Write a scan loop to sweep the gate from 0 to 2000 mV and measures the drain current while keeping the drain voltage constant at 200 mV. Repeat the loop (nested loop) with a range of different drain voltages in the range of 100 to 500 mV.
   #. Now add a measurement for the drain current vs. drain voltage characteristic. Sweep the drain voltage from 0 to 2000 mV and measure the drain current for different constant gate voltages in the range of 800 to 1100 mV. Where does the transition from the linear to the saturation region occur?
 
