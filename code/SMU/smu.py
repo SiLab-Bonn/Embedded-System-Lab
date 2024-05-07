@@ -10,7 +10,7 @@ CH2 = 2
 # There are three devices connected to the I2C bus:
 #  - MCP47CVB22, dual channel 12-bit DAC
 #  - MAX11644, dual channel 12-bit ADC
-#  - PCA9554A, GPIO extender to controll the sense resitor multiplexer
+#  - PCA9554A, GPIO extender to control the sense resistor multiplexer
 #
 # The following code initializes each device with its address on the I2C bus
 # and sets the default configuration
@@ -51,7 +51,7 @@ def get_current_raw(channel, average = False):
 # multiplexer for selecting the current sense resistor
 rsns = I2C(0x38, 1) # init GPIO extender as I2C device on bus 1
 rsns.write(b'\x01\x00') # set bits 3:0 low
-rsns.write(b'\x03\xf0') # configute bits 3:0 as outputs
+rsns.write(b'\x03\xf0') # configure bits 3:0 as outputs
 # the mux settings [0,1,2,3] correspond to the following current sense resistors:
 # 0: mux is off
 # 1:  80 kOhm
