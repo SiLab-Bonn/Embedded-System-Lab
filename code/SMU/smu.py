@@ -74,24 +74,39 @@ def set_current_range(channel, value):
   rsns.write(bytes([0x01, reg]))
 
 # switch on
-current_range = 1
+current_range = 2
 set_voltage(CH1, 1)
 set_current_range(CH1, current_range)
 
-voltage_values = range(0, 2000, 20)
-current_values = []
+voltage_values = np.arange(0, 1000, 5)
+current_values = np.empty((voltage_values.size), float)
 
-for voltage in voltage_values:
+for voltage_step, voltage in enumerate(voltage_values):
   set_voltage(CH1, voltage)
   current = get_current_raw(CH1)/rsns_list[current_range]
-  current_values.append(current)
+  current_values[voltage_step] = current
   print("CH1 voltage [mV]:", voltage ," current [mA]:", current)
  # print("ADC counts:", current_raw)
 
-fig, ax = plt.subplots()
-ax.plot(voltage_values, current_values)
 
-ax.set(xlabel='Voltage (mV)', ylabel='Current (mA)', title='I-V Curve')
+fig, ax = plt.subplots(2, 1)
+
+# linear plot
+ax[0].plot(voltage_values, current_values)
+ax[0].set(xlabel='Voltage (mV)', ylabel='Current (mA)', title='I-V Curve')
+
+# logaritmic plot
+# log_current_values = np.log(current_values)
+# ax[1].plot(voltage_values, log_current_values)
+# ax[1].set(xlabel='Voltage (mV)', ylabel='ln(Current) (mA)')
+
+# Fit of the logarithic plot with a linear regression model
+# start = 60
+# stop =  120
+# coefficients = np.polyfit(voltage_values[start:stop], log_current_values[start:stop], 1)
+# fit = np.poly1d(coefficients)
+# ax[1].plot(voltage_values[start:stop], fit(voltage_values[start:stop]), color='red', label='Fit')
+# plt.legend(['Data', f'Fit: y = {coefficients[0]:.2f} x + {coefficients[1]:.2f}'])
 
 plt.show()
 
