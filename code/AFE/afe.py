@@ -99,7 +99,7 @@ def inject(threshold, charge, time_constant, n_injections):
     time.sleep(0.0002)
   
 charge_range = range(30, 100, 1)
-threshold = 3800
+threshold = 2200
 time_constant_range = range(6,7)
 
 threshold_scan(threshold, charge_range, time_constant_range, plot='sha')
