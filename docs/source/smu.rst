@@ -9,7 +9,7 @@ Experiment: Source-Monitoring-Unit and MOSFET Parameter Extraction
 
     Source-Meter Module
 
-In this experiment a Source-Monitoring-Unit (SMU) will be used to measure the characteristic I-V curves of (active) electronic devices. The acquired I-V curves are then used for the extraction of the devices electrical parameters. For example, a MOSFET is typically characterized by it threshold voltage |VTHR|, its transconductance |gm|, which describes its voltage-to-current gain and other parameters, which can be extracted from I-V measurements. The SMU ('source monitoring unit') module used in this experiment provides two programmable voltage sources with a wide range current measurement capability (~mA down to ~nA) spanning over three current measurement ranges. To achieve the best measurement accuracy, the current measurement range needs to be selected according to the expected current values. The Raspberry Pi communicates with the SMU via an I2C bus that writes the data to set the output voltages, sets the current mesuarement eange, and reads back the measured output current. 
+In this experiment a Source-Monitoring-Unit (SMU) will be used to measure the characteristic I-V curves of (active) electronic devices. The acquired I-V curves are then used for the extraction of the devices electrical parameters. For example, a MOSFET is typically characterized by it threshold voltage |VTHR|, its transconductance |gm|, which describes its voltage-to-current gain and other parameters, which can be extracted from I-V measurements. The SMU ('source monitoring unit') module used in this experiment provides two programmable voltage sources with a wide range current measurement capability (~mA down to ~nA) spanning over three current measurement ranges. To achieve the best measurement accuracy, the current measurement range needs to be selected according to the expected current values. The Raspberry Pi communicates with the SMU via an I2C bus that writes the data to set the output voltages, sets the current measurement range, and reads back the measured output current. 
 
 
 
@@ -100,12 +100,12 @@ The exercise 0 contains preparatory questions related to SMU operation and MOSFE
 
 .. admonition:: Exercise 0. Preparatory questions
 
-  #. What do the terms accuracy, resolution, and precision mean? Where is the difference? 
-  #. What is the resolution of an ADC? What is the quantization error? (Extra: Derive the formula for the quantization error.)
-  #. The current (or voltage) measurement accuracy of an SMU or multimeter is often given as the error in percent of the full scale. How large is this error for the current mesaurement with the 12 bit ADC, taking into account the quantization error only? Does this error depend on the current range?
-  #. The voltage source has a maximum output voltage of 4095 mV and 1 mV resolution (12 bit DAC). What would be the appropriate current range for measuring the I-V curve of a 1 kOhm load resistor? How many I-V measurement points would you get? Which value for the curren sense resistor |RSNS| would you choose? 
-  #. How many measurement points would you get for a 5 kOhm or a 200 Ohm load resistor, respectively? Hint: If the resistance is higher than 1 kOhm, the number of independent points is limited by the resolution of the current measurement i.e. the ADC range is not fully utilized. If the resistance is lower, the number of (meaningful) measurement points is defined by the maximum current the ADC can measure that will be reached before the full DAC voltage range is used. The plot below illustrates the situation. Shown are the I-V curves for the three resistors using a fixed current range. The 1 kOhm load resistance yields the maximum measurement points while the 5 kOhm (200 Ohm) load resistors I-V curves are limited by the DAC (ADC), respectively. 
-  #. The current mesurement ranges of the SMU have a ratio of 1\:100\:1000 (see table above). What would be appropriate threshold values (in ADC counts) for the current range switching? Note that the auto-ranging functionality requires one thresholds for switching from a lower range to a higher range and another threshold for switching from a higher to a lower range (i.e. one threshold at the lower ADC count range and one at the higher ADC count range). What relation between the two thresholds must be met to not have 'gaps' in the combined current measuremnt range? Note\: Typically ADCs perform best if not operated at the extreme ends of their range (i.e. keep the ADC values at least ~10-20 counts from their limits).
+  #. Describe in a few words what the terms accuracy, resolution, and precision mean in the context of analog-digital signal conversion.
+  #. What defines the resolution of an ADC? How is the minimum voltage step size calculated (also called least significant bit LSB) from the resolution and the maximum input voltage (VREF) of the ADC? What is the quantization error of an ADC and how does it relate to the LSB? 
+  #. The current (or voltage) measurement accuracy of an SMU or multimeter is often given as the error in percent of the full scale. How large is this error for the current measurement with the 12 bit ADC, taking into account the quantization error only? Does this error depend on the current range?
+  #. The programmable voltage source has 0 - 4095 mV output voltage range and 1 mV step size (12 bit DAC). What would be the best value for a sense resistor |RSNS| for measuring the I-V curve of a 1 kOhm load resistor? What is the resulting current measurement range and how many I-V measurement points would you get?  
+  #. How many measurement points would you get for a 5 kOhm or a 200 Ohm load resistor, respectively, using the current range you have chosen previously? Hint: If the resistance is higher than 1 kOhm, the number of independent points is limited by the resolution of the current measurement i.e. the ADC range is not fully utilized. If the resistance is lower, the number of (meaningful) measurement points is defined by the maximum current the ADC can measure that will be reached before the full DAC voltage range is used. The plot below illustrates the situation. Shown are the I-V curves for the three resistors using a fixed current range. The 1 kOhm load resistance yields the maximum measurement points while the 5 kOhm (200 Ohm) load resistors I-V curves are limited by the DAC (ADC), respectively. 
+  #. The current measurement ranges of the SMU have a ratio of 1\:100\:10.000 (see table above). What would be appropriate threshold values (in ADC counts) for the current range switching? Note that the auto-ranging functionality requires one thresholds for switching from a lower range to a higher range and another threshold for switching from a higher to a lower range (i.e. one threshold at the lower ADC count range and one at the higher ADC count range). What relation between the two thresholds must be met to not have 'gaps' in the combined current measurement range? Note\: Typically ADCs perform best if not operated at the extreme ends of their range (i.e. keep the ADC values at least ~10-20 counts from their limits).
 
      .. figure:: images/smu_ranges.png
       :width: 600
@@ -113,8 +113,9 @@ The exercise 0 contains preparatory questions related to SMU operation and MOSFE
 
       I-V curves for three load resistors values using a fixed current range.
 
-  #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region? Plot example I-V curves based on a simple (SPICE level 2 MOSFET model) to explain.
-  #. Derive the formula for definition of the transconductance |gm|. 
+  #. List and describe the operation regions of a MOSFET. What are the meanings of weak-, moderate- and strong inversion? What is the difference between linear- and saturation region?
+  #. Plot example I-V curves based on a simple quadratic MOSFET transistor equation for the strong inversion operation to explain linear and saturation regions.
+  #. Derive the formula for the transconductance |gm|. 
   #. How would one extract the threshold parameter |VTHR| from Id vs. Ugs curve? Also consider the extraction of the subthreshold slope, the transconductance |gm|, and the output resistance |go| (from the Id vs. Uds curve).
 
 
@@ -123,12 +124,12 @@ The exercise 0 contains preparatory questions related to SMU operation and MOSFE
   #. Write a simple script that allows to set the output voltage and read back the current of an SMU channel (you also need to set a current range, otherwise the output will be off). Control the output voltage with a voltmeter and compare the measured voltage with the value you have set in the script. Implement the current range selection and check the LED on the board for the selected range.
   #. Add a loop statement to the script and connect a 1 kOhm resistor to the output. Measure and plot I-V curves for all three current measurement ranges (fixed ranging).
   #. Extract the slope and offset from each of the three I-V curves. How well do the three current ranges match? 
-  #. Connect a diode to the SMU and plot the I-V curve for the forward region of the diode. Make the scans for all three current ranges separately and combine the traces in one plot. Remember to set the calibration constant to convert ADC code to current according to the selected current range (see equation above).
+  #. Connect a diode to the SMU and plot the I-V curve for the forward region of the diode. Make the scans for all three current ranges separately and combine the traces in one plot. Remember to set the calibration constant to convert ADC code to current according to the selected current range (see equation above). Does the diode have a threshold behavior? Look at each of the three current ranges separately.
 
 
 .. admonition:: Exercise 2. Automatic current range selection
 
-  #. Implement an "auto-ranging" functionality in the scan loop with the ADC count thresholds you have derived in the preporatory part. Measure the diode I-V curve again and plot linear and log current scales. 
+  #. Implement an "auto-ranging" functionality in the scan loop with the ADC count thresholds you have derived in the preparatory part. Measure the diode I-V curve again and plot linear and log current scales. 
   #. Now consider the precision of the current measurement. Repeat each current measurement 100 times and plot the standard deviation as error bars (choose a large voltage step size to limit the scan time). Compare the error to the theoretical limit given by the quantization error (see Exercise 0). What additional noise sources have to be considered?
   #. Improve the measurement precision by averaging over a number of current readings for each voltage step. Consider to adjust the number of averages according to the measurement range to optimize the scan time.
   #. Redo the diode I-V curve with the optimized scan loop and minimum voltage step size. Examine the curve at the points where the current range changes (also plot the derivative). How good do the |RSNS| resistor values match?
@@ -138,6 +139,7 @@ The exercise 0 contains preparatory questions related to SMU operation and MOSFE
 .. admonition:: Exercise 3. MOSFET I-V curves
 
   For measuring transistor I-V curves and extracting parameters, an N-channel MOSFET (BSP295) plugged into a transistor socket on the SMU module will be used. The gate of the MOSFET is permanently connected to output 1 and the drain is connected via a jumper to output 2. The MOSFET source is connected to ground.
+
   #. The drain current vs. gate voltage curves are measured by sweeping the gate voltage (output 1) and measuring the drain current (output 2) at a constant drain voltage. Write a scan loop to sweep the gate from 0 to 2000 mV and measures the drain current while keeping the drain voltage constant at 200 mV. Repeat the loop (nested loop) with a range of different drain voltages in the range of 100 to 500 mV.
   #. Now add a measurement for the drain current vs. drain voltage characteristic. Sweep the drain voltage from 0 to 2000 mV and measure the drain current for different constant gate voltages in the range of 800 to 1100 mV. Where does the transition from the linear to the saturation region occur?
 

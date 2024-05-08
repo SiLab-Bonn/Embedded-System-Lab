@@ -21,9 +21,9 @@ This programming example describes how to directly access the registers which co
   // start address of the GPIO register space on the VideoCore bus
   #define GPIO_BASE       0x7E200000
   // address offsets for the individual registers
-  #define GPIO_FSEL0      0x00  // mode selsction GPIO 0-9
-  #define GPIO_FSEL1      0x04  // mode selsction GPIO 10-19
-  #define GPIO_FSEL2      0x08  // mode selsction GPIO 20-29
+  #define GPIO_FSEL0      0x00  // mode selection GPIO 0-9
+  #define GPIO_FSEL1      0x04  // mode selection GPIO 10-19
+  #define GPIO_FSEL2      0x08  // mode selection GPIO 20-29
   #define GPIO_SET0       0x1C  // set outputs to '1' GPIO 0-31
   #define GPIO_CLR0       0x28  // set outputs to '0' GPIO 0-31
   #define GPIO_LEV0       0x34  // get input states GPIO 0-31
@@ -59,7 +59,7 @@ Finally, the GPIO mode is set for a given pin which then can be used for output 
   *gpclr0  = 1 << 27;  // set output to '0'
   *gpset0  = 1 << 27;  // set output to '1'
   *gpclr0  = 1 << 27;  // set output to '0'
-  *gpfsel2 = 0;       // set default mode (all GPIO becocme inputs) 
+  *gpfsel2 = 0;       // set default mode (all GPIO become inputs) 
   munmap(gpio_virt_addr_ptr, 0x1000); // free allocated memory
 
 .. warning::
@@ -102,7 +102,7 @@ Exercises
 
   Copy the file :file:`gpio.c` from the :file:`code/GPIO` folder to your :file:`work` folder. Compile (``CTRL+Shift+b`` or ``Terminal->Run build Task``) and run the program by typing :file:`sudo -E ./gpio` into a terminal from within your :file:`work` folder.
   
-  If you recieve an error about 'gpio' not found, double check that you've compiled the source code into a binary with the correct file name.
+  If you receive an error about 'gpio' not found, double check that you've compiled the source code into a binary with the correct file name.
 
   1. Connect an oscilloscope probe to the GPIO27 pin (red LED of the RGB LED) on the base board and adjust the oscilloscope setting such that it triggers on the output pulse when the GPIO program runs. Make sure you select an appropriate horizontal resolution because the pulse will be very narrow (~ 30ns).
   2. Add a loop statement around the code which toggles the GPIO output state to produce a stream of output pulses. 
@@ -115,9 +115,9 @@ Exercises
     
   Measure the pulse width again for the different pulse width modifications. What happens when the CPU runs other tasks while the output is toggling (start another application or just move a window with the mouse). Explain what you see.
 
-.. admonition:: Exercise 2.  GPIO programming with Python 
+.. admonition:: Exercise 2. GPIO programming with Python 
 
-  Copy the file :file:`gpio.py` from the :file:`code/GPIO` folder to your :file:`work` folder. Proceed similar to the tasks in the C-code excersise.
+  Copy the file :file:`gpio.py` from the :file:`code/GPIO` folder to your :file:`work` folder. Proceed similar to the tasks in the C-code exercises.
 
   1. If not yet done, connect an oscilloscope probe to the GPIO27 pin (red LED of the RGB LED) on the base board and adjust the oscilloscope setting such that it  triggers on the output pulse when the GPIO scripts runs. What is the pulse width now?
   2. Add a loop statement around the code which toggles the GPIO output state to produce a stream of output pulses. 
@@ -126,20 +126,20 @@ Exercises
   5. Increase the pulse width by inserting calls to ``sleep()`` (add ``import time`` at the top of your script). 
   6. Adjust both C- and Python codes to generate a ~100 us pulse. How stable is the pulse width? Is there a difference between the C-code and Python implementation? 
   
-.. admonition:: Advanced Exercise:  Serial Terminal connection between two Raspberry boards
+.. admonition:: Exercise 3. Serial UART communication with Python
   
-  The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards and to establish a serial link between them using the UART interface on GPIO pins 14 (TX) and 15 (RX).
+  The goal of this exercise is to implement a simple terminal program running on two Raspberry Pi boards (or a board with itself, in loopback) and to establish a serial link using the UART interface on GPIO pins 14 (TX) and 15 (RX).
 
   Prerequisites:
-    - Enabled 'Serial port', and disabled 'Serial Console' in the Raspberry Pi setting.
-    - A Python library that instanciates a serial port object (for example PySerial) and allows sending and receiving data.
+    - In Raspberry Pi Configuration GUI ensure 'Serial port' is enabled, and 'Serial Console' is disabled. If a change was necessary, you must reboot for it to take effect.
+    - A Python library that instantiates a serial port object (for example PySerial) and allows sending and receiving data.
     - A direct connection between RX and TX pins (loop-back) on a single board for testing the script. 
     - A cross-over connection for making the RX-TX / TX-RX connection between two boards.
   
   Tasks:
-    - Establish the loop-back on a single board and test the script
-    - Connect an oscilloscope to RX (TX) pins and examine the waveform. Set various serial port configuration parameters (baudrate, number of stop bits, parity) and explain their effect.
+    - Write a script, using the `PySerial library <https://pyserial.readthedocs.io/en/latest/shortintro.html>`_, to transmit user input strings across the serial interface. Make sure you properly convert strings to a binary format. (Hint: `str.encode() <https://docs.python.org/3/library/stdtypes.html#str.encode>`_)
+    - Connect an oscilloscope to RX (TX) pins and examine the waveform. Set various serial port configuration parameters (baud rate, number of stop bits, parity) and explain their effect.
     - Connect the serial link between two boards connecting TX of one board to RX of the other board and vice versa.
-    - Make sure ther serial configuration is the same on both boards and send and receive data.
+    - Make sure the serial configuration is the same on both boards and send and receive data.
     - What happens if the settings are not the same on both boards?
     - Extend your script to send and receive binary files.

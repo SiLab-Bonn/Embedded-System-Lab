@@ -18,18 +18,19 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module afe_main
+module afe_solution
 (
-    input  MOSI,
-    output MISO,
-    input  CS_B,
-    input  SCLK,
-    input  INJ_IN,
+	input  MOSI,
+	output MISO,
+	input  CS_B,
+	input  SCLK,
+	input  INJ_IN,
 	input  COMP,
-    output HIT,
+	output HIT,
 	output INJ_OUT,
 	output[7:0] GPIO,
-    input  CLK
+	input  CLK,
+	output LED
 );
 
 
@@ -46,6 +47,7 @@ assign MISO = CS_B? 1'b0 : tot_counter[ptr];
 assign GPIO = gpio_reg;
 assign HIT = hit_reg;
 assign INJ_OUT = INJ_IN;
+assign LED = 1;
 
 BUFG CLK_BUFG_INST (.O(clk_buf), .I(CLK));
 BUFG SCLK_BUFG_INST (.O(sclk_buf), .I(SCLK));

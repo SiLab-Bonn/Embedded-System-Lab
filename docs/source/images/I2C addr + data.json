@@ -1,0 +1,7 @@
+{signal: 
+ [
+  {name: 'SDA', wave: '1022222223401.022222222401', data: ["A6","A5", "A4", "A3", "A2", "A1", "A0", "R/W", "ACK", "D7", "D6", "D5", "D4", "D3", "D2", "D1", "D0", "ACK"  ], phase: 0.5},
+  {name: 'SCL', wave: 'hpppppppppph..pppppppppph', phase: 0.2}
+],
+  config: { hscale: 0.5},
+}

@@ -14,7 +14,7 @@ GPIO.setup(TRG, GPIO.OUT)
 
 spi = spidev.SpiDev()
 spi.open(0,0)  # (bus, device)
-spi.max_speed_hz = 50000
+spi.max_speed_hz = 1000000
 spi.mode = 0
 
 spi_byte = 0x00
@@ -25,9 +25,11 @@ while (input() != 'q'):
 
   spi.xfer([spi_byte])
   
-  time.sleep(0.0001)
   GPIO.output(TRG, GPIO.LOW)
-  time.sleep(0.1)
+
+
   spi_byte += 1
 
 spi.close()
+
+

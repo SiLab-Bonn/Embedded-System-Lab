@@ -15,12 +15,13 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 import sphinx_rtd_theme
+import sphinx_copybutton
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'Embedded System Lab'
-copyright = '2023, SILAB'
+copyright = '2024, SILAB'
 author = 'Hans Krüger'
 
 # The full version, including alpha/beta/rc tags
@@ -34,7 +35,8 @@ master_doc = 'index'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.intersphinx', 
+              'sphinx_copybutton']
 
 source_suffix = {
     '.rst': 'restructuredtext',
