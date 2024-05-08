@@ -78,7 +78,7 @@ current_range = 2
 set_voltage(CH1, 1)
 set_current_range(CH1, current_range)
 
-voltage_values = np.arange(0, 1000, 5)
+voltage_values = np.arange(0, 1000, 5, dtype=float)
 current_values = np.empty((voltage_values.size), float)
 
 for voltage_step, voltage in enumerate(voltage_values):
@@ -91,6 +91,8 @@ for voltage_step, voltage in enumerate(voltage_values):
 
 fig, ax = plt.subplots(2, 1)
 
+#voltage_values /= 1000
+
 # linear plot
 ax[0].plot(voltage_values, current_values)
 ax[0].set(xlabel='Voltage (mV)', ylabel='Current (mA)', title='I-V Curve')
@@ -100,13 +102,14 @@ log_current_values = np.log(current_values)
 ax[1].plot(voltage_values, log_current_values)
 ax[1].set(xlabel='Voltage (mV)', ylabel='ln(Current) (mA)')
 
-# Fit of the logarithic plot with a linear regression model
-start = 60
-stop =  120
+# # Fit of the logarithic plot with a linear regression model
+start = 70
+stop =  110
 coefficients = np.polyfit(voltage_values[start:stop], log_current_values[start:stop], 1)
+print(coefficients)
 fit = np.poly1d(coefficients)
 ax[1].plot(voltage_values[start:stop], fit(voltage_values[start:stop]), color='red', label='Fit')
-plt.legend(['Data', f'Fit: y = {coefficients[0]:.2f} x + {coefficients[1]:.2f}'])
+plt.legend(['Data', f'Fit: y = {coefficients[0]:.3f} x + {coefficients[1]:.2f}'])
 
 plt.show()
 
