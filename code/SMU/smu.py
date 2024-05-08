@@ -96,17 +96,17 @@ ax[0].plot(voltage_values, current_values)
 ax[0].set(xlabel='Voltage (mV)', ylabel='Current (mA)', title='I-V Curve')
 
 # logaritmic plot
-# log_current_values = np.log(current_values)
-# ax[1].plot(voltage_values, log_current_values)
-# ax[1].set(xlabel='Voltage (mV)', ylabel='ln(Current) (mA)')
+log_current_values = np.log(current_values)
+ax[1].plot(voltage_values, log_current_values)
+ax[1].set(xlabel='Voltage (mV)', ylabel='ln(Current) (mA)')
 
 # Fit of the logarithic plot with a linear regression model
-# start = 60
-# stop =  120
-# coefficients = np.polyfit(voltage_values[start:stop], log_current_values[start:stop], 1)
-# fit = np.poly1d(coefficients)
-# ax[1].plot(voltage_values[start:stop], fit(voltage_values[start:stop]), color='red', label='Fit')
-# plt.legend(['Data', f'Fit: y = {coefficients[0]:.2f} x + {coefficients[1]:.2f}'])
+start = 60
+stop =  120
+coefficients = np.polyfit(voltage_values[start:stop], log_current_values[start:stop], 1)
+fit = np.poly1d(coefficients)
+ax[1].plot(voltage_values[start:stop], fit(voltage_values[start:stop]), color='red', label='Fit')
+plt.legend(['Data', f'Fit: y = {coefficients[0]:.2f} x + {coefficients[1]:.2f}'])
 
 plt.show()
 
