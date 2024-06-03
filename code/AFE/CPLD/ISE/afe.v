@@ -40,6 +40,7 @@ reg hit_reg;
 reg sout;
 wire clk_buf;
 wire sclk_buf;
+reg[2:0] ptr;
 
 assign MISO = CS_B? 1'b0 : 1'bz;
 assign GPIO = gpio_reg;
