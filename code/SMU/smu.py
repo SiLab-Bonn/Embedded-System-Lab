@@ -85,39 +85,45 @@ for voltage_step, voltage in enumerate(voltage_values):
   set_voltage(CH1, voltage)
   current = get_current_raw(CH1)/rsns_list[current_range]
   current_values[voltage_step] = current
-  print("CH1 voltage [mV]:", voltage ," current [mA]:", current)
+ # print("CH1 voltage [mV]:", voltage ," current [mA]:", current)
  # print("ADC counts:", current_raw)
 
+# switch off after scan is done
+set_voltage(CH1, 0)
+set_voltage(CH2, 0)
+set_current_range(CH1, 0)
+set_current_range(CH2, 0)
 
 fig, ax = plt.subplots(2, 1)
-
-#voltage_values /= 1000
 
 # linear plot
 ax[0].plot(voltage_values, current_values)
 ax[0].set(xlabel='Voltage (mV)', ylabel='Current (mA)', title='I-V Curve')
 
-# logaritmic plot
-log_current_values = np.log(current_values)
-ax[1].plot(voltage_values, log_current_values)
-ax[1].set(xlabel='Voltage (mV)', ylabel='ln(Current) (mA)')
+# # logaritmic plot
+# log_current_values = np.log(current_values)
+# ax[1].plot(voltage_values, log_current_values)
+# ax[1].set(xlabel='Voltage (mV)', ylabel='ln(Current) (mA)')
 
 # # Fit of the logarithic plot with a linear regression model
-start = 70
-stop =  110
-coefficients = np.polyfit(voltage_values[start:stop], log_current_values[start:stop], 1)
-print(coefficients)
-fit = np.poly1d(coefficients)
-ax[1].plot(voltage_values[start:stop], fit(voltage_values[start:stop]), color='red', label='Fit')
-plt.legend(['Data', f'Fit: y = {coefficients[0]:.3f} x + {coefficients[1]:.2f}'])
+# start = 80 # 20
+# stop =  120 # 55
+# coefficients = np.polyfit(voltage_values[start:stop], log_current_values[start:stop], 1)
+# fit = np.poly1d(coefficients)
+# ax[1].plot(voltage_values[start:stop], fit(voltage_values[start:stop]), color='red', label='Fit')
+
+# a = coefficients[0] # slope
+# b = coefficients[1] # intercept
+# print(a, b)
+
+# VT = 30 # temperature voltage [mV]
+# IS = np.exp(b) * 1e-3 # saturation current [A]
+# n = 1 /(a*VT) # ideality factor
+# print("IS = %.2e A" % IS)
+# print("n = %.2f" % n)
+# plt.legend(['Data', f'Fit: y = {a:.3f} x + {b:.2f}'])
 
 plt.show()
-
-# switch off
-set_voltage(CH1, 0)
-set_voltage(CH2, 0)
-set_current_range(CH1, 0)
-set_current_range(CH2, 0)
 
 adc.close()
 dac.close()

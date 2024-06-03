@@ -21,6 +21,7 @@ Embedded System Lab
    afe
    psa
    fast-adc
+   cpld
 
 
 Indices and tables

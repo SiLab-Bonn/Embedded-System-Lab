@@ -41,7 +41,7 @@ The development of the digital logic can now be done on the local Raspberry Pi w
 
   .. code-block::
   
-    sudo /home/pi/Embedded-System-Lab/code/AFE/CPLD/jtag_programmer/jtag_programmer /home/pi/work/ISE/afe.xsvf
+    sudo -E /home/pi/Embedded-System-Lab/code/AFE/CPLD/jtag_programmer/jtag_programmer /home/pi/work/ISE/afe.xsvf
 
   If you see ``SUCCESS - Completed XSVF execution.`` at the end of the messages the CPLD has been programmed successfully.
 
