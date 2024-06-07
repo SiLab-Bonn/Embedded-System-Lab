@@ -9,11 +9,11 @@ Experiment: Analog Signal Processing for Semiconductor Sensors
 
     Analog Front-end Module
 
-The goal of this lab module is an understanding of the typical analog signal processing steps used for semiconductor charge signal read-out and the basic data acquisition and analysis methods. A discrete single channel analog front-end (AFE) chain will be used to analyse the functionality of each circuit block. In particular the characterisation of the noise performance and its dependence of circuit parameters will be discussed. The electrical interface to the AFE hardware will enable the injection of calibration charge signals, programming of circuit parameters, and the detection of hits. On the software side scan routines will be developed to set the circuit parameters of interest and read the AFE digital output response. Basic analysis methods will be introduced to extract performance parameters such as equivalent noise charge (ENC), charge transfer gain, linearity etc. Additionally, the fast ADC can be used to record analog waveforms for further analysis.
+The goal of this lab module is an understanding of the typical analog signal processing steps used for semiconductor charge signal read-out and the basic data acquisition and analysis methods. A discrete single channel analog front-end (AFE) chain will be used to analyze the functionality of each circuit block. In particular the characterization of the noise performance and its dependence of circuit parameters will be discussed. The electrical interface to the AFE hardware will enable the injection of calibration charge signals, programming of circuit parameters, and the detection of hits. On the software side scan routines will be developed to set the circuit parameters of interest and read the AFE digital output response. Basic analysis methods will be introduced to extract performance parameters such as equivalent noise charge (ENC), charge transfer gain, linearity etc. Additionally, the fast ADC can be used to record analog waveforms for further analysis.
 
 Signal Processing Overview
 ==========================
-A typical analog read-out chain, also called analog front-end, for a semiconductor detector consists of a charge sensitive amplifier (CSA), a pulse shaping amplifier (SHA) and digitization circuit which simplest implementation is a comparator (COMP), as shown in the picture below. The CSA converts the charge signal of the connected detector diode to a voltage step equal to the ratio of signal charge and feedback capacitance (Qsig/Cf). The shaping amplifier acts on the CSA output as a signal filter with a bandpass transfer function. By adjusting its bandpass center frequency the signal-to-noise ratio of the signal processing chain can be optimized. The comparator compares the output of the shaped signal with a programmable threshold. When the input signal is above the threshold, the comparator output goes high and flags a signal hit to the digital read-out logic.
+A typical analog read-out chain, also called analog front-end, for a semiconductor detector consists of a charge sensitive amplifier (CSA), a pulse shaping amplifier (SHA) and digitization circuit which simplest implementation is a comparator (COMP), as shown in the picture below. The CSA converts the charge signal of the connected detector diode to a voltage step equal to the ratio of signal charge and feedback capacitance (Qsig/Cf). The shaping amplifier acts on the CSA output as a signal filter with a band-pass transfer function. By adjusting its band-pass center frequency the signal-to-noise ratio of the signal processing chain can be optimized. The comparator compares the output of the shaped signal with a programmable threshold. When the input signal is above the threshold, the comparator output goes high and flags a signal hit to the digital read-out logic.
 
 .. figure:: images/AFE_signal_flow.png
     :width: 600
@@ -23,7 +23,7 @@ A typical analog read-out chain, also called analog front-end, for a semiconduct
 
 Circuit Implementation
 ======================
-The simplified schematic in the figure below shows the implementation of the signal processing chain. The CSA is build around a low noise opamp which is feed-back with a small capacitance **Cf** and a large resistance **Rf**. The feedback capacitance **Cf** defines the charge transfer gain and the resistance **Rf** allows for a slow discharge of **Cf** and setting of the dc operation point of the opamp. To enable calibration and characterization measurements, an injection circuit is available to generate a programmable CSA input signal. On the rising edge of the digital **TRG_INJ** signal a negative charge of the size **Cinj** times the programmable voltage step amplitude **VINJ** is applied to the CSA input.
+The simplified schematic in the figure below shows the implementation of the signal processing chain. The CSA is build around a low noise op-amp which is feed-back with a small capacitance **Cf** and a large resistance **Rf**. The feedback capacitance **Cf** defines the charge transfer gain and the resistance **Rf** allows for a slow discharge of **Cf** and setting of the dc operation point of the op-amp. To enable calibration and characterization measurements, an injection circuit is used to generate a programmable CSA input signal. On the rising edge of the digital **TRG_INJ** signal a negative charge of the size **Cinj** times the programmable voltage step amplitude **VINJ** is applied to the CSA input.
 
 
 .. figure:: images/AFE_simple_schematic.png
@@ -32,13 +32,15 @@ The simplified schematic in the figure below shows the implementation of the sig
 
     Simplified schematic of the analog front-end. **INJ** and **HIT** control the charge injection and digital hit readout, respectively. The **SPI** bus is used to program the DAC voltages **VTHR** and **VINJ** and select the SHA time constant. The full AFE schematic is found here: :download:`AFE_1.1.pdf <documents/AFE_1.1.pdf>`
 
-The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain *g* to the circuit. Both time constants of the HPF and LPF are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the SHA response to an input step function of the amplitude *Ucsa* is (for t >= 0) 
+The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain :math:`g = 1000` to the circuit. Both time constants of the HPF and LPF are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the SHA response to an input step function of the amplitude :math:`Ucsa` is (for :math:`t \geq 0`) 
 
 .. math::
 
   U_{SHA}(t) = U_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}.
 
-The final analog block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the shaper output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function of the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. The logic which latches the comparator output is implemented in a CPLD (Complex Programmable Logic Device). This logic IC is programmed as depicted in the schematic diagram below.
+Both analog control voltages **VTHR** and **VINJ** are generated by a 12-bit digital to analog converter (DAC). The maximum output voltage of the DAC is 2048 mV which corresponds to a LSB step size of 0.5 mV for **VTHR** and 0.05 mV for **VINJ**, respectively, taking into account the attenuation of the resistive divider in front of the injection capacitor.
+
+The final analog block is the comparator (COMP) which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the shaper output is above the threshold. For a fixed threshold the length of the comparator output signal therefore is a function of the signal amplitude. Some systems detect this pulse width (aka TOT, time over threshold) to get a measure of the incident charge. The logic which latches the comparator output is implemented in a CPLD (Complex Programmable Logic Device). This logic IC can be programmed as depicted in the schematic diagram below.
 
 .. figure:: images/AFE_digital.png
     :width: 500
@@ -111,11 +113,11 @@ The dataset for the injection voltage scan will represent an s-curve which allow
   
   Q_{INJ}= k \cdot  V_{INJ} \cdot C_{INJ}
 
-with *k* = 0.5 for the attenuation of the resistive divider in front of the injection switch and CINJ = 0.5 pF the injection capacitance which converts the voltage step into a charge.
+with *k* = 0.1 for the attenuation of the resistive divider in front of the injection switch and CINJ = 0.1 pF the injection capacitance which converts the voltage step into a charge.
 
 .. math::
   
-  Q_{INJ}[fC]= 0.25 [pF] \cdot V_{INJ}[mV]
+  Q_{INJ}[fC]= 0.01 [pF] \cdot V_{INJ}[mV]
 
 Once the x-axis of the s-curve is converted to charge units also the threshold voltage can be calibrated and converted to charge units. This is done by measuring s-curves for different threshold voltages and plotting the resulting 50 % values (the effective threshold in charge units) as a function of the applied threshold voltage. The extracted slope is  the threshold calibration factor. This factor can also be interpreted a the charge to voltage gain of the read-out chain since it converts an input charge to an output voltage which is seen at the input of the comparator. Actually the scanning of the comparator threshold voltage allows the measurement of the shaper output peak amplitude, which is equivalent to the threshold voltage at which the comparator fires with 50 % probability.
 
@@ -130,10 +132,11 @@ The exercise 0 contains preparatory questions that should be answered before com
 
 .. admonition:: Exercise 0. Preparatory questions
 
-  #. The injection circuit generates a negative charge pulse of the size **Cinj** times the voltage step amplitude **VINJ**. What is the charge in femto Coulomb generated by a voltage step of 1 mV with **Cinj**  = 0.5 pF? What is the maximum charge that can be injected with **VINJ_max** = 1 V?
-  #. What is the expected CSA output voltage for a charge of 1 fC and a feedback capacitance of 0.5 pF? What is the shape of the CSA waveform?
-  #. The shaping amplifier has an internal gain of 100. What is the peak amplitude of the output signal using equal high- and lowpass time constants for an input voltage step of 10 mV?
-  #. What is the total charge sensitivity of the AFE chain (CSA + SHA) i.e., peak amplitude in mV at the shaper output per fC charge at the CSA input? 
+  #. The injection circuit generates a charge signal of the size :math:`C_{inj} \cdot V_{inj}`. What is the charge in femto Coulomb generated by a voltage step of 100 mV with :math:`C_{inj} = 0.1 pF`? What is the charge step size for :math:`V_{inj} = 0.5 mV` which corresponds to the LSB size of the voltage DAC? Also calculate the values in units of the elementary charge (electrons).
+  #. An ideal charge sensitive amplifier generates a step-like output waveform in response to an instantaneous charge signal at the input. What is the **CSA** output step amplitude for an input charge of 1 fC given the feedback capacitance of 1 pF? How is the charge transfer gain defined and what is the unit of the charge transfer gain?
+  #. A shaping amplifier responds with a characteristic output pulse to a step-like input waveform. What is the peak pulse amplitude for a input step with a unit amplitude (i.e. 1 V)? Assume a CR-RC (high-pass + low-pass filter) with equal time constants.
+  #. What is the total charge sensitivity of the analog front-end chain (CSA + SHA) i.e., peak amplitude in mV at the shaper output per fC (or electron) charge at the CSA input? 
+  #. The threshold voltage to detect a signal with the comparator is set by a DAC with an LSB size of 0.5 mV. What is the equivalent LSB size in fC or electrons?
   #. An amplitude histogram of an ideal noise-free system would consist of a delta-like peaks for the baseline and the shaped signal produced by a constant input charge. In a real system, however, noise is overlaying the ideal signals, leading to fluctuations of the analog amplitudes. Modify the amplitude histogram to reflect these fluctuation (assume a Gaussian distribution of the noise).
   #. The threshold of the comparator should be set in a way, that the noise is suppressed and only the signals are detected. Draw an optimum threshold in your amplitude histogram. What would happen if the threshold was too low, what would happen if it was too high? How are purity and efficiency of the detection process defined in this context? What happens if baseline and signal fluctuations are getting to close to each other?
   #. What is the equivalent noise charge (ENC) in fC for a noise amplitude of 10 mV given the charge sensitivity calculated above?
@@ -150,7 +153,7 @@ The exercise 0 contains preparatory questions that should be answered before com
 
 .. admonition:: Exercise 2. Characterization with the digital read-out
 
-  #. Now select the comparator output with the monitor multiplexer. Set a threshold which is roughly at the middle of the shaper peak amplitude (the **Vthr** DAC gain is 1 mV/DAC step). Observe the pulse width of the comparator output (time-over-threshold, TOT) for different injection amplitudes. What relation between TOT and injected charge would you expect? An automated TOT measurement can be implemented by using the hit signal to start and stop a timer. This will be implemented later with the FPGA lab module.
+  #. Now select the comparator output with the monitor multiplexer. Set a threshold which is roughly at the middle of the shaper peak amplitude (the **Vthr** DAC gain is 0.5 mV/DAC step). Observe the pulse width of the comparator output (time-over-threshold, TOT) for different injection amplitudes. What relation between TOT and injected charge would you expect? An automated TOT measurement can be implemented by using the hit signal to start and stop a timer. This will be implemented later with the FPGA lab module.
   #. Implement a scan routine to measure the s-curve of the system. The s-curve is obtained by measuring the hit probability as a function of the injected charge. The charge is varied by changing the injection voltage. The hit probability is calculated by counting the number of hits for a given charge step in relation to the total number of injections. 
   #. Use the measured s-curve to extract the threshold (50 % value) and the noise (slope at the 50 % point). Repeat for different system settings.
 
