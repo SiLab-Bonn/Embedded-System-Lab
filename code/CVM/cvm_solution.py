@@ -40,7 +40,8 @@ vbias = KA3005P()
 smu_voltage = 1500  # voltage amplitude for charge measurement
 frequency_values = np.arange(100, 1001, 10)   # switch frequency in kHz units
 current_values   = np.empty(frequency_values.size)
-vbias_values     = np.arange(0, 30.1, 0.1)
+vbias_step_size = 0.1
+vbias_values     = np.arange(0, 30.1, vbias_step_size)
 capacitance_values = np.empty(vbias_values.size)
 
 fig, ax = plt.subplots(2,2)
@@ -73,6 +74,7 @@ capacitance_values = savgol_filter(capacitance_values, 9, 3)
 depletion_width_values = (e0 * er * A_diode)/(capacitance_values/1e12) * 1e4 # pF to F, cm to µm
 depletion_width_values = savgol_filter(depletion_width_values, 15, 3) 
 capacitance_derivative = np.gradient(1/(capacitance_values/1e12 * capacitance_values/1e12))
+capacitance_derivative = capacitance_derivative / vbias_step_size
 
 neff = 2/(A_diode*A_diode*e0*er*q)*1/capacitance_derivative
 
