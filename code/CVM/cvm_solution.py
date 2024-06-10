@@ -26,8 +26,8 @@ gpio = ctypes.CDLL("/home/pi/Embedded-System-Lab/code/lib/gpio_clib.so")
 # voltage source with current measurement
 smu = SMU()
 cvm = smu.ch[0]
-#cvm.set_current_range('low')
-cvm.enable_autorange()
+cvm.set_current_range('mid')
+#cvm.enable_autorange()
 
 # clock output
 gpio.setup()
@@ -38,7 +38,7 @@ vbias = KA3005P()
 
 # scan parameters
 smu_voltage = 1500  # voltage amplitude for charge measurement
-frequency_values = np.arange(200, 600, 50)   # switch frequency in kHz units
+frequency_values = np.arange(100, 1001, 10)   # switch frequency in kHz units
 current_values   = np.empty(frequency_values.size)
 vbias_values     = np.arange(0, 30.1, 0.1)
 capacitance_values = np.empty(vbias_values.size)
@@ -51,7 +51,7 @@ vbias.enable_output()
 
 for vbias_index, bias_voltage in enumerate(vbias_values):
   vbias.set_voltage(bias_voltage)
-  time.sleep(1)
+  time.sleep(0.5)
   for frequency_index, frequency in enumerate(frequency_values):
     gpio.set_gpclk_freq(int(frequency)) 
     time.sleep(0.05)
@@ -67,11 +67,11 @@ for vbias_index, bias_voltage in enumerate(vbias_values):
 # remove parasitic capacitance
 capacitance_values = capacitance_values - parasitic_capacitance 
 # smoothing
-capacitance_values = savgol_filter(capacitance_values, 20, 2) 
+capacitance_values = savgol_filter(capacitance_values, 9, 3) 
 
 # calculate effective doping density calculation
 depletion_width_values = (e0 * er * A_diode)/(capacitance_values/1e12) * 1e4 # pF to F, cm to µm
-depletion_width_values = savgol_filter(depletion_width_values, 9, 2) 
+depletion_width_values = savgol_filter(depletion_width_values, 15, 3) 
 capacitance_derivative = np.gradient(1/(capacitance_values/1e12 * capacitance_values/1e12))
 
 neff = 2/(A_diode*A_diode*e0*er*q)*1/capacitance_derivative
