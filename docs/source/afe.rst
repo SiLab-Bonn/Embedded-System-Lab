@@ -13,7 +13,7 @@ The goal of this lab module is an understanding of the typical analog signal pro
 
 Signal Processing Overview
 ==========================
-A typical analog read-out chain, also called analog front-end, for a semiconductor detector consists of a charge sensitive amplifier (CSA), a pulse shaping amplifier (SHA) and digitization circuit which simplest implementation is a comparator (COMP), as shown in the picture below. The CSA converts the charge signal of the connected detector diode to a voltage step equal to the ratio of signal charge and feedback capacitance (Qsig/Cf). The shaping amplifier acts on the CSA output as a signal filter with a band-pass transfer function. By adjusting its band-pass center frequency the signal-to-noise ratio of the signal processing chain can be optimized. The comparator compares the output of the shaped signal with a programmable threshold. When the input signal is above the threshold, the comparator output goes high and flags a signal hit to the digital read-out logic.
+A typical analog read-out chain, also called analog front-end, for a semiconductor detector consists of a charge sensitive amplifier (CSA), a pulse shaping amplifier (SHA) and digitization circuit which simplest implementation is a comparator (COMP), as shown in the picture below. The CSA converts the charge signal of a detector diode (or an injection circuit) to a voltage step according to the feedback capacitance **Cf**. The shaping amplifier (SHA) acts on the CSA output as a signal filter with a band-pass transfer function. By adjusting its band-pass center frequency the signal-to-noise ratio of the signal processing chain can be optimized. The comparator compares the output of the shaped signal with a programmable threshold. When the input signal is above the threshold, the comparator output goes high and flags a signal hit to the digital read-out logic.
 
 .. figure:: images/AFE_signal_flow.png
     :width: 600
@@ -23,7 +23,13 @@ A typical analog read-out chain, also called analog front-end, for a semiconduct
 
 Circuit Implementation
 ======================
-The simplified schematic in the figure below shows the implementation of the signal processing chain. The CSA is build around a low noise op-amp which is feed-back with a small capacitance **Cf** and a large resistance **Rf**. The feedback capacitance **Cf** defines the charge transfer gain and the resistance **Rf** allows for a slow discharge of **Cf** and setting of the dc operation point of the op-amp. To enable calibration and characterization measurements, an injection circuit is used to generate a programmable CSA input signal. On the rising edge of the digital **TRG_INJ** signal a negative charge of the size **Cinj** times the programmable voltage step amplitude **VINJ** is applied to the CSA input.
+The simplified schematic in the figure below shows the implementation of the signal processing chain. The CSA is build around a low noise op-amp which is feed-back with a small capacitance **Cf** and a large resistance **Rf**. The feedback capacitance **Cf** defines the charge transfer gain and the resistance **Rf** allows for a slow discharge of **Cf** and setting of the dc operation point of the op-amp. The output voltage of the charge sensitive amplifier in response to an input charge *Q* is given by the formula:
+
+.. math::
+
+  V_{CSA} = \frac{Q}{C_{f}}.
+
+To enable calibration and characterization measurements, an injection circuit is used to generate a programmable CSA input signal. On the rising edge of the digital **TRG_INJ** signal a negative charge of the size **Cinj** times the programmable voltage step amplitude **VINJ** is applied to the CSA input.
 
 
 .. figure:: images/AFE_simple_schematic.png
@@ -32,11 +38,26 @@ The simplified schematic in the figure below shows the implementation of the sig
 
     Simplified schematic of the analog front-end. **INJ** and **HIT** control the charge injection and digital hit readout, respectively. The **SPI** bus is used to program the DAC voltages **VTHR** and **VINJ** and select the SHA time constant. The full AFE schematic is found here: :download:`AFE_1.1.pdf <documents/AFE_1.1.pdf>`
 
-The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain :math:`g = 1000` to the circuit. Actually, the total gain of 1000 is split into three gain stages of :math:`g = 10`, which are located at the CSA output, between the high-pass filter and the low-pass filter (signal **HPF**) and at the output of the shaper (**SHA)**, respectively. Both time constants of the high- and low-pass filter are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the pulse shape in response to an input step function of the amplitude :math:`Ucsa` is (for :math:`t \geq 0`) 
+The shaping amplifier consists of a high pass filter (HPF) and a low pass filter (LPF) separated by a buffer amplifier which adds additional voltage gain :math:`g = 1000` to the circuit. Actually, the total gain of 1000 is split into three gain stages of :math:`g' = 10`, which are located at the CSA output, between the high-pass filter and the low-pass filter (signal **HPF**) and at the output of the shaper (**SHA)**, respectively. Both time constants of the high- and low-pass filter are controlled by selecting the respective resistor values for **Rhp** and **Rlp**. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal. It can be shown that in this case the pulse shape in response to an input step function of the amplitude :math:`Ucsa` is (for :math:`t \geq 0`) 
 
 .. math::
 
-  U_{SHA}(t) = U_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}.
+  V_{SHA}(t) = V_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}},
+
+with the peak amplitude:
+
+.. math::
+
+  V_{SHA}^{peak} = V_{SHA}(t=\tau_{SHA}) = V_{CSA} \cdot g \cdot exp{-1} = \frac{Q}{\C_{f}}\cdot g \cdot exp{-1}.
+
+with :math:`V_{CSA} = \frac{Q}{\C_{f}}`. The charge sensitivity of the whole signal chain can be expressed as
+
+.. math::
+
+  g_{q} = \frac{V_{SHA}^peak}{Q} = g \cdot \frac{1}{C_{f}} \cdot \exp{-1},
+
+which is typically given in units of :math:`mV/fC` or :math:`mV/electrons`
+
 
 Both analog control voltages **VTHR** and **VINJ** are generated by a 12-bit digital to analog converter (DAC). The maximum output voltage of the DAC is 2048 mV which corresponds to a LSB step size of 0.5 mV for **VTHR** and 0.05 mV for **VINJ**, respectively, taking into account the attenuation of the resistive divider in front of the injection capacitor.
 
@@ -110,17 +131,26 @@ A typical data acquisition cycle for measuring an s-curve involves several steps
         SetTrgInj(0)      # reset the comparator latch and charge injection via GPIO5
         Delay()           # short delay (~50 us) to allow the circuit settle after the inject circuit reset
           
-The dataset for the injection voltage scan will represent an s-curve which allows the extraction of the threshold and the noise. For a quantitative evaluation of the s-curve the injection voltage has to be converted to the equivalent injection charge QINJ. 
+The dataset for the injection voltage scan will represent an s-curve which allows the extraction of the threshold and the noise. For a quantitative evaluation of the s-curve the injection voltage has to be converted to the equivalent injection charge :math:`Q_{INJ}`. 
 
 .. math::
   
   Q_{INJ}= k \cdot  V_{INJ} \cdot C_{INJ}
 
-with *k* = 0.1 for the attenuation of the resistive divider in front of the injection switch and CINJ = 0.1 pF the injection capacitance which converts the voltage step into a charge.
+with :math:`k = 0.1` for the attenuation of the resistive divider in front of the injection switch and  :math:`C_{INJ} = 0.1 pF` the injection capacitance which converts the voltage step into a charge.
 
 .. math::
   
   Q_{INJ}[fC]= 0.01 [pF] \cdot V_{INJ}[mV]
+
+The threshold voltage of the comparator corresponds to the peak amplitude of the shaper. Therefore, the threshold voltage can be calculated in units of input charge by dividing the threshold voltage by the charge sensitivity of the system:
+
+.. math::
+  
+  V_{SHA}[mV]= Q_{INJ} \cdot V_{INJ}[mV]
+  V_{SHA}(t) = V_{CSA} \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}.
+  
+  g_{q} = V_{SHA}^peak \cdot g \cdot \frac{t}{\tau_{SHA}} \cdot \exp{\frac{-t}{\tau_{SHA}}}.
 
 Once the x-axis of the s-curve is converted to charge units also the threshold voltage can be calibrated and converted to charge units. This is done by measuring s-curves for different threshold voltages and plotting the resulting 50 % values (the effective threshold in charge units) as a function of the applied threshold voltage. The extracted slope is  the threshold calibration factor. This factor can also be interpreted a the charge to voltage gain of the read-out chain since it converts an input charge to an output voltage which is seen at the input of the comparator. Actually the scanning of the comparator threshold voltage allows the measurement of the shaper output peak amplitude, which is equivalent to the threshold voltage at which the comparator fires with 50 % probability.
 
