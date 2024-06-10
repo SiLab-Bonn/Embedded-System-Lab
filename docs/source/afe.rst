@@ -71,7 +71,7 @@ The electrical interface to control the AFE consist of
   * Digital to analog converter (DAC) which sets the injection step voltage **VINJ** and the comparator threshold **VTHR**
   * Read-out of the TOT counter value via the CPLD SPI interface (if implemented)
 
-* Two GPIO signals
+* Two **GPIO** signals
 
   * **INJ** output signal (**GPIO5**, from Rpi to AFE module) which triggers the injection signal and resets the comparator latch
   * **HIT** input signal (**GPIO4**, from AFE module to Rpi) for reading the digital hit output
@@ -80,7 +80,7 @@ The electrical interface to control the AFE consist of
 Data Acquisition and Analysis Methods
 =====================================
 
-A central performance parameter of an signal processing circuit is its signal-to-noise ratio (SNR) since it is directly related to the efficiency and accuracy of the detection process. A noiseless system would generate a comparator hit signal with 100 % probability if the signal is above threshold and always detect no hit if the signal is below threshold. In the presence of noise, however, the step-like response function of the comparator hit probability as a function of the difference between signal and threshold is smeared out. The following figure shows the comparator response probability of a real system and an ideal system. When the injected charge is equal to the comparator threshold :math:`Q_{INJ} \eq Q_{THR}`, the hit probability is 50% in both cases. In a noiseless system the hit probability immediately goes to 0 % (100 %) for lower (higher) charge. The noise smooths out this transition region. Actually the knowledge of the slope at the 50 % probability mark allows the calculation of the noise. Mathematically, the response curve is given by a Gaussian Error-function (aka s-curve) which is the convolution of a step-function (the ideal comparator response) with a Gaussian probability distribution (representing the noise).
+A central performance parameter of an signal processing circuit is its signal-to-noise ratio (SNR) since it is directly related to the efficiency and accuracy of the detection process. A noiseless system would generate a comparator hit signal with 100 % probability if the signal is above threshold and always detect no hit if the signal is below threshold. In the presence of noise, however, the step-like response function of the comparator hit probability as a function of the difference between signal and threshold is smeared out. The following figure shows the comparator response probability of a real system and an ideal system. When the injected charge is equal to the comparator threshold :math:`Q_{INJ} = Q_{THR}`, the hit probability is 50% in both cases. In a noiseless system the hit probability immediately goes to 0 % (100 %) for lower (higher) charge. The noise smooths out this transition region. Actually the knowledge of the slope at the 50 % probability mark allows the calculation of the noise. Mathematically, the response curve is given by a Gaussian Error-function (aka s-curve) which is the convolution of a step-function (the ideal comparator response) with a Gaussian probability distribution (representing the noise).
 
 
 .. figure:: images/AFE_scurve.png
