@@ -48,13 +48,13 @@ with the peak amplitude:
 
 .. math::
 
-  V_{SHA}^{peak} = V_{SHA}(t=\tau_{SHA}) = V_{CSA} \cdot g \cdot exp{-1} = \frac{Q}{\C_{f}}\cdot g \cdot exp{-1}.
+  V_{SHA}^{peak} = V_{SHA}(t=\tau_{SHA}) = V_{CSA} \cdot g \cdot e^{-1} = \frac{Q}{C_{f}}\cdot g \cdot e^{-1}.
 
 with :math:`V_{CSA} = \frac{Q}{C_f}`. The charge sensitivity of the whole signal chain can be expressed as
 
 .. math::
 
-  g_{q} = \frac{V_{SHA}^peak}{Q} = g \cdot \frac{1}{C_{f}} \cdot \exp{-1},
+  g_{q} = \frac{V_{SHA}^peak}{Q} = g \cdot \frac{1}{C_{f}} \cdot e^{-1},
 
 which is typically given in units of :math:`mV/fC` or :math:`mV/electrons`
 
