@@ -9,7 +9,7 @@ Experiment: Analog Signal Processing for Semiconductor Sensors
 
     Analog Front-end Module
 
-The goal of this lab module is an understanding of the typical analog signal processing steps used for semiconductor charge signal read-out and the basic data acquisition and analysis methods. A discrete single channel analog front-end (AFE) chain will be used to analyze the functionality of each circuit block. In particular the characterization of the noise performance and its dependence of circuit parameters will be discussed. The electrical interface to the AFE hardware will enable the injection of calibration charge signals, programming of circuit parameters, and the detection of hits. On the software side scan routines will be developed to set the circuit parameters of interest and read the AFE digital output response. Basic analysis methods will be introduced to extract performance parameters such as equivalent noise charge (ENC), charge transfer gain, linearity etc. Additionally, the fast ADC can be used to record analog waveforms for further analysis.
+The goal of this lab is to understand typical analog signal processing steps used for read-out of semiconductor detector charge signals, plus the associated basic data acquisition and analysis methods. In this module, a single-channel analog front-end (AFE) chain made of discrete hardware components will be used to analyze the functionality of each circuit block. In particular the characterization of the noise performance and its dependence on circuit parameters will be discussed. The electrical connections to the AFE hardware allow injection of calibration charge signals, programming of circuit parameters, and the detection of hits. On the software side, scan routines will be developed to set the circuit parameters of interest and read the AFE digital output response. Basic analysis methods will be introduced to extract performance parameters such as equivalent noise charge (ENC), charge transfer gain, linearity etc. Additionally, the fast ADC can be used to record analog waveforms for further analysis.
 
 Signal Processing Overview
 ==========================
@@ -38,7 +38,7 @@ For calibration and characterization measurements an injection circuit is used t
 
     Simplified schematic of the analog front-end. **INJ** and **HIT** control the charge injection and digital hit readout, respectively. The **SPI** bus is used to program the DAC voltages **VTHR** and **VINJ** and select the shaping amplifier time constant. The full AFE schematic is found here: :download:`AFE_1.1.pdf <documents/AFE_1.1.pdf>`
 
-The shaping amplifier consists of a first-order high pass filter (HPF) and a first-order low pass filter (LPF). Therefore such a filter is also called CR-RC shaper. The high- and low-pass filter are isolated by a voltage amplifier that adds additional signal gain to the circuit. A total gain of :math:`g = 1000` is achieved by using three gain stages of :math:`g' = 10` each. They are located at the CSA output, between the high-pass filter and the low-pass filter (signal **HPF**) and at the output of the shaper (**SHA**), respectively. The time constants of the high- and low-pass filter are controlled by selecting the resistor values for :math:`R_{HP}` and :math:`R_{LP}`. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal (:math:`C_{HP} = C_{LP} = const.`). It can be shown that in this case the pulse shape in response to an input step function with the amplitude :math:`V_{CSA}` is (for :math:`t \geq 0`) 
+The shaping amplifier consists of a first-order high pass filter (HPF) and a first-order low pass filter (LPF). Therefore such a filter is also called CR-RC shaper. The high- and low-pass filter are isolated by a voltage amplifier that adds additional signal gain to the circuit. A total gain of :math:`g = 1000` is achieved by using three gain stages with :math:`g' = 10` each. They are located at the CSA output, between the high-pass filter and the low-pass filter (signal **HPF**) and at the output of the shaper (**SHA**), respectively. The time constants of the high- and low-pass filter are controlled by selecting the resistor values for :math:`R_{HP}` and :math:`R_{LP}`. The control circuit sets the values such :math:`\tau_{SHA} = \tau_{HP} = \tau_{LP}`, i.e. the time constants for low pass filter and high pass filter are equal (:math:`C_{HP} = C_{LP} = const.`). It can be shown that in this case the pulse shape in response to an input step function with the amplitude :math:`V_{CSA}` is (for :math:`t \geq 0`) 
 
 .. math::
 
@@ -48,9 +48,9 @@ with the peak amplitude:
 
 .. math::
 
-  V_{SHA}^{peak} = V_{SHA}(t=\tau_{SHA}) = V_{CSA} \cdot g \cdot e^{-1} = \frac{Q}{C_{f}}\cdot g \cdot e^{-1}
+  V_{SHA}^{peak} = V_{SHA}(t=\tau_{SHA}) = V_{CSA} \cdot g \cdot e^{-1} = \frac{Q}{C_{f}}\cdot g \cdot e^{-1},
 
-with :math:`V_{CSA} = \frac{Q}{C_f}`. The charge sensitivity of the whole signal chain can be expressed as
+where :math:`V_{CSA} = \frac{Q}{C_f}`. The charge sensitivity of the whole signal chain can be expressed as
 
 .. math::
 
@@ -59,7 +59,7 @@ with :math:`V_{CSA} = \frac{Q}{C_f}`. The charge sensitivity of the whole signal
 and is typically given in units of :math:`[mV/fC]` or :math:`[mV/electrons]`.
 
 
-The final circuit block is the comparator (also called discriminator) that compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. When a signal arrives, the comparator output signal goes high as long as the shaper output is above the threshold. For a constant threshold the width of the comparator output signal is a function of the signal amplitude. Some systems detect this pulse width (aka **TOT**, time over threshold) to get a measure of the incident charge. The logic that latches the comparator output is implemented in a CPLD (Complex Programmable Logic Device). For the measurement of the time-over-threshold, this logic IC can be extended as depicted in the schematic diagram below.
+The final circuit block is the comparator (also called discriminator), which compares the output signal of the shaping amplifier **SHA_OUT** with a programmable threshold voltage **VTHR**. WWhen the input signal arriving from the shaper is above the voltage threshold, the comparator will produce a 'logic high' output. Assuming a constant threshold, the width of the comparator output signal is a function of the signal amplitude. Some systems detect this pulse width (aka **TOT**, time over threshold) to get a measure of the incident charge. On our AFE board, the subsequent digital signal processing for processing the comparator output is implemented in a CPLD (Complex Programmable Logic Device). For the measurement of the time-over-threshold (TOT), this logic IC can be extended as depicted in the schematic diagram below.
 
 .. figure:: images/AFE_digital.png
     :width: 500
@@ -69,17 +69,17 @@ The final circuit block is the comparator (also called discriminator) that compa
 
 
 
-There is a set-reset flip-flop that is asynchronously set by the rising edge of the comparator output signal **COMP**. The flip-flop output signal **HIT** stays high until it is reset by the **INJ** line going low. Parallel to the flip-flop the **COMP** signal enables an 8-bit counter, which output is incremented by a 40 MHz clock signal **CLK**, thereby measuring the comparator output pulse width (time-over-threshold). This **TOT** value can be read out via the SPI interface implemented with the CPLD logic (**CS_B**, **SCLK** and **MISO**). A high to low transition from **INJ** resets the TOT counter.
+In our particular implementation of the digital signal processing, there first is a set-reset (SR) flip-flop which is asynchronously set by the rising edge of the comparator output signal **COMP**. The flip-flop output signal **HIT** stays high until it is reset by the **INJ** line going low. Parallel to the flip-flop, the **COMP** signal enables an 8-bit counter that has its output incremented (every 25 ns) by a 40 MHz clock signal **CLK**, thereby effectively measuring the comparator output pulse width (time-over-threshold). This **TOT** value can subsequently be read out via a SPI interface implemented in the CPLD logic (**CS_B**, **SCLK** and **MISO**). Finally, a high to low transition from **INJ** resets the TOT counter.
 
-The electrical interface to control the AFE consist of 
+The electrical interface to control the AFE consists of 
 
 * An **SPI** interface controlling
 
   * the shaping amplifiers time constants by selecting filter resistor values via a multiplexer
-  * a digital to analog converter (DAC) that sets the injection step voltage **VINJ** and the comparator threshold **VTHR**
+  * a digital to analog converter (DAC) which sets the injection step voltage **VINJ** and the comparator threshold **VTHR**
   * the read-out of the TOT counter value via the CPLD SPI interface (if implemented)
 
-* Two **GPIO** signals
+* And two **GPIO** signals
 
   * **INJ** output signal (**GPIO5**, from Rpi to AFE module) that triggers the injection signal and resets the comparator latch
   * **HIT** input signal (**GPIO4**, from AFE module to Rpi) for reading the digital hit output
@@ -97,7 +97,7 @@ A typical charge injection and digital read-out cycle would look like this:
 Data Acquisition and Analysis Methods
 =====================================
 
-A central performance parameter of an signal processing circuit is its signal-to-noise ratio (SNR) since it is directly related to the efficiency and accuracy of the detection process. A noiseless system would generate a comparator hit signal with 100 % probability if the signal is above threshold and always detect no hit if the signal is below threshold. In the presence of noise, however, the step-like response function of the comparator hit probability as a function of the difference between signal and threshold is smeared out. The following figure shows the comparator response probability of a real system and an ideal system. When the injected charge is equal to the comparator threshold :math:`Q_{INJ} = Q_{THR}`, the hit probability is 50% in both cases. In a noiseless system the hit probability immediately goes to 0 % (100 %) for lower (higher) charge. The noise smooths out this transition region. Actually the knowledge of the slope at the 50 % probability mark allows the calculation of the noise. Mathematically, the response curve is given by a Gaussian error-function (aka s-curve). It is the convolution of a step-function (the ideal comparator response) with a Gaussian probability distribution (representing the noise).
+An important performance metric of a signal processing circuit is its signal-to-noise ratio (SNR), which is directly related to the efficiency and accuracy of the detection process. A noiseless system would generate a comparator hit signal with 100 % probability if the signal is above threshold and always detect no hit if the signal is below threshold. In the presence of noise, however, the step-like response function of the comparator hit probability as a function of the difference between signal and threshold is smeared out. The following figure shows the comparator response probability of a real system and an ideal system. When the injected charge is equal to the comparator threshold :math:`Q_{INJ} = Q_{THR}`, the hit probability is 50% in both cases. In a noiseless system the hit probability immediately goes to 0 % (100 %) for lower (higher) charge. The noise smooths out this transition region. Actually the knowledge of the slope at the 50 % probability mark allows the calculation of the noise. Mathematically, the response curve is given by a Gaussian error-function (aka s-curve). It is the convolution of a step-function (the ideal comparator response) with a Gaussian probability distribution (representing the noise).
 
 
 .. figure:: images/AFE_scurve.png
