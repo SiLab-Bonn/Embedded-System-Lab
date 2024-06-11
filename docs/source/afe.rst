@@ -109,7 +109,7 @@ A central performance parameter of an signal processing circuit is its signal-to
 The measurement of an s-curve is based on a nested loop of injection/read-out cycles. The following steps need to be implemented in a scan routine (also called **threshold scan**):
 
 1. Set threshold and shaping time constant to the desired values.
-2. Outer loop: Define a range of injection voltage values to scan. The injection range must cover the chosen threshold, i.e. the transition from zero hits to 100 % hits must occur within the scan range.
+2. Outer loop: Define a range of injection voltage values (i.e. injection DAC values) to scan. The injection range must cover the chosen threshold, i.e. the transition from zero hits to 100 % hits must occur within the scan range.
 3. Inner loop: For each charge value repeat the injection and read-out cycle (see above) a number of times (typical 100) and count the number of detected comparator signals in relation to the total number of injections.
 4. Finally plot the hit probability data as a function of the injection voltage.
           
