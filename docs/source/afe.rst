@@ -54,7 +54,7 @@ with :math:`V_{CSA} = \frac{Q}{C_f}`. The charge sensitivity of the whole signal
 
 .. math::
 
-  g_{q} = \frac{V_{SHA}^peak}{Q} = \frac{1}{C_{f}} \cdot g \cdot e^{-1},
+  g_{q} = \frac{V_{SHA}^{peak}}{Q} = \frac{1}{C_{f}} \cdot g \cdot e^{-1},
 
 which is can be given in units of :math:`mV/fC` or :math:`mV/electrons`
 
