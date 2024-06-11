@@ -115,21 +115,21 @@ A typical data acquisition cycle for measuring an s-curve involves several steps
   # initialize parameters
   SetThreshold(threshold) # set threshold to ~ 50% charge equivalent
   SetParameter(parameter) # set the circuit parameter to evaluate the response at (i.e. SHA time constant)
-  SetTrgInj(0)            # reset comparator latch and injection step 
+  SetTrgInj(0)            # reset comparator latch and set injection step to '0'
 
   # nested scan loops
-    for (VINJ = (VINJmin, VINmax, VINstep)) # outer loop scans the signal charge
+    for (VINJ = (VINJmin, VINJmax, VINJstep)) # outer loop scans the signal charge
       SetInjectionVoltage(charge)   # set the injection voltage DAC
       for (i = (0, 100))  # inner loop repeats the charge injection a hundred times for each charge step
         SetTrgInj(1)      # trigger the charge injection via GPIO5
         Delay()           # short delay (~50 us) to allow the signal propagate through the circuit
-        hit = GetHitOut() # read status of the hit_out signal GPIO4
-        if hit            # update the hit count in a storage element for plotting and further analysis
-         HitCount[charge] += 1
+        hit = GetHitOut() # read status of the comparator output signal (GPIO4)
+        if (hit)            # update the hit count in a storage element for plotting and further analysis
+          HitCount[charge] += 1
         SetTrgInj(0)      # reset the comparator latch and charge injection via GPIO5
         Delay()           # short delay (~50 us) to allow the circuit settle after the inject circuit reset
           
-The dataset for the injection voltage scan will represent an s-curve which allows the extraction of the threshold and the noise. For a quantitative evaluation of the s-curve the injection voltage has to be converted to the equivalent injection charge :math:`Q_{INJ}`. 
+The dataset for the injection voltage scan will represent an s-curve which allows the extraction of the threshold and the noise. For a quantitative evaluation of the s-curve the injection voltage (i.e. DAC setting) has to be converted to the equivalent injection charge :math:`Q_{INJ}`. 
 
 .. math::
   
@@ -186,19 +186,19 @@ The exercise 0 contains preparatory questions that should be answered before com
 
   This exercise is intended to familiarize with the analog front-end hardware and the control software. The goal is to observe the different signals of the analog front-end chain (CSA, SHA, COMP) and to understand the effect of the different circuit parameters on the signal shape. To monitor the signal waveform, connect an oscilloscope to the LEMO socket **OUTPUT**. Use the jumper bank in front of the LEMO socket to select the signal to be monitored manually (**CSA, HPF, SHA, COMP**) or use the setting **MUX** to select the signal to be monitored via your program code with the **SPI** interface. Note: As mentioned in the circuit description above, the shaper circuit adds a total gain of 1000 to the CSA output signal. This gain is split in three gain stages with G=10 which are distributed along the signal chain in front of the **CSA**, the **HPF**, and the **SHA** output, respectively. The **CSA** output is amplified by 10, the **HPF** accumulated amplification is 100 and the shaper output **SHA** finally accumulates the total gain of 1000. 
 
-  Once you are familiar with the signal generation and monitoring switch from the external oscilloscope to the fast ADC on the Raspberry Pi base board to record and save the waveform data for further analysis. Connect the monitor signal to the **ADC** input on the base board and set the gain jumper to **1**. The trigger for the waveform acquisition should be derived from the charge injection signal. To select this trigger source set the **TRG** jumper to **GPIO5**. The fast ADC is controlled by a Python script ``osc.py`` which can be found in the folder ``FAST_ADC``. The script needs root privileges to access the interface to the fast ADC and thus has to be started by calling ``sudo -E python osc.py``. A simple command line interface of the ``osc.py`` tool will allow you to set the horizontal resolution and the saving of acquired waveform data to file (csv) or to store a waveform image (png).
+  Once you are familiar with the signal generation and monitoring switch from the external oscilloscope to the fast ADC on the Raspberry Pi base board to record and save the waveform data for further analysis. Connect the monitor signal to the **ADC** input on the base board and set the gain jumper to **1**. The trigger for the waveform acquisition should be derived from the charge injection signal. To select this trigger source set the **TRG** jumper to **GPIO5**. The fast ADC is controlled by a Python script ``osc.py`` which can be found in the folder ``FAST_ADC``. The script needs root privileges to access the interface to the fast ADC and thus has to be started by calling ``sudo -E python osc.py``. A simple command line interface of the ``osc.py`` tool will allow you to set the horizontal resolution and the saving of acquired waveform data to file (csv) or to save a waveform image (png).
 
 
   #. Implement a script to continuously inject charge pulses into the CSA. To change configuration parameters (injection amplitude, time constants, output channel of the signal monitor multiplexer) while injecting, use threading to run the injection loop in parallel to the configuration loop (see ``threads.py`` as an example for using threads in Python). 
-  #. What happens if the charge injections are too fast? What time constants do you have to take into account to estimate the maximum injection frequency?
+  #. A negative charge is injected with the rising slope of the **INJ** signal which will generate a positive amplitude at the **CSA**, **HPF**, and **SHA** outputs. What happens at the falling slope of the **INJ** signal? What happens if the time delay between the rising and the falling injection signal is too short? What time constants do you have to take into account to estimate the maximum injection frequency?
   #. Run your injection script and observe the different signals (**CSA**, high-pass filter **HPF**, shaper **SHA**, and comparator **COMP**) while varying the injected charge amplitude, shaper time constants, and comparator threshold. Hint: To get a reasonable comparator response, the threshold needs to be set in a range between the baseline of the signal and the pulse peak amplitude (remember the LSB step size of the threshold DAC is 0.5 mV).
   #. Select a injection amplitude which is well within the dynamic range of the system (i.e. no amplitude clipping but also well above the noise floor). Sample the **SHA** output with the fast ADC and save the waveforms to file for each time constant setting of the shaper. Write a script that can read and plot the saved waveform data (CSV format). Add a fitting function to the pulse shape (assume an ideal CR-RC pulse shape with equivalent time constants for low and high pass filter) and extract the peaking time and peak amplitude for each shaper setting. Does the peak amplitude change with the peaking time? Give possible explanations. Optional: Implement a fitting function for the shaper pulse with independent time constants for high and low pass filter.
 
 
 .. admonition:: Exercise 2. Characterization with the digital read-out
 
-  #. Now select the comparator output with the monitor multiplexer. Set a threshold which is roughly at the middle of the shaper peak amplitude (the **Vthr** DAC gain is 0.5 mV/DAC step). Observe the pulse width of the comparator output (time-over-threshold, TOT) for different injection amplitudes. What relation between TOT and injected charge would you expect? An automated TOT measurement can be implemented by using the hit signal to start and stop a timer. This will be implemented later with the FPGA lab module.
-  #. Implement a scan routine to measure the s-curve of the system. The s-curve is obtained by measuring the hit probability as a function of the injected charge. The charge is varied by changing the injection voltage. The hit probability is calculated by counting the number of hits for a given charge step in relation to the total number of injections. Convert the x-axis of the s-curve from DAC units to charge units using the calibration factor of the injection circuit calculated above (in electrons).
+  #. Now select the comparator output with the monitor multiplexer. Set a threshold at half of the shaper peak amplitude (the **Vthr** DAC gain is 0.5 mV/DAC step). Observe the pulse width of the comparator output (time-over-threshold, TOT) for different injection amplitudes. What relation between TOT and injected charge would you expect? An automated TOT measurement can be implemented by using the hit signal to start and stop a timer. This will be implemented later with the FPGA lab module.
+  #. Implement a scan routine to measure the s-curve of the system. The s-curve is obtained by measuring the hit probability (i.e the comparator output pulse) as a function of the injected charge. The charge is varied by changing the injection voltage. The hit probability is calculated by counting the number of hits for a given charge step in relation to the total number of injections. Convert the x-axis of the s-curve from DAC units to charge units using the calibration factor of the injection circuit calculated above (in electrons).
   #. Use the measured s-curve to extract the threshold (50 % value) and the noise (slope at the 50 % point). Repeat for different threshold settings. Does the change of the measured threshold (in injection charge units) correspond to the change of the threshold DAC setting in threshold charge units (both in electrons) as you have calculated above? How large is the deviation?
 
 
