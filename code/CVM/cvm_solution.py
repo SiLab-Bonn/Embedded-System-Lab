@@ -38,7 +38,7 @@ vbias = KA3005P()
 
 # scan parameters
 smu_voltage = 1500  # voltage amplitude for charge measurement
-frequency_values = np.arange(100, 1001, 10)   # switch frequency in kHz units
+frequency_values = np.arange(100, 501, 100)   # switch frequency in kHz units
 current_values   = np.empty(frequency_values.size)
 vbias_step_size = 0.1
 vbias_values     = np.arange(0, 30.1, vbias_step_size)
@@ -57,7 +57,14 @@ for vbias_index, bias_voltage in enumerate(vbias_values):
     gpio.set_gpclk_freq(int(frequency)) 
     time.sleep(0.05)
     current = cvm.get_current()  # mA units
-    current_values[frequency_index] = current
+    current = current + cvm.get_current()  
+    current = current + cvm.get_current()  
+    current = current + cvm.get_current()  
+    current = current + cvm.get_current()  
+    current = current + cvm.get_current()  
+    current = current + cvm.get_current()  
+    current = current + cvm.get_current()  
+    current_values[frequency_index] = current / 8
 
   corrected_current_values = [current * smu_voltage/(smu_voltage - current * R_SERIES) for current in current_values]
   slope = np.polyfit(frequency_values, corrected_current_values, 1)[0]
@@ -68,11 +75,12 @@ for vbias_index, bias_voltage in enumerate(vbias_values):
 # remove parasitic capacitance
 capacitance_values = capacitance_values - parasitic_capacitance 
 # smoothing
-capacitance_values = savgol_filter(capacitance_values, 9, 3) 
+#capacitance_values = savgol_filter(capacitance_values, 11, 3) 
 
 # calculate effective doping density calculation
+
 depletion_width_values = (e0 * er * A_diode)/(capacitance_values/1e12) * 1e4 # pF to F, cm to µm
-depletion_width_values = savgol_filter(depletion_width_values, 15, 3) 
+#depletion_width_values = savgol_filter(depletion_width_values, 15, 3) 
 capacitance_derivative = np.gradient(1/(capacitance_values/1e12 * capacitance_values/1e12))
 capacitance_derivative = capacitance_derivative / vbias_step_size
 
