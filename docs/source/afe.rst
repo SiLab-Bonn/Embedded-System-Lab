@@ -81,8 +81,8 @@ The electrical interface to control the AFE consists of
 
 * And two **GPIO** signals
 
-  * **INJ** output signal (**GPIO5**, from Rpi to AFE module) that triggers the injection signal and resets the comparator latch
-  * **HIT** input signal (**GPIO4**, from AFE module to Rpi) for reading the digital hit output
+  * **INJ** output signal (**GPIO4**, from Rpi to AFE module) that triggers the injection signal and resets the comparator latch
+  * **HIT** input signal (**GPIO5**, from AFE module to Rpi) for reading the digital hit output
   
 A typical charge injection and digital read-out cycle would look like this:
 
