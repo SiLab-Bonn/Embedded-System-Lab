@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 from scipy.optimize import curve_fit
+import csv
 from tqdm import tqdm
 
 
@@ -144,6 +145,19 @@ def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_
   ax[1].grid()
   plt.show()
   
+
+def analyze_wafeform(filename):
+  with open(filename, 'r') as file:
+    reader = csv.reader(file)
+    data = list(reader)
+    data = np.array(data).astype(float)
+
+    fig, ax = plt.subplots()
+    ax.plot(data[:,0], data[:,1])
+    plt.show()
+
+
+
 charge_range = np.arange(50, 301, 10, dtype=int)
 charge = 200
 threshold_range = np.arange(2400, 2701, 100, dtype=int)
@@ -154,7 +168,8 @@ time_constant = 6
 #inject(threshold, charge, time_constant, n_injections = 1000, monitor = 'sha')
 #threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot = True)
 #parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha')
-parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha')
+#parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha')
+analyze_wafeform('test.csv')
 
 spi.close()
 GPIO.cleanup()
