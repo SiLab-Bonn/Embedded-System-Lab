@@ -145,17 +145,25 @@ def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_
   ax[1].grid()
   plt.show()
   
+def sha_pulse_func(t, t0, tau, a, b):
+  return np.where(t > t0, a * np.exp(1) * (t-t0)/tau * np.exp(-(t-t0)/tau) + b, b)
 
-def analyze_wafeform(filename):
+
+def analyze_waveform(filename):
   with open(filename, 'r') as file:
     reader = csv.reader(file)
     data = list(reader)
-    data = np.array(data).astype(float)
+    data = np.array(data[:1000]).astype(float)
+    
+    popt, pcov = curve_fit(sha_pulse_func, data[:,0], data[:,1], bounds=([50, 1, 200, 900], [80, 25, 1500, 1100])) 
+    label_text = 't0=%.1f, tau=%.1f, a=%.1f, b=%.1f' % (popt[0], popt[1], popt[2], popt[3])
 
     fig, ax = plt.subplots()
     ax.plot(data[:,0], data[:,1])
+    ax.plot(data[:,0], sha_pulse_func(data[:,0], *popt), label=label_text)
+    ax.set(xlabel='Time [us]', ylabel='Voltage [mV]', title='SHA pulse')
+    ax.legend()
     plt.show()
-
 
 
 charge_range = np.arange(50, 301, 10, dtype=int)
@@ -169,7 +177,7 @@ time_constant = 6
 #threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot = True)
 #parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha')
 #parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha')
-analyze_wafeform('test.csv')
+analyze_waveform('code/AFE/test.csv')
 
 spi.close()
 GPIO.cleanup()
