@@ -85,7 +85,7 @@ def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, m
   for charge in tqdm(charge_range):        # scan range of injected charges
     hit_probability = inject(threshold, charge, time_constant, n_injections, monitor)
     hit_data=np.append(hit_data, hit_probability)
-  popt, pcov = curve_fit(err_func, charge_range, hit_data, bounds=([10,30], [100, 300])) # fir error function to data (still DAC units!)
+  popt, pcov = curve_fit(err_func, charge_range, hit_data, bounds=([10,30], [100, 500])) # fir error function to data (still DAC units!)
   print(popt)
   if (show_plot == True):
     fig, ax = plt.subplots()
@@ -165,19 +165,21 @@ def analyze_waveform(filename):
     ax.legend()
     plt.show()
 
-
-charge_range = np.arange(50, 301, 10, dtype=int)
+baseline = 2430  # adjust for actual baseline of the individual AFE module (DAC units)
+threshold_range_min = baseline + 200
+threshold_range_max = baseline + 600
+charge_range = np.arange(50, 401, 10, dtype=int)
 charge = 200
-threshold_range = np.arange(2400, 2701, 100, dtype=int)
-threshold = 2600 
-time_constant_range = range(3,7)
+threshold_range = np.arange(threshold_range_min, threshold_range_max, 100, dtype=int)
+threshold = baseline + 400 
+time_constant_range = range(2,8)
 time_constant = 6
 
 #inject(threshold, charge, time_constant, n_injections = 1000, monitor = 'sha')
 #threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot = True)
 #parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha')
-#parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha')
-analyze_waveform('code/AFE/test.csv')
+parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha')
+#analyze_waveform('code/AFE/test.csv')
 
 spi.close()
 GPIO.cleanup()
