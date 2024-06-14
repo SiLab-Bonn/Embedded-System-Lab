@@ -108,7 +108,7 @@ while True:
   print('Trigger mode: %s' % ('Auto' if not trigger_mode_single else 'Single'))
   print(
 '\nCommands:\n\
-  <1..7>  Sample frequency [0.2, 0.5, 1, 2, 5] MHz\n\
+  <1..5>  Sample frequency [0.2, 0.5, 1, 2, 5] MHz\n\
   <a>     Auto trigger mode\n\
   <s>     Single trigger mode\n\
   <i>     Save plot image (png)\n\
