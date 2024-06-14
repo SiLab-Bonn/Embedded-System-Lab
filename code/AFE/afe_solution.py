@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 from scipy.optimize import curve_fit
+import csv
 from tqdm import tqdm
 
 
@@ -84,7 +85,7 @@ def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, m
   for charge in tqdm(charge_range):        # scan range of injected charges
     hit_probability = inject(threshold, charge, time_constant, n_injections, monitor)
     hit_data=np.append(hit_data, hit_probability)
-  popt, pcov = curve_fit(err_func, charge_range, hit_data, bounds=([10,30], [100, 300])) # fir error function to data (still DAC units!)
+  popt, pcov = curve_fit(err_func, charge_range, hit_data, bounds=([10,30], [100, 500])) # fir error function to data (still DAC units!)
   print(popt)
   if (show_plot == True):
     fig, ax = plt.subplots()
@@ -94,7 +95,7 @@ def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, m
     ax.set(xlabel='Injected charge (DAC)', ylabel='Hit probability', title='Threshold scan')
     ax.legend()
     ax.grid()
-    plt.show()
+    #plt.show()
   return popt, hit_data
 
 # multiple s-curve measurements with varying threshold voltage, extract the fitted threshold values
@@ -118,7 +119,7 @@ def parametric_threshold_scan_1(threshold_range, charge_range, time_constant, n_
   ax[1].set(xlabel='Measured threshold [INJ_DAC]', ylabel='Set threshold [VTHR_DAC]')
   ax[1].legend()
   ax[1].grid()
-  plt.show()
+  #plt.show()
 
 # multiple s-curve measurements with varying time constant, extract the fitted noise values
 def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_injections = 100, monitor = 'sha'):
@@ -144,17 +145,42 @@ def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_
   ax[1].grid()
   plt.show()
   
-charge_range = np.arange(50, 301, 10, dtype=int)
+def sha_pulse_func(t, t0, tau, a, b):
+  return np.where(t > t0, a * np.exp(1) * (t-t0)/tau * np.exp(-(t-t0)/tau) + b, b)
+
+
+def analyze_waveform(filename):
+  with open(filename, 'r') as file:
+    reader = csv.reader(file)
+    data = list(reader)
+    data = np.array(data[:1000]).astype(float)
+    
+    popt, pcov = curve_fit(sha_pulse_func, data[:,0], data[:,1], bounds=([50, 1, 200, 900], [80, 25, 1500, 1100])) 
+    label_text = 't0=%.1f, tau=%.1f, a=%.1f, b=%.1f' % (popt[0], popt[1], popt[2], popt[3])
+
+    fig, ax = plt.subplots()
+    ax.plot(data[:,0], data[:,1])
+    ax.plot(data[:,0], sha_pulse_func(data[:,0], *popt), label=label_text)
+    ax.set(xlabel='Time [us]', ylabel='Voltage [mV]', title='SHA pulse')
+    ax.legend()
+    plt.show()
+
+baseline = 2000  # typical value, adjust for actual baseline of the individual AFE module, if needed
+threshold_range_min = baseline + 200
+threshold_range_max = baseline + 600
+charge_range = np.arange(20, 301, 10, dtype=int)
 charge = 200
-threshold_range = np.arange(2400, 2701, 100, dtype=int)
-threshold = 2600 
-time_constant_range = range(3,7)
+threshold_range = np.arange(threshold_range_min, threshold_range_max, 100, dtype=int)
+threshold = baseline + 400 
+time_constant_range = range(2,8)
 time_constant = 6
 
 #inject(threshold, charge, time_constant, n_injections = 1000, monitor = 'sha')
 #threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot = True)
-#parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha')
+parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha')
 parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha')
+#analyze_waveform('code/AFE/test.csv')
 
 spi.close()
 GPIO.cleanup()
+plt.show()
