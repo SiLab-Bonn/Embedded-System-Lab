@@ -148,6 +148,9 @@ def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_
 def sha_pulse_func(t, t0, tau, a, b):
   return np.where(t > t0, a * np.exp(1) * (t-t0)/tau * np.exp(-(t-t0)/tau) + b, b)
 
+def sha_pulse2_func(t, t0, tau1, tau2, a, b):
+  return np.where(t > t0, a * np.exp(1) * 1/(tau1-tau2) * (np.exp(-(t-t0)/tau2) - (tau2/tau1) * np.exp(-(t-t0)/tau1)) + b, b)
+
 
 def analyze_waveform(filename):
   with open(filename, 'r') as file:
