@@ -57,12 +57,34 @@ def update_spi_regs(threshold, injected_signal, time_constant, out_mux):
   #print(bin(spi_data)[2:].zfill(24))
   spi.xfer(bytearray(spi_data.to_bytes(3, byteorder='big')))
 
-def err_func(x,a,b):
-   return 0.5*scipy.special.erf((x-b)/a)+0.5
 
-charge    = 300
-threshold = 2800
-out_mux = 0
+def calculate_calibration_constants():
+  q_e = 1.602e-19   # elementary charge
+  C_f   = 1.39e-12  # 1 pF mounted + 0.39 pF parasitic capacitance (from Rf mainly)
+  C_inj = 0.1e-12   # 
+  A_sha = 1000/np.exp(1) # shaping amplifier gain
+  sensitivity_fC = 1/C_f * A_sha * 1e-12     # total AFE chain sensitivity [mV/fC]
+  sensitivity_e  = 1/C_f * A_sha * q_e * 1e3 # total AFE chain sensitivity [mV/e]
+  injection_fc   = 0.1 * C_inj * 1e12        # charge injection conversion factor [fC/mV]
+  injection_e    = 0.1 * C_inj * 1e-3 / q_e  # charge injection conversion factor [e/mV]
+
+  vthr_dac_lsb_electrons = 0.5 / sensitivity_e # 0.5 mV (DAC LSB) / AFE sensitivity [e/DAC_LSB]
+  vinj_dac_lsb_electrons = 0.5 * injection_e   # 0.5 mV (DAC LSB) * injection conversion factor [e/DAC_LSB]
+
+  print('AFE sensitivity: %.1f [mV/fC]' % sensitivity_fC)
+  print('AFE sensitivity: %.3f [mV/e]' % sensitivity_e)
+  print('VTHR DAC LSB: %.2f [e]' % vthr_dac_lsb_electrons)
+  print('VINJ DAC LSB: %.2f [e]' % vinj_dac_lsb_electrons)
+  print('VINJ DAC LSB/VTHR DAC LSB: %.2f' % (vinj_dac_lsb_electrons/vthr_dac_lsb_electrons))
+
+  return vthr_dac_lsb_electrons, vinj_dac_lsb_electrons
+
+
+def err_func(x,a,b):
+   return 0.5*(scipy.special.erf((x-b)/(np.sqrt(2)*a))+1)  # normalized error function
+
+vinj_dac_lsb_electrons = 1
+vthr_dac_lsb_electrons = 1
 
 GPIO.output(INJECT, GPIO.LOW)
 
@@ -80,67 +102,107 @@ def inject(threshold, charge, time_constant, n_injections, monitor = 'sha'):
   return (hit_count/n_injections)  # return measured hit probability
 
 # scan the injection charge range and return the resulting s-curve fit parameters
-def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, monitor = 'sha', show_plot = False):
+def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, monitor = 'sha', show_plot = False, use_calibration = False):
   hit_data = np.empty(0, int)
   for charge in tqdm(charge_range):        # scan range of injected charges
     hit_probability = inject(threshold, charge, time_constant, n_injections, monitor)
     hit_data=np.append(hit_data, hit_probability)
-  popt, pcov = curve_fit(err_func, charge_range, hit_data, bounds=([10,30], [100, 500])) # fir error function to data (still DAC units!)
-  print(popt)
+    a_min = 1
+    a_max = 100
+    b_min = 30
+    b_max = 500
+  if (use_calibration == True):
+    charge_range = charge_range * vinj_dac_lsb_electrons
+    a_min = a_min * vinj_dac_lsb_electrons
+    a_max = a_max * vinj_dac_lsb_electrons
+    b_min = b_min * vinj_dac_lsb_electrons
+    b_max = b_max * vinj_dac_lsb_electrons
+  popt, pcov = curve_fit(err_func, charge_range, hit_data, bounds=([a_min,b_min], [a_max, b_max])) # fit error function to data (DAC units)
   if (show_plot == True):
     fig, ax = plt.subplots()
-    label_text = 'tau=%s, sigma=%.1f, thr=%.1f [INJ_DAC], thr=%.1f [VTHR_DAC]' % (time_constants_list[time_constant], popt[0], popt[1], threshold)
+    if (use_calibration == True):
+      sigma = popt[0]
+      label_text = 'tau=%s µs, sigma=%.0f [e], thr(inj)=%.1f [e], thr(set)=%.1f [e]' % (time_constants_list[time_constant], sigma, popt[1], (threshold-baseline)*vthr_dac_lsb_electrons)
+    else:
+      label_text = 'tau=%s µs, sigma=%.1f, thr=%.1f [INJ_DAC], thr=%.1f [VTHR_DAC]' % (time_constants_list[time_constant], popt[0], popt[1], threshold)
     ax.plot(charge_range, hit_data, label=label_text)
     ax.plot(charge_range, err_func(charge_range, *popt))
-    ax.set(xlabel='Injected charge (DAC)', ylabel='Hit probability', title='Threshold scan')
+    if (use_calibration == True):
+      ax.set(xlabel='Injected charge (e)', ylabel='Hit probability', title='Threshold scan')
+    else:
+      ax.set(xlabel='Injected charge (DAC)', ylabel='Hit probability', title='Threshold scan')
     ax.legend()
     ax.grid()
     #plt.show()
   return popt, hit_data
 
 # multiple s-curve measurements with varying threshold voltage, extract the fitted threshold values
-def parametric_threshold_scan_1(threshold_range, charge_range, time_constant, n_injections = 100, monitor = 'sha'):
+def parametric_threshold_scan_1(threshold_range, charge_range, time_constant, n_injections = 100, monitor = 'sha', use_calibration = False):
   hit_data = np.empty(0, int)  
   fitted_threshold_data = np.empty(0, int)
   fig, ax = plt.subplots(2,1)
   for threshold in threshold_range:          # scan range of threshold voltages
-    popt, hit_data = threshold_scan(threshold, charge_range, time_constant, n_injections, monitor)
+    popt, hit_data = threshold_scan(threshold, charge_range, time_constant, n_injections, monitor, use_calibration = use_calibration)
     fitted_threshold_data = np.append(fitted_threshold_data, popt[1])
-    label_text = 'tau=%s, sigma=%.1f, thr=%.1f [INJ_DAC], thr=%.1f [VTHR_DAC]' % (time_constants_list[time_constant], popt[0], popt[1], threshold)
-    ax[0].plot(charge_range, hit_data, label=label_text)    # plot hit probability vs. injected charge
-    ax[0].plot(charge_range, err_func(charge_range, *popt)) # plot fitted error-function
-  ax[0].set(xlabel='Injected charge (DAC)', ylabel='Hit probability', title='Threshold scan')
+    if (use_calibration == True):
+      label_text = 'tau=%s [µs], sigma=%.0f [e], thr(inj)=%.0f [e], thr(set)=%.0f [e]' % (time_constants_list[time_constant], popt[0], popt[1], (threshold-baseline)*vthr_dac_lsb_electrons)
+      ax[0].plot(charge_range * vinj_dac_lsb_electrons, hit_data, label=label_text)    # plot hit probability vs. injected charge
+      ax[0].plot(charge_range * vinj_dac_lsb_electrons, err_func(charge_range * vinj_dac_lsb_electrons, *popt)) # plot fitted error-function
+    else:
+      label_text = 'tau=%s [ms], sigma=%.1f [DAC], thr=%.1f [INJ_DAC], thr=%.0f [VTHR_DAC]' % (time_constants_list[time_constant], popt[0], popt[1], threshold)
+      ax[0].plot(charge_range, hit_data, label=label_text)    # plot hit probability vs. injected charge
+      ax[0].plot(charge_range, err_func(charge_range, *popt)) # plot fitted error-function
+  if (use_calibration == True): 
+    ax[0].set(xlabel='Injected charge [e]', ylabel='Hit probability', title='Threshold scan')
+  else:
+    ax[0].set(xlabel='Injected charge [DAC]', ylabel='Hit probability', title='Threshold scan')
   ax[0].legend()
   ax[0].grid()
-  print(fitted_threshold_data)
+  #print(fitted_threshold_data)
+  if (use_calibration == True):
+    threshold_range = (threshold_range - baseline) * vthr_dac_lsb_electrons
   slope, offset = np.polyfit(fitted_threshold_data, threshold_range, 1)
   label_text = 'slope=%.2f, offset=%.1f' % (slope, offset)
-  ax[1].plot(fitted_threshold_data, threshold_range, label=label_text) # plot measured vs set. threshold
-  ax[1].set(xlabel='Measured threshold [INJ_DAC]', ylabel='Set threshold [VTHR_DAC]')
+  if (use_calibration == True):
+    ax[1].plot(fitted_threshold_data, threshold_range, label=label_text) # plot measured vs set. threshold
+    ax[1].set(xlabel='Measured threshold [e]', ylabel='Set threshold [e]')
+  else:
+    ax[1].plot(fitted_threshold_data, threshold_range, label=label_text) # plot measured vs set. threshold
+    ax[1].set(xlabel='Measured threshold [INJ_DAC]', ylabel='Set threshold [VTHR_DAC]')
   ax[1].legend()
   ax[1].grid()
   #plt.show()
 
 # multiple s-curve measurements with varying time constant, extract the fitted noise values
-def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_injections = 100, monitor = 'sha'):
+def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_injections = 100, monitor = 'sha', use_calibration = False):
   hit_data = np.empty(0, int)  
   fitted_noise_data = np.empty(0, int)  
   shaping_time_data = np.empty(0, float)
   fig, ax = plt.subplots(2,1)
   for time_constant_index in time_constant_range:    # scan range of shaper time constants **or**
-    popt, hit_data = threshold_scan(threshold, charge_range, time_constant_index, n_injections, monitor)
+    popt, hit_data = threshold_scan(threshold, charge_range, time_constant_index, n_injections, monitor, use_calibration = use_calibration)
     fitted_noise_data = np.append(fitted_noise_data, popt[0])
     shaping_time_data = np.append(shaping_time_data, time_constants_list[time_constant_index])
-    label_text = 'tau=%s µs, sigma=%.1f, thr=%.1f [INJ_DAC], thr=%.1f [VTHR_DAC]' % (time_constants_list[time_constant_index], popt[0], popt[1], threshold)
-    ax[0].plot(charge_range, hit_data, label=label_text)    # plot hit probability vs. injected charge
-    ax[0].plot(charge_range, err_func(charge_range, *popt)) # plot fittd error-function
-  ax[0].set(xlabel='Injected charge [INJ_DAC]', ylabel='Hit probability', title='Threshold scan')
+    if (use_calibration == True):
+      label_text = 'tau=%s µs, sigma=%.0f [e]' % (time_constants_list[time_constant_index], popt[0])
+      ax[0].plot(charge_range * vinj_dac_lsb_electrons, hit_data, label=label_text)    # plot hit probability vs. injected charge
+      ax[0].plot(charge_range * vinj_dac_lsb_electrons, err_func(charge_range * vinj_dac_lsb_electrons, *popt))
+    else: 
+      label_text = 'tau=%s µs, sigma=%.1f' % (time_constants_list[time_constant_index], popt[0])
+      ax[0].plot(charge_range, hit_data, label=label_text)    # plot hit probability vs. injected charge
+      ax[0].plot(charge_range, err_func(charge_range, *popt)) # plot fittd error-function
+  if (use_calibration == True):    
+    ax[0].set(xlabel='Injected charge [e]', ylabel='Hit probability', title='Threshold scan')
+    ax[1].set(xlabel='Shaping time [us]', ylabel='Noise [e]', title='Noise vs. shaping time')
+  else:
+    ax[0].set(xlabel='Injected charge [INJ_DAC]', ylabel='Hit probability', title='Threshold scan')
+    ax[1].set(xlabel='Shaping time [us]', ylabel='Noise [INJ_DAC]', title='Noise vs. shaping time')
+     
   ax[0].legend()
   ax[0].grid()
-  print(fitted_noise_data)
+  #print(fitted_noise_data)
   #label_text = 'tau=%s, sigma=%.1f, thr=%.1f [INJ_DAC], thr=%.1f [VTHR_DAC]' % (time_constants_list[time_constant], popt[0], popt[1], threshold)
   ax[1].plot(shaping_time_data, fitted_noise_data, label='some detector capacitance...') # plot noise vs shaping time constant
-  ax[1].set(xlabel='Shaping time [us]', ylabel='Noise [INJ_DAC]', title='Noise vs. shaping time')
   ax[1].legend()
   ax[1].grid()
   plt.show()
@@ -150,7 +212,6 @@ def sha_pulse_func(t, t0, tau, a, b):
 
 def sha_pulse2_func(t, t0, tau1, tau2, a, b):
   return np.where(t > t0, a * np.exp(1) * 1/(tau1-tau2) * (np.exp(-(t-t0)/tau2) - (tau2/tau1) * np.exp(-(t-t0)/tau1)) + b, b)
-
 
 def analyze_waveform(filename):
   with open(filename, 'r') as file:
@@ -178,11 +239,14 @@ threshold = baseline + 400
 time_constant_range = range(2,8)
 time_constant = 6
 
+vthr_dac_lsb_electrons, vinj_dac_lsb_electrons = calculate_calibration_constants()
 #inject(threshold, charge, time_constant, n_injections = 1000, monitor = 'sha')
-#threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot = True)
-parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha')
-parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha')
+#threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot=True, use_calibration=True)
+#parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha', use_calibration=True)
+parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha', use_calibration=True)
 #analyze_waveform('code/AFE/test.csv')
+
+
 
 spi.close()
 GPIO.cleanup()
