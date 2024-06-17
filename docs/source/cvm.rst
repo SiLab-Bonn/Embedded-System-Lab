@@ -75,9 +75,8 @@ Exercise 0 should be solved before coming to the lab.
     
   #. Connect the CVM module to the base board and modify the ``cvm.py`` script such that GPIO pin 4 generates a 100 kHz clock signal. Connect an oscilloscope probe to GPIO4 test pin at the Embedded-System-Lab base board and measure the clock frequency.
   #. Connect the SMU module to the base board with an flat-ribbon cable and adjust the script such that the SMU module is set to source a voltage of 1.5 V. Measure the voltage with a DVM.
-  #. Connect the output of the SMU module to the LEMO socket on the CVM module labeled "VIN" and measure the SMU current. Don't connect a test capacitor or diode yet. Calculate the parasitic capacitance of the CVM output node from the measured current.
-  #. Now modify the script that it scans the clock frequency from 100 kHz to 1 MHz in steps of 100 kHz and measures the current for each frequency step . Plot the measured current as a function of the clock frequency. Use the slope factor of this F-I plot to calculate the parasitic capacitance of CVM circuit. Compare this measured value with the value from the previous measurement (the one at a fixed 100 kHz clock frequency). How large is the static leakage current?
-  #. Connect a test capacitors or BNC cables of various lengths to the socket labeled "SENSOR" and measure their capacitance by extracting the slope factor of the F-I curve. (Hint: The capacitance of a BNC cable is around 100 pF/m.)
+  #. Connect the output of the SMU module to the LEMO socket on the CVM module labeled "VIN" (don't connect a test capacitor or diode yet). Modify the script that it scans the clock frequency from 100 kHz to 1 MHz in steps of 100 kHz and measures the current for each frequency step . Plot the measured current as a function of the clock frequency. Use the slope factor of this F-I plot to calculate the parasitic capacitance of CVM circuit. How large is the static leakage current (input bias current of the CVM circuit)?
+  #. Connect test capacitors or BNC cables of various lengths to the socket labeled "SENSOR" and measure their capacitance by extracting the slope factor of the F-I curve. (Hint: The capacitance of a BNC cable is around 100 pF/m.)
 
 .. admonition:: Exercise 2. Measure and plot the C-V curve of a sensor diode
 
