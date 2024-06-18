@@ -121,8 +121,7 @@ def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, m
   if (show_plot == True):
     fig, ax = plt.subplots()
     if (use_calibration == True):
-      sigma = popt[0]
-      label_text = 'tau=%s µs, sigma=%.0f [e], thr(inj)=%.1f [e], thr(set)=%.1f [e]' % (time_constants_list[time_constant], sigma, popt[1], (threshold-baseline)*vthr_dac_lsb_electrons)
+      label_text = 'tau=%s µs, sigma=%.0f [e], thr(inj)=%.1f [e], thr(set)=%.1f [e]' % (time_constants_list[time_constant], popt[0], popt[1], (threshold-baseline)*vthr_dac_lsb_electrons)
     else:
       label_text = 'tau=%s µs, sigma=%.1f, thr=%.1f [INJ_DAC], thr=%.1f [VTHR_DAC]' % (time_constants_list[time_constant], popt[0], popt[1], threshold)
     ax.plot(charge_range, hit_data, label=label_text)
