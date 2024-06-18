@@ -23,13 +23,21 @@ INJECT = 4
 GPIO.setup(INJECT, GPIO.OUT)
 GPIO.output(INJECT, GPIO.LOW)
 
-time_constants_list = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20]
+# some constants and AFE circuit parameters
+tot_period  = 25e-3  # [µs], 40 MHz TOT counter clock
+q_e   = 1.602e-19 # elementary charge
+C_f   = 1.39e-12  # 1 pF mounted + 0.39 pF parasitic capacitance (from Rf mainly)
+C_inj = 0.1e-12   # 0.1 pF injection capacitance   
+A_sha = 1000/np.exp(1) # shaping amplifier gain
+
+time_constants_list = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20] # [µs]
 out_mux_dict = {
   'csa':  0, 
   'hpf':  1, 
   'sha':  2, 
   'comp': 3}
 
+# main function for communication with the AFE module via the SPI bus
 def update_spi_regs(threshold, injected_signal, time_constant, out_mux):
   # the SPI bus connects to two devices:
   #  - Dual channel 12-bit DAC that controlls the threshold voltage and the injected signal level
@@ -57,12 +65,9 @@ def update_spi_regs(threshold, injected_signal, time_constant, out_mux):
   #print(bin(spi_data)[2:].zfill(24))
   return spi.xfer(bytearray(spi_data.to_bytes(3, byteorder='big')))
 
-
+# calculate sensitivity and calibration constants (DAC LSB sizes in electrons)
 def calculate_calibration_constants():
-  q_e = 1.602e-19   # elementary charge
-  C_f   = 1.39e-12  # 1 pF mounted + 0.39 pF parasitic capacitance (from Rf mainly)
-  C_inj = 0.1e-12   # 
-  A_sha = 1000/np.exp(1) # shaping amplifier gain
+
   sensitivity_fC = 1/C_f * A_sha * 1e-12     # total AFE chain sensitivity [mV/fC]
   sensitivity_e  = 1/C_f * A_sha * q_e * 1e3 # total AFE chain sensitivity [mV/e]
   injection_fc   = 0.1 * C_inj * 1e12        # charge injection conversion factor [fC/mV]
@@ -79,14 +84,17 @@ def calculate_calibration_constants():
 
   return vthr_dac_lsb_electrons, vinj_dac_lsb_electrons
 
-
+# normalized error function for threshold scan fit
 def err_func(x,a,b):
    return 0.5*(scipy.special.erf((x-b)/(np.sqrt(2)*a))+1)  # normalized error function
 
-vinj_dac_lsb_electrons = 1
-vthr_dac_lsb_electrons = 1
+# shaper pulse waveform function (equal low and high pass filter time constants)
+def sha_pulse_func(t, t0, tau, a, b):
+  return np.where(t > t0, a * np.exp(1) * (t-t0)/tau * np.exp(-(t-t0)/tau) + b, b)
 
-GPIO.output(INJECT, GPIO.LOW)
+# shaper pulse waveform function (individual low and high pass filter time constants) 
+def sha_pulse2_func(t, t0, tau1, tau2, a, b):
+  return np.where(t > t0, a * np.exp(1) * 1/(tau1-tau2) * (np.exp(-(t-t0)/tau2) - (tau2/tau1) * np.exp(-(t-t0)/tau1)) + b, b)
 
 # simple injection loop, returns the detected hit probability
 def inject(threshold, charge, time_constant, n_injections = 100, monitor = 'sha'):
@@ -109,10 +117,10 @@ def inject_read_tot(threshold, charge, time_constant, monitor = 'sha'):
   time.sleep(0.0001) 
   if (GPIO.input(COMP)):   # read latched comparator output, read TOT value if hit detected
     time.sleep(0.001)     # wait for counter to stop
-    tot = update_spi_regs(threshold, charge, time_constant, monitor)  # read TOT value from CPLD   
+    tot = update_spi_regs(threshold, charge, time_constant, monitor)[0]  # read TOT value from CPLD   
   GPIO.output(INJECT, GPIO.LOW)  # reset charge injection, hit latch, and TOT counter
   time.sleep(0.0001)
-  return tot[0]  # return measured TOT
+  return tot  # return measured TOT
 
 # scan the injection charge range and return the resulting s-curve fit parameters
 def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, monitor = 'sha', show_plot = False, use_calibration = False):
@@ -154,6 +162,7 @@ def parametric_threshold_scan_1(threshold_range, charge_range, time_constant, n_
   fitted_threshold_data = np.empty(0, int)
   fig, ax = plt.subplots(2,1)
   for threshold in threshold_range:          # scan range of threshold voltages
+    print('Scanning threshold: ', threshold if use_calibration else  threshold * vthr_dac_lsb_electrons)
     popt, hit_data = threshold_scan(threshold, charge_range, time_constant, n_injections, monitor, use_calibration = use_calibration)
     fitted_threshold_data = np.append(fitted_threshold_data, popt[1])
     if (use_calibration == True):
@@ -183,7 +192,6 @@ def parametric_threshold_scan_1(threshold_range, charge_range, time_constant, n_
     ax[1].set(xlabel='Measured threshold [INJ_DAC]', ylabel='Set threshold [VTHR_DAC]')
   ax[1].legend()
   ax[1].grid()
-  #plt.show()
 
 # multiple s-curve measurements with varying time constant, extract the fitted noise values
 def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_injections = 100, monitor = 'sha', use_calibration = False):
@@ -192,6 +200,7 @@ def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_
   shaping_time_data = np.empty(0, float)
   fig, ax = plt.subplots(2,1)
   for time_constant_index in time_constant_range:    # scan range of shaper time constants **or**
+    print('Scanning time constant: ', time_constants_list[time_constant_index])
     popt, hit_data = threshold_scan(threshold, charge_range, time_constant_index, n_injections, monitor, use_calibration = use_calibration)
     fitted_noise_data = np.append(fitted_noise_data, popt[0])
     shaping_time_data = np.append(shaping_time_data, time_constants_list[time_constant_index])
@@ -215,13 +224,50 @@ def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_
   ax[1].plot(shaping_time_data, fitted_noise_data, label='some detector capacitance...') # plot noise vs shaping time constant
   ax[1].legend()
   ax[1].grid()
-  plt.show()
-  
-def sha_pulse_func(t, t0, tau, a, b):
-  return np.where(t > t0, a * np.exp(1) * (t-t0)/tau * np.exp(-(t-t0)/tau) + b, b)
 
-def sha_pulse2_func(t, t0, tau1, tau2, a, b):
-  return np.where(t > t0, a * np.exp(1) * 1/(tau1-tau2) * (np.exp(-(t-t0)/tau2) - (tau2/tau1) * np.exp(-(t-t0)/tau1)) + b, b)
+# scan injected charge range and return the resulting TOT values 
+def tot_scan(threshold, charge_range, time_constant, n_injections = 100, monitor = 'comp', show_plot = False, use_calibration = False):
+  tot_data = np.empty(0, int)
+  for charge in tqdm(charge_range):
+    tot = 0
+    for i in range(n_injections):
+      tot = tot + inject_read_tot(threshold, charge, time_constant, monitor)
+    tot = tot/n_injections
+    tot_data = np.append(tot_data, tot)
+  if (show_plot == True):
+    fig, ax = plt.subplots()
+    if (use_calibration == True):
+      label_text = 'tau=%s µs, thr(set)=%.1f [e]' % (time_constants_list[time_constant],(threshold-baseline)*vthr_dac_lsb_electrons)
+      ax.set(xlabel='Injected charge (e)', ylabel='TOT [25 ns]', title='TOT scan')
+      charge_range = charge_range * vinj_dac_lsb_electrons
+      tot_data = tot_data * tot_period
+    else:
+      label_text = 'tau=%s µs, thr=%.0f [VTHR_DAC]' % (time_constants_list[time_constant], threshold)
+      ax.set(xlabel='Injected charge (DAC)', ylabel='HTOT [25 ns]', title='TOT scan')
+    ax.plot(charge_range, tot_data, label=label_text)
+    ax.legend()
+    ax.grid()
+  #plt.show()
+  return tot_data
+
+# scan the injected charge range and return the resulting TOT values with the time constant as parameter
+def parametric_tot_scan(threshold, charge_range, time_constant_range, n_injections = 100, monitor = 'comp', use_calibration = False):
+  fig, ax = plt.subplots()
+  for time_constant_index in time_constant_range:    # scan range of shaper time constants
+    print('Scanning time constant: ', time_constants_list[time_constant_index])
+    tot_data = np.empty(0, int)
+    tot_data = tot_scan(threshold, charge_range, time_constant_index, n_injections, monitor, use_calibration = use_calibration)
+    label_text = 'tau=%s µs' % (time_constants_list[time_constant_index])
+    if (use_calibration == True):
+      ax.plot(charge_range * vinj_dac_lsb_electrons, tot_data * tot_period, label=label_text)    # plot hit probability vs. injected charge
+    else: 
+      ax.plot(charge_range, tot_data * tot_period, label=label_text)    # plot hit probability vs. injected charge
+  if (use_calibration == True):    
+    ax.set(xlabel='Injected charge [e]', ylabel='TOT [µs]', title='TOT scan')
+  else:
+    ax.set(xlabel='Injected charge [INJ_DAC]', ylabel='TOT [25 ns]', title='TOT scan')
+  ax.legend()
+  ax.grid()
 
 def analyze_waveform(filename):
   with open(filename, 'r') as file:
@@ -239,27 +285,30 @@ def analyze_waveform(filename):
     ax.legend()
     plt.show()
 
-baseline = 2000  # typical value, adjust for actual baseline of the individual AFE module, if needed
+# scan range definitions
+baseline = 2000  # shaper output DC potential (typical value), adjust for actual baseline of the individual AFE module if needed
 threshold_range_min = baseline + 200
 threshold_range_max = baseline + 600
 charge_range = np.arange(20, 301, 10, dtype=int)
 charge = 200
 threshold_range = np.arange(threshold_range_min, threshold_range_max, 100, dtype=int)
 threshold = baseline + 400 
-time_constant_range = range(2,8)
+time_constant_range = range(2,5)
 time_constant = 3
 
+
+# function calls, uncomment to run specific or all tests
 vthr_dac_lsb_electrons, vinj_dac_lsb_electrons = calculate_calibration_constants()
 #inject(threshold, charge, time_constant, n_injections = 1000, monitor = 'sha')
 #threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot=True, use_calibration=True)
-#parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha', use_calibration=True)
-#parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha', use_calibration=True)
+#tot_scan(threshold, charge_range, time_constant, monitor = 'comp', show_plot = True, use_calibration=True)
+parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha', use_calibration=True)
+parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha', use_calibration=True)
+parametric_tot_scan(threshold, charge_range, time_constant_range, monitor = 'comp',  use_calibration=True)
 #analyze_waveform('code/AFE/test.csv')
 
-for i in range(10):
-  print(inject_read_tot(threshold, charge, time_constant, monitor='comp'))
-
-
+# clean up
 spi.close()
 GPIO.cleanup()
+# finally show all plots
 plt.show()
