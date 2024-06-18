@@ -50,3 +50,5 @@ code/AFE/CPLD/ISE/isim*
 code/AFE/CPLD/ISE/*html
 
 !test.csv
+code/AFE/CPLD/ISE/iseconfig/afe.xreport
+code/AFE/CPLD/ISE/iseconfig/afe.xreport
