@@ -43,6 +43,10 @@ code/AFE/CPLD/ISE/*.prj
 code/AFE/CPLD/ISE/afe_html/
 code/AFE/CPLD/ISE/afe_summary.html
 code/AFE/CPLD/ISE/afe_envsettings.html
+code/AFE/CPLD/ISE/iseconfig/*.xreport
 code/AFE/CPLD/ISE/iseconfig/afe.xreport
-!test.csv
+code/AFE/CPLD/ISE/afe_solution_html*
+code/AFE/CPLD/ISE/isim*
+code/AFE/CPLD/ISE/*html
 
+!test.csv

@@ -56,7 +56,7 @@ always @(posedge clk_buf)
 begin
   if (!INJ_IN) // reset TOT counter
     tot_counter <= 0;
-  else if (COMP)
+  else if (COMP & INJ_IN)
     tot_counter <= tot_counter + 1;
 end
 
