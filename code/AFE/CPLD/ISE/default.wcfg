@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="/home/ise/ISE/afe_tb_isim_beh.wdb" id="1" type="auto">
+         <top_modules>
+            <top_module name="afe_tb" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <WVObjectSize size="11" />
+   <wvobject fp_name="/afe_tb/MISO" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">MISO</obj_property>
+      <obj_property name="ObjectShortName">MISO</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/HIT" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">HIT</obj_property>
+      <obj_property name="ObjectShortName">HIT</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/GPIO" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">GPIO[7:0]</obj_property>
+      <obj_property name="ObjectShortName">GPIO[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/MOSI" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">MOSI</obj_property>
+      <obj_property name="ObjectShortName">MOSI</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/CS_B" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">CS_B</obj_property>
+      <obj_property name="ObjectShortName">CS_B</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/SCLK" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">SCLK</obj_property>
+      <obj_property name="ObjectShortName">SCLK</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/INJ" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">INJ</obj_property>
+      <obj_property name="ObjectShortName">INJ</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/COMP" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">COMP</obj_property>
+      <obj_property name="ObjectShortName">COMP</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/CLK" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">CLK</obj_property>
+      <obj_property name="ObjectShortName">CLK</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/out_data" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">out_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">out_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/uut/tot_counter" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">tot_counter[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tot_counter[7:0]</obj_property>
+   </wvobject>
+</wave_config>

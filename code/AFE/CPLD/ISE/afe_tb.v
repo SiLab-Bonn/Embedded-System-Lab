@@ -36,15 +36,15 @@ module afe_tb;
 	wire MISO;
 	wire HIT;
 	wire [7:0] GPIO;
-	reg  [7:0] out_data = 8'b01101001;
+	reg  [7:0] out_data = 8'b00000000;
 
 	// Instantiate the Unit Under Test (UUT)
-	afe_main uut (
+	afe_solution uut (
 		.MOSI(MOSI), 
 		.MISO(MISO), 
 		.CS_B(CS_B), 
 		.SCLK(SCLK), 
-		.INJ(INJ), 
+		.INJ_IN(INJ), 
 		.COMP(COMP), 
 		.HIT(HIT), 
 		.GPIO(GPIO), 
