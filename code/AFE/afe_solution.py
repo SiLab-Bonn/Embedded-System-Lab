@@ -238,12 +238,12 @@ def tot_scan(threshold, charge_range, time_constant, n_injections = 100, monitor
     fig, ax = plt.subplots()
     if (use_calibration == True):
       label_text = 'tau=%s µs, thr(set)=%.1f [e]' % (time_constants_list[time_constant],(threshold-baseline)*vthr_dac_lsb_electrons)
-      ax.set(xlabel='Injected charge (e)', ylabel='TOT [25 ns]', title='TOT scan')
+      ax.set(xlabel='Injected charge (e)', ylabel='TOT [µs]', title='TOT scan')
       charge_range = charge_range * vinj_dac_lsb_electrons
       tot_data = tot_data * tot_period
     else:
       label_text = 'tau=%s µs, thr=%.0f [VTHR_DAC]' % (time_constants_list[time_constant], threshold)
-      ax.set(xlabel='Injected charge (DAC)', ylabel='HTOT [25 ns]', title='TOT scan')
+      ax.set(xlabel='Injected charge (DAC)', ylabel='TOT [25 ns]', title='TOT scan')
     ax.plot(charge_range, tot_data, label=label_text)
     ax.legend()
     ax.grid()
@@ -257,7 +257,7 @@ def parametric_tot_scan(threshold, charge_range, time_constant_range, n_injectio
     print('Scanning time constant: ', time_constants_list[time_constant_index])
     tot_data = np.empty(0, int)
     tot_data = tot_scan(threshold, charge_range, time_constant_index, n_injections, monitor, use_calibration = use_calibration)
-    label_text = 'tau=%s µs' % (time_constants_list[time_constant_index])
+    label_text = 'tau=%s µs, threshold=%.1f' % (time_constants_list[time_constant_index], (threshold-baseline)*vthr_dac_lsb_electrons if use_calibration else threshold)
     if (use_calibration == True):
       ax.plot(charge_range * vinj_dac_lsb_electrons, tot_data * tot_period, label=label_text)    # plot hit probability vs. injected charge
     else: 
@@ -287,12 +287,12 @@ def analyze_waveform(filename):
 
 # scan range definitions
 baseline = 2000  # shaper output DC potential (typical value), adjust for actual baseline of the individual AFE module if needed
-threshold_range_min = baseline + 200
-threshold_range_max = baseline + 600
+threshold_range_min = baseline + 300
+threshold_range_max = baseline + 700
 charge_range = np.arange(20, 301, 10, dtype=int)
 charge = 200
 threshold_range = np.arange(threshold_range_min, threshold_range_max, 100, dtype=int)
-threshold = baseline + 400 
+threshold = baseline + 450 
 time_constant_range = range(2,5)
 time_constant = 3
 
