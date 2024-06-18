@@ -55,7 +55,7 @@ def update_spi_regs(threshold, injected_signal, time_constant, out_mux):
   spi_data = ((((0xfff & int(injected_signal)) | dac_cmd_b) << 8) + \
                 ( 0x07 & time_constant) | ((0x03 & out_mux_val) << 3))
   #print(bin(spi_data)[2:].zfill(24))
-  spi.xfer(bytearray(spi_data.to_bytes(3, byteorder='big')))
+  return spi.xfer(bytearray(spi_data.to_bytes(3, byteorder='big')))
 
 
 def calculate_calibration_constants():
@@ -89,7 +89,7 @@ vthr_dac_lsb_electrons = 1
 GPIO.output(INJECT, GPIO.LOW)
 
 # simple injection loop, returns the detected hit probability
-def inject(threshold, charge, time_constant, n_injections, monitor = 'sha'):
+def inject(threshold, charge, time_constant, n_injections = 100, monitor = 'sha'):
   update_spi_regs(threshold, charge, time_constant, monitor)
   hit_count = 0
   for i in range(n_injections): 
@@ -100,6 +100,19 @@ def inject(threshold, charge, time_constant, n_injections, monitor = 'sha'):
     GPIO.output(INJECT, GPIO.LOW)  # reset charge injection and hit latch 
     time.sleep(0.0001)
   return (hit_count/n_injections)  # return measured hit probability
+
+# single injection, returns TOT value
+def inject_read_tot(threshold, charge, time_constant, monitor = 'sha'):
+  tot = 0 # in case no hit was detected
+  update_spi_regs(threshold, charge, time_constant, monitor)
+  GPIO.output(INJECT, GPIO.HIGH) # inject charge
+  time.sleep(0.0001) 
+  if (GPIO.input(COMP)):   # read latched comparator output, read TOT value if hit detected
+    time.sleep(0.001)     # wait for counter to stop
+    tot = update_spi_regs(threshold, charge, time_constant, monitor)  # read TOT value from CPLD   
+  GPIO.output(INJECT, GPIO.LOW)  # reset charge injection, hit latch, and TOT counter
+  time.sleep(0.0001)
+  return tot[0]  # return measured TOT
 
 # scan the injection charge range and return the resulting s-curve fit parameters
 def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, monitor = 'sha', show_plot = False, use_calibration = False):
@@ -187,7 +200,7 @@ def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_
       ax[0].plot(charge_range * vinj_dac_lsb_electrons, hit_data, label=label_text)    # plot hit probability vs. injected charge
       ax[0].plot(charge_range * vinj_dac_lsb_electrons, err_func(charge_range * vinj_dac_lsb_electrons, *popt))
     else: 
-      label_text = 'tau=%s µs, sigma=%.1f' % (time_constants_list[time_constant_index], popt[0])
+      label_text = 'tau=%s µs, sigma=%.1f [INJ_DAC]' % (time_constants_list[time_constant_index], popt[0])
       ax[0].plot(charge_range, hit_data, label=label_text)    # plot hit probability vs. injected charge
       ax[0].plot(charge_range, err_func(charge_range, *popt)) # plot fittd error-function
   if (use_calibration == True):    
@@ -199,8 +212,6 @@ def parametric_threshold_scan_2(threshold, charge_range, time_constant_range, n_
      
   ax[0].legend()
   ax[0].grid()
-  #print(fitted_noise_data)
-  #label_text = 'tau=%s, sigma=%.1f, thr=%.1f [INJ_DAC], thr=%.1f [VTHR_DAC]' % (time_constants_list[time_constant], popt[0], popt[1], threshold)
   ax[1].plot(shaping_time_data, fitted_noise_data, label='some detector capacitance...') # plot noise vs shaping time constant
   ax[1].legend()
   ax[1].grid()
@@ -236,15 +247,17 @@ charge = 200
 threshold_range = np.arange(threshold_range_min, threshold_range_max, 100, dtype=int)
 threshold = baseline + 400 
 time_constant_range = range(2,8)
-time_constant = 6
+time_constant = 3
 
 vthr_dac_lsb_electrons, vinj_dac_lsb_electrons = calculate_calibration_constants()
 #inject(threshold, charge, time_constant, n_injections = 1000, monitor = 'sha')
 #threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot=True, use_calibration=True)
 #parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha', use_calibration=True)
-parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha', use_calibration=True)
+#parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha', use_calibration=True)
 #analyze_waveform('code/AFE/test.csv')
 
+for i in range(10):
+  print(inject_read_tot(threshold, charge, time_constant, monitor='comp'))
 
 
 spi.close()
