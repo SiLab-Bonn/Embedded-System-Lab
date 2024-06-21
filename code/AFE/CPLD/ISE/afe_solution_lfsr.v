@@ -5,6 +5,7 @@ module afe_solution_lfsr
 	input  CS_B,
 	input  SCLK,
 	input  INJ_IN,
+	input  INJ_IN_DEL,
 	input  COMP,
 	output HIT,
 	output INJ_OUT,
@@ -15,16 +16,18 @@ module afe_solution_lfsr
 
   reg [7:0] lfsr_reg;
   reg [7:0] gpio_reg;
-  reg [7:0] GPIO;
   reg hit_reg;
   wire feedback;
   wire reg_clk;
+  wire lfsr_reset_b;
 
   assign LED = 1;
   assign INJ_OUT = INJ_IN;
+  assign HIT = hit_reg;
   assign reg_clk = INJ_IN ? CLK : SCLK;  // 
   assign feedback  = CS_B ? (lfsr_reg[0] ^ lfsr_reg[2] ^ lfsr_reg[3] ^ lfsr_reg[4]) : MOSI;
-  assign MISO = CS_B ? 1'b0 : lfsr_reg[0];
+  assign lfsr_rst_b = !(INJ_IN && !INJ_IN_DEL);
+  assign MISO = CS_B ? 1'b0 : lfsr_reg[7];
   assign GPIO = gpio_reg;
 
   // asyc. hit latch
@@ -39,9 +42,9 @@ module afe_solution_lfsr
   end
 
   // shit register: SPI data or TOT counter (lfsr)
-  always @(posedge reg_clk or negedge INJ_IN) 
+  always @(posedge reg_clk or negedge lfsr_rst_b) 
   begin
-    if (!INJ_IN)   // FIXME
+    if (!lfsr_rst_b)   
       lfsr_reg <= 8'b11111111;
     else 
     begin
@@ -54,7 +57,7 @@ module afe_solution_lfsr
   always @(posedge CS_B) 
   begin
     begin
-      GPIO <= lfsr_reg;
+      gpio_reg <= lfsr_reg;
     end
   end
 

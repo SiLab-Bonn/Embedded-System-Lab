@@ -10,7 +10,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="11" />
+   <WVObjectSize size="13" />
    <wvobject fp_name="/afe_tb/MISO" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">MISO</obj_property>
       <obj_property name="ObjectShortName">MISO</obj_property>
@@ -39,6 +39,10 @@
       <obj_property name="ElementShortName">INJ</obj_property>
       <obj_property name="ObjectShortName">INJ</obj_property>
    </wvobject>
+   <wvobject fp_name="/afe_tb/INJ_DEL" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">INJ_DEL</obj_property>
+      <obj_property name="ObjectShortName">INJ_DEL</obj_property>
+   </wvobject>
    <wvobject fp_name="/afe_tb/COMP" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">COMP</obj_property>
       <obj_property name="ObjectShortName">COMP</obj_property>
@@ -51,8 +55,12 @@
       <obj_property name="ElementShortName">out_data[7:0]</obj_property>
       <obj_property name="ObjectShortName">out_data[7:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/afe_tb/uut/tot_counter" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">tot_counter[7:0]</obj_property>
-      <obj_property name="ObjectShortName">tot_counter[7:0]</obj_property>
+   <wvobject fp_name="/afe_tb/uut/toa_reg" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">toa_reg[7:0]</obj_property>
+      <obj_property name="ObjectShortName">toa_reg[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/afe_tb/uut/tot_reg" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">tot_reg[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tot_reg[7:0]</obj_property>
    </wvobject>
 </wave_config>

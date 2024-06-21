@@ -56,85 +56,127 @@
     <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="afe_html"/>
     <file xil_pn:fileType="FILE_XRPT" xil_pn:name="afe_ngdbuild.xrpt"/>
     <file xil_pn:fileType="FILE_PAD_EXCEL_REPORT" xil_pn:name="afe_pad.csv"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGDBUILD_LOG" xil_pn:name="afe_solution.bld"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_CHK" xil_pn:name="afe_solution.chk"/>
+    <file xil_pn:fileType="FILE_CMD_LOG" xil_pn:name="afe_solution.cmd_log"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_CXT" xil_pn:name="afe_solution.cxt"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_GYD" xil_pn:name="afe_solution.gyd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_JEDEC" xil_pn:name="afe_solution.jed"/>
+    <file xil_pn:fileType="FILE_LOG" xil_pn:name="afe_solution.log"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_LSO" xil_pn:name="afe_solution.lso"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_MFD" xil_pn:name="afe_solution.mfd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGA" xil_pn:name="afe_solution.nga"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGC" xil_pn:name="afe_solution.ngc"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGD" xil_pn:name="afe_solution.ngd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGR" xil_pn:name="afe_solution.ngr"/>
+    <file xil_pn:fileType="FILE_PAD_MISC" xil_pn:name="afe_solution.pad"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_PNX" xil_pn:name="afe_solution.pnx"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="afe_solution.prj"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution.rpt"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_STX" xil_pn:name="afe_solution.stx"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_REPORT" xil_pn:name="afe_solution.syr"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution.tim"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution.tspec"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_VM6" xil_pn:name="afe_solution.vm6"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution.xml"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST" xil_pn:name="afe_solution.xst"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution_build.xml"/>
+    <file xil_pn:fileType="FILE_HTML" xil_pn:name="afe_solution_envsettings.html"/>
+    <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="afe_solution_html"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGDBUILD_LOG" xil_pn:name="afe_solution_lfsr.bld"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_CHK" xil_pn:name="afe_solution_lfsr.chk"/>
+    <file xil_pn:fileType="FILE_CMD_LOG" xil_pn:name="afe_solution_lfsr.cmd_log"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_CXT" xil_pn:name="afe_solution_lfsr.cxt"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_GYD" xil_pn:name="afe_solution_lfsr.gyd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_JEDEC" xil_pn:name="afe_solution_lfsr.jed"/>
+    <file xil_pn:fileType="FILE_LOG" xil_pn:name="afe_solution_lfsr.log"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_LSO" xil_pn:name="afe_solution_lfsr.lso"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_MFD" xil_pn:name="afe_solution_lfsr.mfd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGA" xil_pn:name="afe_solution_lfsr.nga"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGC" xil_pn:name="afe_solution_lfsr.ngc"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGD" xil_pn:name="afe_solution_lfsr.ngd"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_NGR" xil_pn:name="afe_solution_lfsr.ngr"/>
+    <file xil_pn:fileType="FILE_PAD_MISC" xil_pn:name="afe_solution_lfsr.pad"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_PNX" xil_pn:name="afe_solution_lfsr.pnx"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="afe_solution_lfsr.prj"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution_lfsr.rpt"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_STX" xil_pn:name="afe_solution_lfsr.stx"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST_REPORT" xil_pn:name="afe_solution_lfsr.syr"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution_lfsr.tspec"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_VM6" xil_pn:name="afe_solution_lfsr.vm6"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution_lfsr.xml"/>
+    <file xil_pn:branch="Implementation" xil_pn:fileType="FILE_XST" xil_pn:name="afe_solution_lfsr.xst"/>
+    <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="afe_solution_lfsr_build.xml"/>
+    <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="afe_solution_lfsr_html"/>
+    <file xil_pn:fileType="FILE_XRPT" xil_pn:name="afe_solution_lfsr_ngdbuild.xrpt"/>
+    <file xil_pn:fileType="FILE_PAD_EXCEL_REPORT" xil_pn:name="afe_solution_lfsr_pad.csv"/>
+    <file xil_pn:fileType="FILE_HTML" xil_pn:name="afe_solution_lfsr_summary.html"/>
+    <file xil_pn:fileType="FILE_XRPT" xil_pn:name="afe_solution_lfsr_xst.xrpt"/>
+    <file xil_pn:fileType="FILE_XRPT" xil_pn:name="afe_solution_ngdbuild.xrpt"/>
+    <file xil_pn:fileType="FILE_PAD_EXCEL_REPORT" xil_pn:name="afe_solution_pad.csv"/>
+    <file xil_pn:fileType="FILE_HTML" xil_pn:name="afe_solution_summary.html"/>
+    <file xil_pn:fileType="FILE_XRPT" xil_pn:name="afe_solution_xst.xrpt"/>
     <file xil_pn:fileType="FILE_HTML" xil_pn:name="afe_summary.html"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="afe_tb_beh.prj"/>
+    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_ISIM_EXE" xil_pn:name="afe_tb_isim_beh.exe"/>
+    <file xil_pn:fileType="FILE_ISIM_MISC" xil_pn:name="afe_tb_isim_beh.wdb"/>
+    <file xil_pn:fileType="FILE_XST_PROJECT" xil_pn:name="afe_tb_stx_beh.prj"/>
     <file xil_pn:fileType="FILE_XRPT" xil_pn:name="afe_xst.xrpt"/>
+    <file xil_pn:fileType="FILE_LOG" xil_pn:name="fuse.log"/>
+    <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="isim"/>
+    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_CMD" xil_pn:name="isim.cmd"/>
+    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_LOG" xil_pn:name="isim.log"/>
     <file xil_pn:fileType="FILE_FITTER_REPORT" xil_pn:name="webtalk_pn.xml"/>
+    <file xil_pn:branch="BehavioralSim" xil_pn:fileType="FILE_INI" xil_pn:name="xilinxsim.ini"/>
     <file xil_pn:fileType="FILE_DIRECTORY" xil_pn:name="xlnx_auto_0_xdb"/>
   </files>
 
   <transforms xmlns="http://www.xilinx.com/XMLSchema">
-    <transform xil_pn:end_ts="1715868219" xil_pn:name="TRAN_copyInitialToXSTAbstractSynthesis" xil_pn:start_ts="1715868219">
+    <transform xil_pn:end_ts="1718981094" xil_pn:name="TRAN_copyInitialToAbstractSimulation" xil_pn:start_ts="1718981094">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1715868219" xil_pn:name="TRAN_schematicsToHdl" xil_pn:prop_ck="-2797529878254372386" xil_pn:start_ts="1715868219">
+    <transform xil_pn:end_ts="1718982312" xil_pn:in_ck="-6721250399548989760" xil_pn:name="TRAN_copyAbstractToPostAbstractSimulation" xil_pn:start_ts="1718982312">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+      <outfile xil_pn:name="afe_solution_lfsr_toa_tot.v"/>
+      <outfile xil_pn:name="afe_tb.v"/>
+    </transform>
+    <transform xil_pn:end_ts="1718981095" xil_pn:name="TRAN_schematicsToHdlSim" xil_pn:prop_ck="-685920061916143149" xil_pn:start_ts="1718981095">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1715868315" xil_pn:in_ck="118811536" xil_pn:name="TRANEXT_xstsynthesize_xbr" xil_pn:prop_ck="1861434877241969051" xil_pn:start_ts="1715868299">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="WarningsGenerated"/>
-      <status xil_pn:value="ReadyToRun"/>
-      <outfile xil_pn:name="../Xilinx/AFE/xst"/>
-      <outfile xil_pn:name="_xmsgs/xst.xmsgs"/>
-      <outfile xil_pn:name="afe.lso"/>
-      <outfile xil_pn:name="afe.ngc"/>
-      <outfile xil_pn:name="afe.ngr"/>
-      <outfile xil_pn:name="afe.prj"/>
-      <outfile xil_pn:name="afe.stx"/>
-      <outfile xil_pn:name="afe.syr"/>
-      <outfile xil_pn:name="afe.xst"/>
-      <outfile xil_pn:name="afe_xst.xrpt"/>
-      <outfile xil_pn:name="webtalk_pn.xml"/>
-    </transform>
-    <transform xil_pn:end_ts="1715868224" xil_pn:in_ck="129385764984" xil_pn:name="TRAN_compileBCD2" xil_pn:prop_ck="3734212952590958" xil_pn:start_ts="1715868224">
+    <transform xil_pn:end_ts="1718982312" xil_pn:in_ck="-6721250399548989760" xil_pn:name="TRAN_copyPostAbstractToPreSimulation" xil_pn:start_ts="1718982312">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <outfile xil_pn:name="afe_solution_lfsr_toa_tot.v"/>
+      <outfile xil_pn:name="afe_tb.v"/>
     </transform>
-    <transform xil_pn:end_ts="1715868326" xil_pn:in_ck="-1356950286254520470" xil_pn:name="TRAN_ngdbuild" xil_pn:prop_ck="2434330539670293515" xil_pn:start_ts="1715868315">
-      <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="ReadyToRun"/>
-      <outfile xil_pn:name="_ngo"/>
-      <outfile xil_pn:name="_xmsgs/ngdbuild.xmsgs"/>
-      <outfile xil_pn:name="afe.bld"/>
-      <outfile xil_pn:name="afe.ngd"/>
-      <outfile xil_pn:name="afe_ngdbuild.xrpt"/>
-    </transform>
-    <transform xil_pn:end_ts="1715868342" xil_pn:in_ck="129385757491" xil_pn:name="TRANEXT_vm6File_xbr" xil_pn:prop_ck="-1616460296047693490" xil_pn:start_ts="1715868326">
+    <transform xil_pn:end_ts="1718982315" xil_pn:in_ck="-6721250399548989760" xil_pn:name="TRAN_ISimulateBehavioralModelRunFuse" xil_pn:prop_ck="-4090088448698491348" xil_pn:start_ts="1718982312">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <status xil_pn:value="OutOfDateForOutputs"/>
       <status xil_pn:value="OutputChanged"/>
-      <outfile xil_pn:name="afe.chk"/>
-      <outfile xil_pn:name="afe.cxt"/>
-      <outfile xil_pn:name="afe.gyd"/>
-      <outfile xil_pn:name="afe.log"/>
-      <outfile xil_pn:name="afe.mfd"/>
-      <outfile xil_pn:name="afe.nga"/>
-      <outfile xil_pn:name="afe.pad"/>
-      <outfile xil_pn:name="afe.pnx"/>
-      <outfile xil_pn:name="afe.rpt"/>
-      <outfile xil_pn:name="afe.tim"/>
-      <outfile xil_pn:name="afe.tspec"/>
-      <outfile xil_pn:name="afe.vm6"/>
-      <outfile xil_pn:name="afe.xml"/>
-      <outfile xil_pn:name="afe_build.xml"/>
-      <outfile xil_pn:name="afe_html"/>
-      <outfile xil_pn:name="afe_pad.csv"/>
+      <outfile xil_pn:name="afe_tb_beh.prj"/>
+      <outfile xil_pn:name="afe_tb_isim_beh.exe"/>
+      <outfile xil_pn:name="fuse.log"/>
+      <outfile xil_pn:name="isim"/>
+      <outfile xil_pn:name="isim.log"/>
+      <outfile xil_pn:name="xilinxsim.ini"/>
     </transform>
-    <transform xil_pn:end_ts="1715868346" xil_pn:in_ck="129385766355" xil_pn:name="TRANEXT_crtProg_xbr" xil_pn:prop_ck="5245363024343" xil_pn:start_ts="1715868342">
+    <transform xil_pn:end_ts="1718982316" xil_pn:in_ck="441712728106169296" xil_pn:name="TRAN_ISimulateBehavioralModel" xil_pn:prop_ck="-9001650772882822897" xil_pn:start_ts="1718982315">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
-      <outfile xil_pn:name="afe.jed"/>
+      <outfile xil_pn:name="afe_tb_isim_beh.wdb"/>
+      <outfile xil_pn:name="isim.cmd"/>
+      <outfile xil_pn:name="isim.log"/>
     </transform>
-    <transform xil_pn:end_ts="1715868375" xil_pn:in_ck="129385753069" xil_pn:name="TRAN_configureTargetDevice_CPLD" xil_pn:prop_ck="-3223234765801749484" xil_pn:start_ts="1715868372">
+    <transform xil_pn:end_ts="1715868219" xil_pn:name="TRAN_copyInitialToXSTAbstractSynthesis" xil_pn:start_ts="1715868219">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
-      <outfile xil_pn:name="_impactbatch.log"/>
     </transform>
-    <transform xil_pn:end_ts="1715868342" xil_pn:in_ck="129385766355" xil_pn:name="TRAN_timRpt" xil_pn:prop_ck="111903974446" xil_pn:start_ts="1715868338">
+    <transform xil_pn:end_ts="1718980242" xil_pn:in_ck="129385764984" xil_pn:name="TRAN_compileBCD2" xil_pn:prop_ck="-6592407214156872000" xil_pn:start_ts="1718980242">
       <status xil_pn:value="SuccessfullyRun"/>
-      <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
   </transforms>

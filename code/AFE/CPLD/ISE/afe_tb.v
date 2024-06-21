@@ -29,6 +29,7 @@ module afe_tb;
 	reg CS_B;
 	reg SCLK;
 	reg INJ;
+	reg INJ_DEL;
 	reg COMP;
 	reg CLK;
 
@@ -39,20 +40,20 @@ module afe_tb;
 	reg  [7:0] out_data = 8'b00000000;
 
 	// Instantiate the Unit Under Test (UUT)
-	afe_solution uut (
+	afe_solution_lfsr_toa_tot uut (
 		.MOSI(MOSI), 
 		.MISO(MISO), 
 		.CS_B(CS_B), 
 		.SCLK(SCLK), 
 		.INJ_IN(INJ), 
+		.INJ_IN_DEL(INJ_DEL), 
 		.COMP(COMP), 
 		.HIT(HIT), 
 		.GPIO(GPIO), 
 		.CLK(CLK)
 	);
 
-    $dumpfile("dump.vcd");
-    $dumpvars(1);
+
 
 	initial 
 	begin
@@ -61,6 +62,7 @@ module afe_tb;
 		CS_B = 1;
 		SCLK = 0;
 		INJ = 0;
+		INJ_DEL = 0;
 		COMP = 0;
 		CLK = 0;
 
@@ -68,29 +70,48 @@ module afe_tb;
 		#10;
         
 	forever #12.5 CLK = ~CLK;
+
 	end
 	
-	initial
-    begin	
-		// trigger injection
-	  #  70  INJ = 1;	
-	  #  30  COMP = 1;
-	  # 230  COMP = 0;
-	 
-	end	
 	
 	initial
     begin	
-		// SPI transfer
-	  # 400 CS_B = 0;
+    // SPI transfer
+	  CS_B = 0;
 	  #50;
 	  repeat(16)
 	  begin
 	  # 50 SCLK = ~SCLK;
 	  end
 	  CS_B = 1;
-	  #100 $finish;
+	  #100; 
+	
+		// trigger injection
+	  #  70  INJ = 1;	
+	  #  180 INJ_DEL = 1;
+	  # 300  COMP = 1;
+	  # 530  COMP = 0;	  
+	  
+	  #  70  INJ = 0;	
+	  #  180 INJ_DEL = 0;	  
+	  
+	  #100;
+	  CS_B = 0;
+	  #50;
+	  repeat(32)
+	  begin
+	  # 50 SCLK = ~SCLK;
+	  end
+	  CS_B = 1;
+
+	  
+
+	  # 100
+	  
+	  $finish;
 	end	
+	
+
 	
 	initial
 	assign MOSI = CS_B? 1'b1: out_data[7];
