@@ -51,6 +51,9 @@ module afe_tb;
 		.CLK(CLK)
 	);
 
+    $dumpfile("dump.vcd");
+    $dumpvars(1);
+
 	initial 
 	begin
 		// Initialize Inputs
