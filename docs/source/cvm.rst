@@ -103,28 +103,28 @@ Exercise 0 should be solved before coming to the lab.
 
   .. math::
 
-    C = \frac{\epsilon_{0} \cdot \epsilon_{Si} \cdot A}{d}.
+    C = \frac{\epsilon_{0} \cdot \epsilon_{Si} \cdot A}{W}.
 
-  where  :math:`\epsilon_{0} = 8.854 \cdot 10^-12 \frac{F}{m}` is the vacuum permittivity, :math:`\epsilon_{Si} = 11.7` is the permittivity of silicon, :math:`A` is the active area and :math:`d` is the thickness of the diode.
+  where  :math:`\epsilon_{0} = 8.854 \cdot 10^-12 \frac{F}{m}` is the vacuum permittivity, :math:`\epsilon_{Si} = 11.7` is the permittivity of silicon, :math:`A` is the active area and :math:`W` is the width of the depletion zone.
 
 
   #. Connect the bias supply to the the connector labeled "BIAS" and plug a sensor diode (BPW 34) to the CVM module. Measure the diode capacitance at zero bias (i.e. the bias supply set to 0 Volt output). The measured capacitance should be in the range of 80 to 120 pF. Hint: Make sure that the polarity of the bias voltage is correct, i.e. the inner wire of the coax cable is connected to the positive power supply terminal (the banana plug to BNC adapter is correctly plugged into the power supply outputs ). 
   #. Measure the capacitance of the diode as a function of the bias voltage (C-V curve) in a range from 0 to 30 Volts. Start with a step size of 1 Volt. 
   #. Between each voltage step a certain settling time is required to reach a stable bias potential at the diode. Test the chosen settling (delay) time by scanning form 0 to 30 Volts and back to 0 Volts in one loop. The points from both scan directions should be on top of each other. If not, increase the delay time in your scan loop. Once you have optimized your scan loop timing decrease the voltage step to 100 mV and measure the capacitance again.
   #. Use the C-V data from the previous measurement and calculate the depletion width as a function of the bias voltage. Assume a parallel plate capacitor configuration to calculate the depletion width from the measured capacitance. Plot the depletion width as a function of the bias voltage. 
-  #. What dependency would you expect for an ideal pn-junction (i.e. abrupt junction and constant doping profile)? Implement the expression for an ideal pn-junction in your code and compare the simulated data with your measurement. Adjust the simulation parameters manually to get a similar result range compared to the measurement data.
+  #. What dependency of the depletion width from the bias voltage would you expect for an ideal pn-junction (i.e. abrupt junction and constant doping profile)? Implement the expression for the voltage dependent depletion width of ideal pn-junction in your code and compare the simulated data with your measurement. Adjust the simulation parameters manually to get a similar result range compared to the measurement data.
   #. What could be the reason for the deviation of the measured data from the ideal case? 
 
 
 .. admonition:: Exercise 3 (advanced). Extract the doping profile from the C-V measurement
 
-  As hinted in the results from the previous exercise, the doping profile of the BAS34 diode is not constant. Actually, this type of diode is a so-called PIN diode, which has a region of very low effective doping density (almost intrinsic) between the p- and n-doped regions (therefore the name "p-i-n"). The doping profile can be calculated from the capacitance-voltage data using the differential capacitance method. The differential capacitance is defined as:
+  As hinted in the results from the previous exercise, the doping profile of the BAS34 diode is not constant. Actually, this type of diode is a so-called PIN diode, which has a region of very low effective doping density (almost intrinsic) between the p- and n-doped regions (therefore the name "p-i-n"). The doping profile can be calculated from the C-V data using the differential capacitance method. The differential capacitance is defined as:
 
   .. math::
 
     C_{\text{diff}} = \frac{dC}{dV},
 
-  which is a function of the depletion width :math:`W`and the local doping density at this location :math:`N(W)_{\text{eff}}`. Therefore, the differential capacitance can be expressed as:
+  which is a function of the depletion width :math:`W` and the local doping density at this location :math:`N(W)_{\text{eff}}`. Therefore, the differential capacitance can be expressed as:
 
   .. math::
 
@@ -134,7 +134,7 @@ Exercise 0 should be solved before coming to the lab.
 
   .. math::
 
-    N(W)_{\text{eff}} = \frac{2}{q \epsilon_{0} \epsilon_{Si} A^2 \frac{d}{dV}(\frac{1}{C^2})}.
+    N(W)_{\text{eff}} = \frac{2}{q \epsilon_{0} \epsilon_{Si} A^2 \frac{d}{dV}(\frac{1}{C_{\text{diff}}^2})}.
 
 
   #. Use this formula to calculate and plot the doping profile of the BPW34 diode. Where is the minimum of the doping profile located and how wide is it approximately? What is the the minimum doping density and how does this value compare with the intrinsic doping density of silicon?
