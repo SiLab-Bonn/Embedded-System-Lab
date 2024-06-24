@@ -75,14 +75,67 @@ Exercise 0 should be solved before coming to the lab.
     
   #. Connect the CVM module to the base board and modify the ``cvm.py`` script such that GPIO pin 4 generates a 100 kHz clock signal. Connect an oscilloscope probe to GPIO4 test pin at the Embedded-System-Lab base board and measure the clock frequency.
   #. Connect the SMU module to the base board with an flat-ribbon cable and adjust the script such that the SMU module is set to source a voltage of 1.5 V. Measure the voltage with a DVM.
-  #. Connect the output of the SMU module to the LEMO socket on the CVM module labeled "VIN" (don't connect a test capacitor or diode yet). Modify the script that it scans the clock frequency from 100 kHz to 1 MHz in steps of 100 kHz and measures the current for each frequency step . Plot the measured current as a function of the clock frequency. Use the slope factor of this F-I plot to calculate the parasitic capacitance of CVM circuit. How large is the static leakage current (input bias current of the CVM circuit)?
+  #. Connect the output of the SMU module to the LEMO socket on the CVM module labeled "VIN" (don't connect a test capacitor or diode yet). Modify the script that it scans the clock frequency from 100 kHz to 1 MHz in steps of 100 kHz and measures the current for each frequency step. Plot the measured current as a function of the clock frequency. Use the slope factor of this F-I plot to calculate the parasitic capacitance of CVM circuit. How large is the static leakage current (input bias current of the CVM circuit)?
   #. Connect test capacitors or BNC cables of various lengths to the socket labeled "SENSOR" and measure their capacitance by extracting the slope factor of the F-I curve. (Hint: The capacitance of a BNC cable is around 100 pF/m.)
 
 .. admonition:: Exercise 2. Measure and plot the C-V curve of a sensor diode
 
-  This exercise requires the use of an external bias voltage source which can generate up to 30 Volts to deplete the sensor diode. A "KA-3005P" lab power supply that can be controlled via an USB interface will be used for that purpose. The required code is found in the Python file ``KA3005P.py`` in the directory ``code/LabDevices``. Use this file and make yourself familiar with the commands to control the power supply.
-    
+  This exercise requires the use of an external bias voltage source which can generate up to 30 Volts to deplete the sensor diode. A "KA-3005P" lab power supply that can be controlled via an USB interface will be used for that purpose. The required code is found in the Python file ``KA3005P.py`` in the directory ``code/LabDevices``. Use this file and make yourself familiar with the commands to control the power supply. The sensor diode used in this lab is a "BPW 34" silicon photo diode. Here are some parameters form the datasheet:
+
+  .. list-table::
+     :widths: 100 80
+     :header-rows: 1
+
+     * - Parameter
+       - Value
+     * - Active area
+       - 2.65 mm x 2.65 mm (7.02 mm^2)
+     * - Thickness
+       - 210 - 300 µm    
+     * - Reverse breakdown voltage
+       - 70 V
+     * - Capacitance at zero bias
+       - 80 pF
+     * - Dark current at 10 V
+       - 2 nA
+
+  Given the large aspect ration of diode area and thickness one can model the diode capacitance with the equation for a parallel plate capacitor:
+
+  .. math::
+
+    C = \frac{\epsilon_{0} \cdot \epsilon_{Si} \cdot A}{d}.
+
+  where  :math:`\epsilon_{0} = 8.854 \cdot 10^-12 \frac{F}{m}` is the vacuum permittivity, :math:`\epsilon_{Si} = 11.7` is the permittivity of silicon, :math:`A` is the active area and :math:`d` is the thickness of the diode.
+
+
   #. Connect the bias supply to the the connector labeled "BIAS" and plug a sensor diode (BPW 34) to the CVM module. Measure the diode capacitance at zero bias (i.e. the bias supply set to 0 Volt output). The measured capacitance should be in the range of 80 to 120 pF. Hint: Make sure that the polarity of the bias voltage is correct, i.e. the inner wire of the coax cable is connected to the positive power supply terminal (the banana plug to BNC adapter is correctly plugged into the power supply outputs ). 
   #. Measure the capacitance of the diode as a function of the bias voltage (C-V curve) in a range from 0 to 30 Volts. Start with a step size of 1 Volt. 
   #. Between each voltage step a certain settling time is required to reach a stable bias potential at the diode. Test the chosen settling (delay) time by scanning form 0 to 30 Volts and back to 0 Volts in one loop. The points from both scan directions should be on top of each other. If not, increase the delay time in your scan loop. Once you have optimized your scan loop timing decrease the voltage step to 100 mV and measure the capacitance again.
-  #. What do you observe in the C-V plot? Does the diode behave like an ideal plate capacitor? What could be the reason for the non-ideal behavior? At which voltage would you expect the diode to be "almost" fully depleted?
+  #. Use the C-V data from the previous measurement and calculate the depletion width as a function of the bias voltage. Assume a parallel plate capacitor configuration to calculate the depletion width from the measured capacitance. Plot the depletion width as a function of the bias voltage. 
+  #. What dependency would you expect for an ideal pn-junction (i.e. abrupt junction and constant doping profile)? Implement the expression for an ideal pn-junction in your code and compare the simulated data with your measurement. Adjust the simulation parameters manually to get a similar result range compared to the measurement data.
+  #. What could be the reason for the deviation of the measured data from the ideal case? 
+
+
+.. admonition:: Exercise 3 (advanced). Extract the doping profile from the C-V measurement
+
+  As hinted in the results from the previous exercise, the doping profile of the BAS34 diode is not constant. Actually, this type of diode is a so-called PIN diode, which has a region of very low effective doping density (almost intrinsic) between the p- and n-doped regions (therefore the name "p-i-n"). The doping profile can be calculated from the capacitance-voltage data using the differential capacitance method. The differential capacitance is defined as:
+
+  .. math::
+
+    C_{\text{diff}} = \frac{dC}{dV},
+
+  which is a function of the depletion width :math:`W`and the local doping density at this location :math:`N(W)_{\text{eff}}`. Therefore, the differential capacitance can be expressed as:
+
+  .. math::
+
+    C_{\text{diff}} = \frac{dC}{dV} = q A N(W)_{\text{eff}} \frac{dW}{dV}.
+
+  Using the equation for the parallel plate capacitor (see above) and differentiating it with respect to the bias voltage, one can derive the following expression for the effective doping density:
+
+  .. math::
+
+    N(W)_{\text{eff}} = \frac{2}{q \epsilon_{0} \epsilon_{Si} A^2 \frac{d}{dV}(\frac{1}{C^2})}.
+
+
+  #. Use this formula to calculate and plot the doping profile of the BPW34 diode. Where is the minimum of the doping profile located and how wide is it approximately? What is the the minimum doping density and how does this value compare with the intrinsic doping density of silicon?
+
