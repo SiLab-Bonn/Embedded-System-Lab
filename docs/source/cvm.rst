@@ -134,7 +134,7 @@ Exercise 0 should be solved before coming to the lab.
 
   .. math::
 
-    N(W)_{\text{eff}} = \frac{2}{q \epsilon_{0} \epsilon_{Si} A^2 \frac{d}{dV}(\frac{1}{C_{\text{diff}}^2})}.
+    N(W)_{\text{eff}} = \frac{2}{q \epsilon_{0} \epsilon_{Si} A^2 \frac{d}{dV}(\frac{1}{C^2})}.
 
 
   #. Use this formula to calculate and plot the doping profile of the BPW34 diode. Where is the minimum of the doping profile located and how wide is it approximately? What is the the minimum doping density and how does this value compare with the intrinsic doping density of silicon?
