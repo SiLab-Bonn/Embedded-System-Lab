@@ -39,7 +39,6 @@ reg[2:0] ptr;
 reg[7:0] sr_in;
 reg[7:0] gpio_reg;
 reg hit_reg;
-reg sout;
 wire clk_buf;
 wire sclk_buf;
 
@@ -47,7 +46,7 @@ assign MISO = CS_B? 1'b0 : tot_counter[ptr];
 assign GPIO = gpio_reg;
 assign HIT = hit_reg;
 assign INJ_OUT = INJ_IN;
-assign LED = 1;
+assign LED = 1'b1;
 
 BUFG CLK_BUFG_INST (.O(clk_buf), .I(CLK));
 BUFG SCLK_BUFG_INST (.O(sclk_buf), .I(SCLK));
@@ -56,7 +55,7 @@ always @(posedge clk_buf)
 begin
   if (!INJ_IN) // reset TOT counter
     tot_counter <= 0;
-  else if (COMP & INJ_IN)
+  else if (COMP && hit_reg)
     tot_counter <= tot_counter + 1;
 end
 
@@ -64,13 +63,12 @@ always @(posedge sclk_buf or posedge CS_B)
 begin
   if (CS_B)  // reset serial output
     begin
-    sout <= 0;
     ptr <= 7;
 	end
   else
     begin
-	sr_in[7:0] <= {sr_in[6:0], MOSI}; // shift in GPIO register
-	ptr <= ptr - 1;
+		sr_in[7:0] <= {sr_in[6:0], MOSI}; // shift in GPIO register
+		ptr <= ptr - 1;
     end
 end
     
@@ -86,7 +84,5 @@ begin
   else
     hit_reg <= 1;
 end
-
-  
 
 endmodule

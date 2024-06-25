@@ -40,16 +40,17 @@ module afe_tb;
 	reg  [7:0] out_data = 8'b00000000;
 
 	// Instantiate the Unit Under Test (UUT)
-	afe_solution_lfsr_toa_tot uut (
+	afe_solution uut (
 		.MOSI(MOSI), 
 		.MISO(MISO), 
 		.CS_B(CS_B), 
 		.SCLK(SCLK), 
 		.INJ_IN(INJ), 
-		.INJ_IN_DEL(INJ_DEL), 
+		//.INJ_IN_DEL(INJ_DEL), 
 		.COMP(COMP), 
 		.HIT(HIT), 
 		.GPIO(GPIO), 
+		.LED(LED),
 		.CLK(CLK)
 	);
 

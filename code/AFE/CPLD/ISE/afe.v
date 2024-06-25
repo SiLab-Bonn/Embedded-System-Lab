@@ -37,7 +37,6 @@ module afe
 reg[7:0] sr_in;
 reg[7:0] gpio_reg;
 reg hit_reg;
-reg sout;
 wire clk_buf;
 wire sclk_buf;
 reg[2:0] ptr;
@@ -46,7 +45,7 @@ assign MISO = CS_B? 1'b0 : 1'bz;
 assign GPIO = gpio_reg;
 assign HIT = hit_reg;
 assign INJ_OUT = INJ_IN;
-assign LED = 1;
+assign LED = 1'b1;
 
 BUFG CLK_BUFG_INST (.O(clk_buf), .I(CLK));
 BUFG SCLK_BUFG_INST (.O(sclk_buf), .I(SCLK));
@@ -56,7 +55,6 @@ always @(posedge sclk_buf or posedge CS_B)
 begin
   if (CS_B)  // reset serial output
     begin
-    sout <= 0;
     ptr <= 7;
 	end
   else
