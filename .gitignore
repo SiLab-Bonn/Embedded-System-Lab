@@ -4,7 +4,6 @@ docs/_build/*
 code/hello_world
 work/*
 *.exe
-*.png
 *.pyc
 *.ilk
 *.obj
