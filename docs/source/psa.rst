@@ -17,7 +17,7 @@ This experiment is designed to introduce the student to the concept of Time Doma
     :width: 500
     :align: center
 
-    Functional block diagram of the TDR module
+    Functional block diagram of the TDR module. The full circuit schematic is found here: :download:`TDR_1.1.pdf <documents/TDR_1.1.pdf>`
 
 The challenge in high resolution TDR measurements is the high bandwidth requirement for the test pulse generation and the analog-to-digital conversion of the received pulse reflection. For example a signal on a typical PCB traces has a propagation speed of about 0.1 mm/ps. To measure a transmission line with a spatial resolution of 3 mm the rise time of the test pulse and the analog-to-digital conversion time must be in the order of 30 ps. While modern circuit technology allows for fast rise-time pulses to be generated, the analog-to-digital conversion at that speed is still a challenge. Therefore the principle of a digital serial analyzer is used in this experiment (and also in many commercial TDR devices): Instead of sampling the reflected amplitude of a single pulse in one go, the pulse is repeated many times and only one point of the received pulse is sampled at a time. By shifting the sampling point in time with respect to the generated output pulse, the reflected waveform is acquired point by point. This method reduces the ADC conversion time requirement to the repetition time of the generated pulse, which is typically in the order of 10 - 100 kHz.
 

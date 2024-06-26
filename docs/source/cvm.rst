@@ -45,7 +45,7 @@ The switches for charing and discharging the capacitance are implemented with a 
     :width: 600
     :align: center
 
-    Simplified schematic of the CVM module. The switches are implemented with a CMOS inverter where the NMOS transistor is closed and the PMOS is open during the discharge phase (CLK = high) and the NMOS transistor is open and the PMOS is closed during the charging phase (CLK = low). 
+    Simplified schematic of the CVM module. The switches are implemented with a CMOS inverter where the NMOS transistor is closed and the PMOS is open during the discharge phase (CLK = high) and the NMOS transistor is open and the PMOS is closed during the charging phase (CLK = low). The full circuit schematic is found here: :download:`CVM_1.1.pdf <documents/CVM_1.1.pdf>`
 
 
 To apply the voltage :math:`V_0` and to measure the current, an SMU-module can be used. The voltage :math:`V_0` should be chosen such that the PMOS and NMOS transistors in the CMOS inverter are not switched on at the same time. If :math:`V_0` is chosen too high (> 2 times the threshold voltage of a transistor), both transistors will be conducting during an input clock transition which will deteriorate the measurement. If the voltage is chosen too small, the measured current will be small and thus more affected by noise. 1.5 V has been found to be a good compromise for the CBCM measurement.	
