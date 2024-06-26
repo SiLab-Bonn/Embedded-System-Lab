@@ -55,3 +55,4 @@ code/AFE/CPLD/ISE/iseconfig/afe.xreport
 code/AFE/CPLD/ISE/default.wcfg
 code/AFE/CPLD/ISE/fuse.xmsgs
 code/AFE/CPLD/ISE/fuse.xmsgs
+docs/images/*.png
