@@ -116,11 +116,34 @@ def inject_read_tot(threshold, charge, time_constant, monitor = 'sha'):
   GPIO.output(INJECT, GPIO.HIGH) # inject charge
   time.sleep(0.0001) 
   if (GPIO.input(COMP)):   # read latched comparator output, read TOT value if hit detected
-    time.sleep(0.001)     # wait for counter to stop
+    time.sleep(0.0001)     # wait for counter to stop
     tot = update_spi_regs(threshold, charge, time_constant, monitor)[0]  # read TOT value from CPLD   
   GPIO.output(INJECT, GPIO.LOW)  # reset charge injection, hit latch, and TOT counter
   time.sleep(0.0001)
   return tot  # return measured TOT
+
+
+# single injection, returns TOT value
+def read_tot(threshold, charge, time_constant, monitor = 'sha'):
+  update_spi_regs(threshold, charge, time_constant, monitor)
+
+  timeout = 5  # timeout in seconds
+  start_time = time.time()
+
+  GPIO.output(INJECT, GPIO.HIGH) # enable hit detection, but do not inject charge ==> remove INJ_IN jumper!
+  while (time.time() - start_time) < timeout:
+    if (GPIO.input(COMP)):
+      #time.sleep(0.0001)     # wait for counter to stop
+      tot = update_spi_regs(threshold, charge, time_constant, monitor)[0]  # read TOT value from CPLD   
+      GPIO.output(INJECT, GPIO.LOW)  # reset hit latch and TOT counter
+      time.sleep(0.0001)
+      # print("TOT: ", tot)
+      return tot  # return measured TOT
+
+    # Timeout occurred
+  # print("Timeout occurred")
+  return -1
+
 
 # scan the injection charge range and return the resulting s-curve fit parameters
 def threshold_scan(threshold, charge_range, time_constant, n_injections = 100, monitor = 'sha', show_plot = False, use_calibration = False):
@@ -250,6 +273,20 @@ def tot_scan(threshold, charge_range, time_constant, n_injections = 100, monitor
   #plt.show()
   return tot_data
 
+def tot_histogram(threshold, charge, time_constant, duration, monitor = 'comp', use_calibration = False):
+  tot_data = np.zeros(256, int)
+  
+  start_time = time.time()
+  while (time.time() - start_time) < duration:
+    tot = read_tot(threshold, charge, time_constant, monitor = 'sha') # read TOT value from CPLD 
+    if (tot >= 0) and (tot < 256):  
+      tot_data[tot] = tot_data[tot] + 1
+
+  fig, ax = plt.subplots()
+  ax.stairs(tot_data, range(257), fill=True, linewidth=1.5)
+  ax.set(xlabel='TOT [25 ns]', ylabel='Occurrences', title='TOT Histogram')
+  ax.grid()
+
 # scan the injected charge range and return the resulting TOT values with the time constant as parameter
 def parametric_tot_scan(threshold, charge_range, time_constant_range, n_injections = 100, monitor = 'comp', use_calibration = False):
   fig, ax = plt.subplots()
@@ -292,20 +329,21 @@ threshold_range_max = baseline + 700
 charge_range = np.arange(20, 301, 10, dtype=int)
 charge = 200
 threshold_range = np.arange(threshold_range_min, threshold_range_max, 100, dtype=int)
-threshold = baseline + 450 
+threshold = baseline + 550 
 time_constant_range = range(2,5)
-time_constant = 3
+time_constant = 6
 
 
 # function calls, uncomment to run specific or all tests
 vthr_dac_lsb_electrons, vinj_dac_lsb_electrons = calculate_calibration_constants()
-#inject(threshold, charge, time_constant, n_injections = 1000, monitor = 'sha')
-#threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot=True, use_calibration=True)
-#tot_scan(threshold, charge_range, time_constant, monitor = 'comp', show_plot = True, use_calibration=True)
-parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha', use_calibration=True)
-parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha', use_calibration=True)
-parametric_tot_scan(threshold, charge_range, time_constant_range, monitor = 'comp',  use_calibration=True)
-#analyze_waveform('code/AFE/test.csv')
+# inject(threshold, charge, time_constant, n_injections = 1000, monitor = 'sha')
+# threshold_scan(threshold, charge_range, time_constant, monitor='sha', show_plot=True, use_calibration=True)
+# tot_scan(threshold, charge_range, time_constant, monitor = 'comp', show_plot = True, use_calibration=True)
+# parametric_threshold_scan_1(threshold_range, charge_range, time_constant, monitor='sha', use_calibration=True)
+# parametric_threshold_scan_2(threshold, charge_range, time_constant_range, monitor='sha', use_calibration=True)
+# parametric_tot_scan(threshold, charge_range, time_constant_range, monitor = 'comp',  use_calibration=True)
+# analyze_waveform('code/AFE/test.csv')
+tot_histogram(threshold = baseline + 810, charge = 0, time_constant = 4, duration = 100, monitor = 'sha')
 
 # clean up
 spi.close()
