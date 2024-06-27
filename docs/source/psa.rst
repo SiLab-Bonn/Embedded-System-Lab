@@ -68,8 +68,8 @@ The exercise 0 contains preparatory questions that should be answered before com
   
   #. The TDR module makes use of a pulse splitter (three resistor is a star-configuration, see circuit block diagram above) to join three signal paths together. Calculate the required resistor values to ensure that the impedance looking into each of the three nodes is 50 Ohm. Assume that the  impedance connected to each of the pulse splitter nodes is also 50 Ohm. 
   #. How is the signal amplitude affected by the pulse splitter (i.e. what is the signal attenuation from **VTX** to **VPULSE**)? 
-  #. The received signal at **VRX** is composed of the superstition of the incident wave from the pulse generator :math:`V_{inc}` and the reflected wave :math:`V_{ref}` coming back from the transmission line. Calculate the attenuation factors as seen from **VRX** node for both the incident and reflected wave as they are combined by the pulse splitter. Hint: Keep in mind that any reflected signal passes the pulse spitter two times (forward wave **VTX** to **VPULSE** and reflected wave **VPULSE** to **VRX**).
-  #. Redraw the waveform sketch from the first question, but now include the pulse splitter and its attenuation.
+  #. The received signal at **VRX** is composed of the superstition of the incident wave from the pulse generator :math:`V_{inc}` and the reflected wave :math:`V_{ref}` coming back from the transmission line. Calculate the attenuation factors as seen from **VRX** node for both the incident and reflected wave as they are combined by the pulse splitter. Hint: Keep in mind that any reflected signal will have passed the pulse spitter two times (forward wave **VTX** to **VPULSE** and reflected wave **VPULSE** to **VRX**).
+  #. Redraw the waveform sketch from the first question, now including the effect of the pulse splitter attenuation.
 
 
 
