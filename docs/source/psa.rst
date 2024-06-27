@@ -62,9 +62,9 @@ The exercise 0 contains preparatory questions that should be answered before com
   #. Explain the term reflection coefficient in the context of transmission lines. How is it defined? How can the refection coefficient be calculated from the transmission line impedance :math:`Z_0` and the load impedance :math:`Z_L`?
   #. What is the maximum cable or trace length that can be measured with the TDR module? Assume that the maximum delay setting is 5 ns and the propagation delay of the cable is 5 ns/m.
   #. Assume you have a signal generator with 50 Ohm output impedance producing a positive edge with 100 mV amplitude and a 20 cm coaxial cable (50 Ohm characteristic impedance, 5 ns/m propagation delay) connected to it. Sketch the waveforms at the generator output for the following cases (x-axis: time, y-axis: voltage):
-    - The cable is not terminated (open end).
-    - Termination with a 100 Ohm resistor.
-    What are the reflection coefficients for both cases?
+  - The cable is not terminated (open end).
+  - Termination with a 100 Ohm resistor.
+  What are the reflection coefficients for both cases?
   #. The TDR module makes use of a pulse splitter (three resistor is a star-configuration, see circuit block diagram above) to join three signal paths together. Calculate the required resistor values to ensure that the impedance looking into each of the three nodes is 50 Ohm. Assume that the  impedance connected to each of the pulse splitter nodes is also 50 Ohm. 
   #. How is the signal amplitude affected by the pulse splitter (i.e. what is the signal attenuation from **VTX** to **VPULSE**)? 
   #. The received signal at **VRX** is composed of the superstition of the incident wave from the pulse generator :math:`V_{inc}` and the reflected wave :math:`V_{ref}` coming back from the transmission line. Calculate the attenuation factors as seen from **VRX** node for both the incident and reflected wave as they are combined by the pulse splitter. Hint: Keep in mind that any reflected signal will have passed the pulse spitter two times (forward wave **VTX** to **VPULSE** and reflected wave **VPULSE** to **VRX**).
