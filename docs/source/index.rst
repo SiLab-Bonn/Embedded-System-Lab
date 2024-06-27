@@ -19,10 +19,9 @@ Embedded System Lab
    sar-adc
    cvm
    afe
-   psa
-   fast-adc
+   tdr
    cpld
-
+   
 
 Indices and tables
 ==================
