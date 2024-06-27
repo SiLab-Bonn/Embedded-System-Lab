@@ -83,8 +83,6 @@ while True:
         update_spi_regs(threshold, pulse_delay, sample_delay)
         # trigger pulse step
         GPIO.output(TRIGGER, GPIO.HIGH)
-        # wait for comparator to settle
-        #time.sleep(0.00001)
         # read comparator result
         result = GPIO.input(COMP)
         # reset pulse output
