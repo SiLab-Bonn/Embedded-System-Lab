@@ -114,11 +114,11 @@ The exercise 0 contains preparatory questions that should be answered before com
   #. Implement the SAR logic as described above. Use ``print`` or logging statements to examine the DAC register setting during the loop. Alternatively, run the code in debug mode and inspect the variables in the debugger window.
   #. Connect a dc-voltage source (lab power supply) to the ``ADC_INPUT`` connector and test your SAR code. Note that the comparator needs some time to stablize its output after the DAC register has been changed (insert some delay between DAC update and comparator output read). Plot the DAC code as a function of cycle number (see picture below). Repeat the plot with DAC voltage units instead of DAC code using the binary weights measured in Exercise 1.
 
-  .. figure:: images/sar_cycle.png
-     :width: 400
-     :align: center
+    .. figure:: images/sar_cycle.png
+      :width: 400
+      :align: center
 
-     Example of an successive approximation cycle
+      Example of an successive approximation cycle
 
 
   #. Measure the sample rate either within the script (use for example Python **tqdm** module in the acquisition loop) or with the oscilloscope (measure the ``SAMPLE`` signal frequency). What is the maximum sample rate you can achieve? What is the dominant limit?
@@ -135,10 +135,10 @@ The exercise 0 contains preparatory questions that should be answered before com
   #. Record ADC data with higher statistic (~100 entries per ADC code) and plot the histogram within the useful dynamic range of the ramp waveform.
   #. Generate DNL amd INL plots from this histogram and calculate the RMS values. Evaluate the effect of the statistic on the reproducibility of the measurement. How much data points do you need to get "stable" results? 
 
-  .. figure:: images/adc_inl_dnl.png
-     :width: 400
-     :align: center
+    .. figure:: images/adc_inl_dnl.png
+      :width: 400
+      :align: center
 
-     Example of an INL and DNL characterization
+      Example of an INL and DNL characterization
 
   #. Change the above mentioned delay time between DAC register update and comparator read and repeat the INL/DNL analysis. What setting would you chose to optimize linearity? What sample rate does this yield? Plot sample rate vs. DNL for a reasonable range.
