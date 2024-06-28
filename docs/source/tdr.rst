@@ -58,6 +58,12 @@ The control script for the TDR module is based upon a loop to control the succes
     TRG = 0 // reset the trigger signal
 
 
+.. figure:: images/tdr_example.png
+    :width: 700
+    :align: center
+
+    TDR measurement example: A 50 Ohm coax cable (25 cm length) connected to a T-adapter with (~5 cm effective length) which has another two 50 Ohm cables (~14 cm length) connected to each of its ends. After 30 cm of nominal 50 Ohm impedance the parallel connection of the two coax cables lets the effective impedance drop to 25 Ohm before the wave gets reflected a the cables open ends at :math:`x = 440 mm`. The wiggle at the first few millimeters of the waveform is due to discontinuities of the SMA connector on the TDR module.
+
 
 Exercises 
 ---------
