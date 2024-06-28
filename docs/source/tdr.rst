@@ -14,7 +14,7 @@ This experiment is designed to introduce the student to the concept of Time Doma
 
 
 .. figure:: images/TDR_method.png
-    :width: 500
+    :width: 600
     :align: center
 
     TDR measurement principle: A fast rise-time pulse is sent along the transmission line under test and the reflected waveform is analyzed to determine the impedance along the line.
