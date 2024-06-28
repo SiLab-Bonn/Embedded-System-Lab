@@ -90,17 +90,17 @@ plot1, = waveform[0].plot(time_steps, voltage_data)
 waveform[0].set_xlabel("Time [ps]")
 waveform[0].set_ylabel("Voltage [#DAC]")
 waveform[0].set_xlim(0, max_delay * delay_step)
-waveform[0].set_ylim(1000, 3200)
+waveform[0].set_ylim(1500, 2500)
 plot2, = waveform[1].plot(time_steps, reflection_data)
 waveform[1].set_xlabel("Time [ps]")
 waveform[1].set_ylabel("Refection Coefficient")
 waveform[1].set_xlim(0, max_delay * delay_step)
-waveform[1].set_ylim(-1.5, 1.5)
+waveform[1].set_ylim(-1.1, 1.1)
 plot3, = waveform[2].plot(time_steps, impedance_data)
 waveform[2].set_xlabel("Distance [mm]")
 waveform[2].set_ylabel("Impedance [Ohm]")
 waveform[2].set_xlim(- x0_offset, (max_delay * delay_step * length_step) - x0_offset)
-waveform[2].set_ylim(10, 110)
+waveform[2].set_ylim(0, 110)
 
 
 while not end_application:
@@ -117,6 +117,7 @@ while not end_application:
       update_spi_regs(threshold, pulse_delay, sample_delay)
       # trigger pulse step
       GPIO.output(TRIGGER, GPIO.HIGH)
+      #time.sleep(0.00001)
       # read comparator result
       result = GPIO.input(COMP)
       # reset pulse output
