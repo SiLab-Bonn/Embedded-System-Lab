@@ -33,7 +33,7 @@ The circuit uses a fast driver to convert the **TRG** input into a fast rise-tim
 
     Functional block diagram of the TDR module. The full circuit schematic is found here: :download:`TDR_1.1.pdf <documents/TDR_1.1.pdf>`
 
-The analog-to-digital conversion is using the successive-approximation-register (SAR) method: For a fixed delay setting, the SAR logic implemented in the control script scans the threshold **VTHR** by adjusting a 10-bit DAC to find the closest value equivalent to the received amplitude **VRX**. By measuring the amplitude at each delay setting (1024 delay steps, 5 ps step size), the waveform of the reflected signal is reconstructed.
+The analog-to-digital conversion is using a modified successive-approximation-register (SAR) method: For a fixed delay setting, the SAR logic implemented in the control script scans the threshold **VTHR** by adjusting a 10-bit DAC to find the closest value equivalent to the received amplitude **VRX**. However, instead of first sampling the analog amplitude with a track-and-hold circuit and then successively comparing the sampled value to the DAC output - the way it is done with an standard SAR-ADC design -, in the TDR module each individual comparison is preceded by a new trigger signal **TRG**. That way, an analog sampling switch, which would have to meet the very high speed requirements of the sampling time step (~5 ps) is not needed and the **VRX** node can be directly connected to the comparator. The drawback of this method is that the comparator must be triggered for each comparison, which requires *"time steps"* times *"DAC resolution"* trigger cycles for a full TDR sweep instead of just *"time steps"* trigger cycles. 
 
 Control Script
 --------------
