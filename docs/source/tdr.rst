@@ -14,7 +14,7 @@ This experiment is designed to introduce the student to the concept of Time Doma
 
 
 .. figure:: images/TDR_method.png
-    :width: 600
+    :width: 700
     :align: center
 
     TDR measurement principle: A fast rise-time pulse is sent along the transmission line under test and the reflected waveform is analyzed to determine the impedance along the line.
@@ -42,18 +42,18 @@ The control script for the TDR module is based upon a loop to control the succes
 
 .. code-block:: c
 
-  // Outer loop: Update SPI register for a new delay value
+  // outer loop: Update SPI register for a new delay value
   setDelay(delay++)
   
-    // Inner loop: Repeat code block below n-times while j runs from n-1 to 0.
-    TRG = 1 //   Trigger the output pulse         
+    // Inner loop: repeat code block below n-times while j runs from n-1 to 0.
+    TRG = 1 //   trigger the output pulse which in return triggers the comparator        
     
     // SAR logic
     DAC_register += (1 << j)   // set and test DAC register bits from MSB to LSB
     if (!COMP)                 // read the result of the comparator)
       DAC_register -= (1 << j) // DAC output larger then VIN, subtract current DAC register bit
     
-    // The final DAC register value after n-iterations is the digital representation of the analog input voltage.
+    // the final DAC register value after n-iterations is the digital representation of the analog input voltage.
     waveform[delay] = DAC_register
     TRG = 0 // reset the trigger signal
 
