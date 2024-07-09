@@ -6,7 +6,7 @@ remote_username="pi"
 
 # Extract the local host name and set remote server name
 local_hostname=$(hostname)
-remote_hostname="asiclab001"
+remote_hostname="asiclab005"
 
 # open ssh connection, create a directory on the remote host if not already present, mount remote folder and keep connection open afterwards
 ssh -t $remote_username@$remote_hostname.physik.uni-bonn.de \
