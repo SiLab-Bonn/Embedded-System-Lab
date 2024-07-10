@@ -91,12 +91,12 @@ ToT Counter
 
 The Time-Over-Threshold method yields information about the injected charge by measuring for how long the sensor signal amplitude was above the set threshold. In other words, for how long the comparator output signal is high.
 
-A straightforward method to measure this time interval involves using a binary counter. The counter increments with each cycle of the fast clock (``CLK``), as long as the comparator output is high. The counter should be reset when the injection cycle is complete i.e. ``INJ_IN`` is low. Due to limited resources of our CPLD, a reasonable counter width is 8 bits.
+A straightforward method to measure this time interval involves using a binary counter. The counter increments with each cycle of the fast clock (``clk_buf``), as long as the comparator output is high. The counter should be reset when the injection cycle is complete i.e. ``INJ_IN`` is low. Due to limited resources of our CPLD, a reasonable counter width is 8 bits.
 
   What is the achievable ToT range and timing resolution? Can it be improved and what are the limitations?
 
 To read the counter value with the RPi, the partially implemented SPI protocol needs to be extended.
-A description of the SPI protocol can be found in the :ref:`gpio-interface` chapter. The ``MISO``signal is used to transfer serialized data, one bit per SPI clock cycle (``SCLK``). ``CS_B`` is controlled by the RPi and determines whether data is written to the CPLD (``CS_B == 1``) or read from it (``CS_B == 0``). 
+A description of the SPI protocol can be found in the :ref:`gpio-interface` chapter. The ``MISO`` signal is used to transfer serialized data, one bit per SPI clock cycle (``SCLK``). ``CS_B`` is controlled by the RPi and determines whether data is written to the CPLD (``CS_B == 1``) or read from it (``CS_B == 0``). 
 
 .. admonition:: Exercise 3: ToT counter
 
