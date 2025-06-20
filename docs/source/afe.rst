@@ -165,7 +165,7 @@ Exercises
 
 The pre-lab exercises (Exercise 0) are questions which must be answered before coming to the lab, with the method of your choosing, although Latex may be preferable to avoid duplicating effort with the report.
 
-The in-lab exercises (Exercise 1-3) are grouped into three section. In the first part the basic functionality of the analog front-end is tested. This is accomplished by implementing a script to enable the charge injection and to observe waveforms of the charge sensitive amplifier, shaper, and comparator with an external oscilloscope and/or the fast ADC on the Raspberry Pi base board. In the second part methods to extract analog performance parameters from the digital hit information will be developed. Finally, the full analog signal processing chain will be characterized as a function of shaping time and detector capacitance. 
+The in-lab exercises (Exercises 1-3) are grouped into three section. In the first part the basic functionality of the analog front-end is tested. This is accomplished by implementing a script to enable the charge injection and to observe waveforms of the charge sensitive amplifier, shaper, and comparator with an external oscilloscope and/or the fast ADC on the Raspberry Pi base board. In the second part methods to extract analog performance parameters from the digital hit information will be developed. Finally, the full analog signal processing chain will be characterized as a function of shaping time and detector capacitance. 
 
 .. admonition:: Exercise 0: Pre-lab questions
 
@@ -182,6 +182,7 @@ The in-lab exercises (Exercise 1-3) are grouped into three section. In the first
   #. Draw a sketch of an amplitude histogram of an ideal noise-free system. It consist of two delta-like peaks: one for the baseline and one for the signal amplitude produced by a constant input charge. In a real system, however, noise is overlaying the ideal signals, leading to fluctuations of the baseline and signal amplitudes. Modify the amplitude histogram to reflect these fluctuations (assume a Gaussian distribution of the noise).
   #. Draw an optimum threshold in your amplitude histogram.
   #. The term 'equivalent-noise-charge' (ENC) represents the quantity of electrons at the input of an ideal (i.e. noise-free) signal chain that would produce the same  amplitude at the output as the noise alone would in a real system. What is the ENC value for a noise amplitude of 10 mV given the charge sensitivity calculated above?
+
 
 .. admonition:: Exercise 1. Characterizing an analog front-end
 
