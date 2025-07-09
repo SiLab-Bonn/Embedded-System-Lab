@@ -109,7 +109,7 @@ Design implementation and CPLD programming
 
 The development of the digital logic can now be done on the local Raspberry Pi while the design implementation will be executed with the Xilinx ISE tool chain on the remote machine:
 
-1. Edit the Verilog code in the ``afe.v`` file in your local work folder according to your design ideas. Save the file and call the design implementation script by typing into the terminal (the one with the ssh session to the remote Linux machine):
+1. Edit the Verilog code in the ``afe.v`` file in your local work folder according to your design ideas. Save the file and call the design implementation script from the terminal with the active ssh session to the remote Linux machine):
  
   .. code-block::
   
