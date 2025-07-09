@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # setup XILINX environment
-source /tools/xilinx/14.7/ISE_DS/settings64.sh
+source /eda/xilinx/14.7/ISE_DS/settings64.sh
 
 # Run the TCL script using Xilinx tcl shell 
 # complete design implementation 
