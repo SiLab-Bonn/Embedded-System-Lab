@@ -61,7 +61,7 @@ The complexity of simulation models can vary a lot and is defined by the require
 
 .. admonition:: Exercise 1: BUFG
 
-  #. Write a Verilog module "BUFG" (filename ``BUFG.v``) with the same IO pin names and basic functionality (hint: one-liner), that can be used within the simulation. Include the module in the ``afe_tb.v`` testbench (e.g. ```include "BUFG.v"``).
+  #. Write a Verilog module "BUFG" (filename ``BUFG.v``) with the same IO pin names and basic functionality (hint: one-liner), that can be used within the simulation. Include the module in the ``afe_tb.v`` testbench (```include "BUFG.v"``).
 
 
 Simulation
@@ -83,7 +83,7 @@ Start the compiler and the simulator from your ISE directory. The generated vcd 
 
 .. admonition:: Exercise 2: Waveforms
 
-  #. Try to interpret the waveforms and find the corresponding code lines in the testbench and source files. You can add internal signals from instantiated modules using the `[instancename].[signalname]`-notation.
+  #. Try to interpret the SPI waveforms and find the corresponding code lines in the testbench and source files. The plotted signal names are listed in the testbench (``$dumpvars(0,SCLK,CS_B,MISO,MOSI);``). You can add internal signals from instantiated modules using the [instancename].[signalname]-notation or you can simply show all signals with ``$dumpvars();``.
 
 
 ToT Counter
@@ -136,8 +136,8 @@ The development of the digital logic can now be done on the local Raspberry Pi w
 ToT measurement
 =================
 
-Connect a BPW34 diode to the AFE board and set the "CLK_EN" jumper.
+Connect a BPW34 diode to the AFE board, cover it with foil to protect it from light, and set the "CLK_EN" jumper.
 
 .. admonition:: Exercise 4: ToT measurement
 
-  #. Test the counter with the ToT functions (e.g. ``tot_scan()`` or ``tot_histrogram()``) in ``afe_solution.py``. What information do you gain compared to a simple binary implementation (hit / no-hit) and for which type of measurement could this be useful?
+  #. Test the counter with the ToT functions (``tot_scan()`` or ``tot_histrogram()``) in ``afe_solution.py``. Adjust the threshold and incection charge until you see a Gaussian ToT distribution. What information do you gain compared to a simple binary implementation (hit / no-hit) and for which type of measurement could this be useful?
