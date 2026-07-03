@@ -61,7 +61,7 @@ The complexity of simulation models can vary a lot and is defined by the require
 
 .. admonition:: Exercise 1: BUFG
 
-  #. Write a Verilog module "BUFG" (filename e.g. ``BUFG.v``) with the same IO pin names and basic functionality (hint: one-liner), that can be used within the simulation. Include the module in the ``afe_tb.v`` testbench (e.g. ```include "BUFG.v"``).
+  #. Write a Verilog module "BUFG" (filename ``BUFG.v``) with the same IO pin names and basic functionality (hint: one-liner), that can be used within the simulation. Include the module in the ``afe_tb.v`` testbench (```include "BUFG.v"``).
 
 
 Simulation
@@ -83,7 +83,7 @@ Start the compiler and the simulator from your ISE directory. The generated vcd 
 
 .. admonition:: Exercise 2: Waveforms
 
-  #. Try to interpret the waveforms and find the corresponding code lines in the testbench and source files. You can add internal signals from instantiated modules using the `[instancename].[signalname]`-notation.
+  #. Try to interpret the SPI waveforms and find the corresponding code lines in the testbench and source files. The plotted signal names are listed in the testbench (``$dumpvars(0,SCLK,CS_B,MISO,MOSI);``). You can add internal signals from instantiated modules using the [instancename].[signalname]-notation or you can simply show all signals with ``$dumpvars();``.
 
 
 ToT Counter
@@ -91,7 +91,7 @@ ToT Counter
 
 The Time-Over-Threshold method yields information about the injected charge by measuring for how long the sensor signal amplitude was above the set threshold. In other words, for how long the comparator output signal is high.
 
-A straightforward method to measure this time interval involves using a binary counter. The counter increments with each cycle of the fast clock (``clk_buf``), as long as the comparator output is high. The counter should be reset when the injection cycle is complete i.e. ``INJ_IN`` is low. Due to limited resources of our CPLD, a reasonable counter width is 8 bits.
+A straightforward method to measure this time interval involves using a binary counter. The counter increments with each rising edge of the fast clock (``clk_buf``), as long as the comparator output is high. The counter should be reset when the injection cycle is complete (``INJ_IN`` is low). Due to limited resources of our CPLD, a reasonable counter width is 8 bits.
 
   What is the achievable ToT range and timing resolution? Can it be improved and what are the limitations?
 
@@ -100,7 +100,7 @@ A description of the SPI protocol can be found in the :ref:`gpio-interface` chap
 
 .. admonition:: Exercise 3: ToT counter
 
-  #. Implement a ToT counter and modify the SPI code to transmit the counter value. The pointer register (``ptr``) can be used to serialize the tot counter register by selecting one bit of the vector. Extend the existing ``MISO`` assignment to transfer the tot-counter when ``CS_B`` is low.
+  #. Implement a ToT counter and modify the SPI code to transmit the counter value. The pointer register (``ptr``) can be used to serialize the ToT counter register. Use ptr as an index for the ToT counter vector. Extend the existing ``MISO`` assignment to transfer the tot-counter when ``CS_B`` is low.
   #. Verify your changes in simulation.
 
 
@@ -109,7 +109,7 @@ Design implementation and CPLD programming
 
 The development of the digital logic can now be done on the local Raspberry Pi while the design implementation will be executed with the Xilinx ISE tool chain on the remote machine:
 
-1. Edit the Verilog code in the ``afe.v`` file in your local work folder according to your design ideas. Save the file and call the design implementation script by typing into the terminal (the one with the ssh session to the remote Linux machine):
+1. Edit the Verilog code in the ``afe.v`` file in your local work folder according to your design ideas. Save the file and call the design implementation script from the terminal with the active ssh session to the remote Linux machine):
  
   .. code-block::
   
@@ -124,7 +124,7 @@ The development of the digital logic can now be done on the local Raspberry Pi w
 
   Examine the output messages. If all tasks are executed without errors, an output file ``afe.xsvf`` will be generated in the folder ``/home/pi/work/ISE``. This file will be used in the next step to program the CPLD.
 
-2. Now you can use the JTAG programming tool ``jtag_programmer`` to program the CPLD (you will need a special cable to connect the CPLD's JTAG interface to the GPIO port of the Raspberry Pi). The programming tool is located in the folder ``/home/pi/Embedded-System-Lab/code/AFE/jtag_programmer``. To execute the tool on the local Raspberry Pi, open a new terminal and type:
+2. Now you can use the JTAG programming tool ``jtag_programmer`` to program the CPLD (you will need a special cable to connect the CPLD's JTAG interface to the GPIO port of the Raspberry Pi). The programming tool is located in the folder ``/home/pi/Embedded-System-Lab/code/AFE/jtag_programmer``. To execute the tool on the local Raspberry Pi, open a new terminal and use the following command:
 
   .. code-block::
   
@@ -136,8 +136,8 @@ The development of the digital logic can now be done on the local Raspberry Pi w
 ToT measurement
 =================
 
-Connect a BPW34 diode to the AFE board and set the "CLK_EN" jumper.
+Connect a BPW34 diode to the AFE board, cover it with foil to protect it from light, and set the "CLK_EN" jumper.
 
 .. admonition:: Exercise 4: ToT measurement
 
-  #. Test the counter with the ToT functions (e.g. ``tot_scan()`` or ``tot_histrogram()``) in ``afe_solution.py``. What information do you gain compared to a simple binary implementation (hit / no-hit) and for which type of measurement could this be useful?
+  #. Test the counter with the ToT functions (``tot_scan()`` or ``tot_histrogram()``) in ``afe_solution.py``. Adjust the threshold and incection charge until you see a Gaussian ToT distribution. What information do you gain compared to a simple binary implementation (hit / no-hit) and for which type of measurement could this be useful?
