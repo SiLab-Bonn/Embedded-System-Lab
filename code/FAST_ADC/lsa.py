@@ -117,6 +117,7 @@ while True:
   print('\033[1m' + 'Logic Signal Analyzer' + '\033[0m' + '\n')
   print('Sample frequency: %.1f MHz' % sample_freq_list[freq_index])
   print('Trigger mode: %s' % ('Auto' if not trigger_mode_single else 'Single'))
+  print('channel 0: GPIO12, channel 1: GPIO13, channel 2: GPIO14, channel 3: GPIO15'))
   print(
 '\nCommands:\n\
   <1..7>  Sample frequency [0.2, 0.5, 1, 2, 5, 10, 25] MHz\n\
