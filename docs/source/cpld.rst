@@ -51,17 +51,16 @@ Type ``pwd`` to check if the folder is mounted correctly. The output should be  
 Test bench
 =================
 
-Test benches (tb) are environments in which the functionality of digital designs can be verified. They instantiate the unit- or device under test (UUT/DUT) and provide means to generate input signals and record output responses of the DUT.
+Test benches (TBs) are simulation environments used to verify the functionality of digital designs. They instantiate the Unit Under Test (UUT) or Device Under Test (DUT) and provide mechanisms for generating input stimuli as well as monitoring and evaluating the DUT's output responses.
 
-If FPGA hardware building blocks like clock management, IO buffers, BRAM etc. are used in a synthesizable design, they can be instantiated from Xilinx standard libraries. The design tools configure and route these blocks automatically during synthesis. Typically the libraries also provide simulation models for these blocks (also referred to as "primitives") but here we write one from scratch. 
+When synthesizable FPGA designs make use of dedicated hardware resources such as clock management blocks, I/O buffers, or block RAM (BRAM), these components can be instantiated from the Xilinx standard libraries. During synthesis, the design tools automatically configure and map these primitives to the corresponding hardware resources of the target FPGA. For simulation purposes, Xilinx typically provides behavioral models for these primitives. In this exercise, however, you will create a simulation model from scratch.
 
-In this example, we make use of BUFG, an architecture-independent global buffer which distributes clock signals throughout a PLD. The synthesis software converts each BUFG to an appropriate type of global buffer for the target PLD device.
-A brief description of this basic design element can be found in the Xilinx online documentation (https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/BUFG).
-The complexity of simulation models can vary a lot and is defined by the requirements. For this testbench, it is sufficient to write a very simple behavioral model.
+As an example, we consider the BUFG, an architecture-independent global clock buffer that distributes clock signals throughout the FPGA. During synthesis, each BUFG instance is automatically mapped to the appropriate global clock buffer available on the target device. A brief description of the BUFG primitive can be found in the Xilinx online documentation: (https://docs.amd.com/r/en-US/ug953-vivado-7series-libraries/BUFG).
+The complexity of a simulation model depends on the intended use case. For the purposes of this testbench, a simple behavioral model is entirely sufficient.
 
 .. admonition:: Exercise 1: BUFG
 
-  #. Write a Verilog module "BUFG" (filename ``BUFG.v``) with the same IO pin names and basic functionality (hint: one-liner), that can be used within the simulation. Include the module in the ``afe_tb.v`` testbench (```include "BUFG.v"``).
+  #. Implement a Verilog module named BUFG (file: BUFG.v) that has the same input/output port names and basic functionality as the original primitive (hint: the implementation is a one-line assignment). Include your module in the afe_tb.v testbench using: (```include "BUFG.v"``).
 
 
 Simulation
