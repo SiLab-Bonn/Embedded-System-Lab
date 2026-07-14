@@ -21,6 +21,8 @@ A typical analog read-out chain - also called analog front-end - for a semicondu
 
     Generic read-out chain for a semiconductor detector: charge sensitive amplifier (CSA), pulse shaping amplifier (SHA), and comparator (COMP). Shown are typical signal waveforms between the blocks and the parameters that can be controlled for each block.
 
+.. _circuit-implementation:
+
 Circuit Implementation
 ======================
 The simplified schematic in the figure below shows the implementation of the signal processing chain on the AFE board.
