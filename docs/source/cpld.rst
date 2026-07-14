@@ -92,7 +92,10 @@ The Time-Over-Threshold method yields information about the injected charge by m
 
 A straightforward method to measure this time interval involves using a binary counter. The counter increments with each rising edge of the fast clock (``clk_buf``), as long as the comparator output is high. The counter should be reset when the injection cycle is complete (``INJ_IN`` is low). Due to limited resources of our CPLD, a reasonable counter width is 8 bits.
 
-  What is the achievable ToT range and timing resolution? Can it be improved and what are the limitations?
+  What are the achievable ToT range and timing resolution? Can either be improved, and if so, what are the limiting factors?
+
+.. note::
+    Review the AFE circuit (schematic and digital implementation) desribed in this chapter: :ref:`circuit-implementation`.
 
 To read the counter value with the RPi, the partially implemented SPI protocol needs to be extended.
 A description of the SPI protocol can be found in the :ref:`gpio-interface` chapter. The ``MISO`` signal is used to transfer serialized data, one bit per SPI clock cycle (``SCLK``). ``CS_B`` is controlled by the RPi and determines whether data is written to the CPLD (``CS_B == 1``) or read from it (``CS_B == 0``). 
